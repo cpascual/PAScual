@@ -7,7 +7,7 @@
 	<META NAME="AUTHOR" CONTENT="Carlos Pascual-Izarra">
 	<META NAME="CREATED" CONTENT="20080519;15052400">
 	<META NAME="CHANGEDBY" CONTENT="Carlos Pascual-Izarra">
-	<META NAME="CHANGED" CONTENT="20080522;15281151">
+	<META NAME="CHANGED" CONTENT="20080526;17574694">
 	<META NAME="CHANGEDBY" CONTENT="Carlos Pascual-Izarra">
 	<META NAME="CHANGEDBY" CONTENT="Carlos Pascual-Izarra">
 	<STYLE TYPE="text/css">
@@ -36,7 +36,12 @@ User Manual</H1>
 <P><BR><BR>
 </P>
 <P>Author: Carlos Pascual-Izarra</P>
-<P>Last modified in <SDFIELD TYPE=DATETIME SDNUM="3081;3081;DD/MM/YY">22/05/08</SDFIELD></P>
+<P>Last modified in <SDFIELD TYPE=DATETIME SDNUM="3081;3081;DD/MM/YY">26/05/08</SDFIELD></P>
+<P>This manual is work in progress. The most recent version can be
+found at:</P>
+<P><A HREF="http://pascual.sourceforge.net/PAScual-UserManual.html">http://pascual.sourceforge.net/PAScual-UserManual.html</A></P>
+<P><BR><BR>
+</P>
 <DIV ID="Table of Contents1" DIR="LTR">
 	<DIV ID="Table of Contents1_Head" DIR="LTR">
 		<P STYLE="margin-top: 0.42cm; margin-bottom: 0.5cm; page-break-after: avoid">
@@ -107,23 +112,24 @@ User Manual</H1>
 <P>PAScual is in some ways similar programs like LTv9 or PALSfit, but
 it has some features that make it unique:</P>
 <UL>
-	<LI><P>It is free / open source software (GPL license). So you can
-	see the code and adapt it to your needs.</P>
-	<LI><P>It gives options for choosing the fitting method: other
-	programs use only Levemberg-Marquardt algorithms for the fit.
-	PAScual offers a global minimisation algorithm (Simulated annealing)
-	as well.</P>
-	<LI><P>It offers a powerful tool for characterising the
-	uncertainties in the results: The Markov Chain Monte-Carlo Bayesian
-	Inference algorithm.</P>
-	<LI><P>It allows you to set limits to the fitting parameters</P>
-	<LI><P>It has an intuitive and easy Graphical User Interface, but it
-	can also be used in text mode or incorporated as a library into your
-	own program.</P>
-	<LI><P>It is written in Python, so it is multi-platform (runs on
-	Linux, Windows and Mac systems)</P>
-	<LI><P>...and many more as it will be shown in the rest of the
-	manual</P>
+	<LI><P STYLE="margin-bottom: 0cm">It is free / open source software
+	(GPL license). So you can see the code and adapt it to your needs.</P>
+	<LI><P STYLE="margin-bottom: 0cm">It gives options for choosing the
+	fitting method: other programs use only Levemberg-Marquardt
+	algorithms for the fit. PAScual offers a global minimisation
+	algorithm (Simulated annealing) as well.</P>
+	<LI><P STYLE="margin-bottom: 0cm">It offers a powerful tool for
+	characterising the uncertainties in the results: The Markov Chain
+	Monte-Carlo Bayesian Inference algorithm.</P>
+	<LI><P STYLE="margin-bottom: 0cm">It allows you to set limits to the
+	fitting parameters</P>
+	<LI><P STYLE="margin-bottom: 0cm">It has an intuitive and easy
+	Graphical User Interface, but it can also be used in text mode or
+	incorporated as a library into your own program.</P>
+	<LI><P STYLE="margin-bottom: 0cm">It is written in Python, so it is
+	multi-platform (runs on Linux, Windows and Mac systems)</P>
+	<LI><P STYLE="margin-bottom: 0cm">...and many more as it will be
+	shown in the rest of the manual</P>
 </UL>
 <P><BR><BR>
 </P>
@@ -144,26 +150,26 @@ All of them are free software that can be freely downloaded..</P>
 <P>General Installation instructions:</P>
 <P>For running PAScual you need, at the very least:</P>
 <UL>
-	<LI><P>Python &gt;=2.5</P>
-	<LI><P>Numpy &gt;=1.0.3</P>
-	<LI><P>scipy &gt;=0.5.2</P>
+	<LI><P STYLE="margin-bottom: 0cm">Python &gt;=2.5</P>
+	<LI><P STYLE="margin-bottom: 0cm">Numpy &gt;=1.0.3</P>
+	<LI><P STYLE="margin-bottom: 0cm">scipy &gt;=0.5.2</P>
 </UL>
 <P><BR><BR>
 </P>
 <P>For using the GUI interface (which I bet you want), you need also:</P>
 <UL>
-	<LI><P>Qt &gt;=4.2.3 
+	<LI><P STYLE="margin-bottom: 0cm">Qt &gt;=4.2.3 
 	</P>
-	<LI><P>PyQt &gt;= 4.2.3 
+	<LI><P STYLE="margin-bottom: 0cm">PyQt &gt;= 4.2.3 
 	</P>
-	<LI><P>pyQwt &gt;=5.0.1 
+	<LI><P STYLE="margin-bottom: 0cm">pyQwt &gt;=5.0.1 
 	</P>
 </UL>
 <P><BR><BR>
 </P>
 <P>For getting graphical output in the text mode interface, you need:</P>
 <UL>
-	<LI><P>matplotlib &gt;= 0.90.1</P>
+	<LI><P STYLE="margin-bottom: 0cm">matplotlib &gt;= 0.90.1</P>
 </UL>
 <P><BR><BR>
 </P>
@@ -186,12 +192,12 @@ requisites in the General Installation Instructions.</P>
 </P>
 <P>Install the following in the given order:</P>
 <OL>
-	<LI><P><A HREF="http://www.python.org/ftp/python/2.5.2/python-2.5.2.msi">python-2.5.2.msi</A></P>
-	<LI><P><A HREF="http://prdownloads.sourceforge.net/numpy/numpy-1.0.4.win32-py2.5.msi?use_mirror=internap">numpy-1.0.4.win32-py2.5.msi</A>
+	<LI><P STYLE="margin-bottom: 0cm"><A HREF="http://www.python.org/ftp/python/2.5.2/python-2.5.2.msi">python-2.5.2.msi</A></P>
+	<LI><P STYLE="margin-bottom: 0cm"><A HREF="http://prdownloads.sourceforge.net/numpy/numpy-1.0.4.win32-py2.5.msi?use_mirror=internap">numpy-1.0.4.win32-py2.5.msi</A>
 		</P>
-	<LI><P><A HREF="http://prdownloads.sourceforge.net/scipy/scipy-0.6.0.win32-py2.5.exe?download">scipy-0.6.0.win32-py2.5.exe</A>
+	<LI><P STYLE="margin-bottom: 0cm"><A HREF="http://prdownloads.sourceforge.net/scipy/scipy-0.6.0.win32-py2.5.exe?download">scipy-0.6.0.win32-py2.5.exe</A>
 		</P>
-	<LI><P><A HREF="http://pascual.sourceforge.net/required/PyQt-Py2.5-gpl-4.3.3-2.exe">PyQt-Py2.5-gpl-4.3.3-2.exe</A>
+	<LI><P STYLE="margin-bottom: 0cm"><A HREF="http://pascual.sourceforge.net/required/PyQt-Py2.5-gpl-4.3.3-2.exe">PyQt-Py2.5-gpl-4.3.3-2.exe</A>
 	(This package includes Qt, PyQt and PyQwt. The newest version in the
 	<A HREF="http://www.riverbankcomputing.com/software/pyqt/download">PyQt
 	web page</A> does not include PyQwt, so I recommend to use this one
@@ -202,7 +208,7 @@ requisites in the General Installation Instructions.</P>
 <P>If you intend to work in text mode, I recommend you the following
 too:</P>
 <OL START=5>
-	<LI><P><A HREF="http://downloads.sourceforge.net/matplotlib/matplotlib-0.91.2.win32-py2.5.exe?modtime=1199628765&amp;big_mirror=0">matplotlib-0.91.2.win32-py2.5.exe</A>
+	<LI><P STYLE="margin-bottom: 0cm"><A HREF="http://downloads.sourceforge.net/matplotlib/matplotlib-0.91.2.win32-py2.5.exe?modtime=1199628765&amp;big_mirror=0">matplotlib-0.91.2.win32-py2.5.exe</A>
 	(Needed only for graphs support in the text interface)</P>
 </OL>
 <P>The above packages can be installed using the default options
