@@ -1,0 +1,25 @@
+CREDITS:
+
+PLEASE give credit: If you use PAScual, acknowledge it by citing, at least:
+
+C. Pascual-Izarra et al., Characterisation of Amphiphile Self-Assembly Materials using Positron Annihilation Lifetime Spectroscopy (PALS)-Part1: Advanced Fitting Algorithms for Data Analysis, Journal of Physical Chemistry B,  [in review], 2008. 
+
+See http://pascual.sourceforge.net for the latest information
+
+PAScual has been written and is maintained by Carlos Pascual-Izarra. 
+Contact by email: carlos.pascual-izarra [AT] csiro.au 
+
+
+
+PAScual uses code from third parties who generously made it available under free software licenses. The author wants to acknowledge them:
+
+* Python (http://www.python.org/).Thanks to Guido and the rest for making this great language.
+* Scipy (http://www.scipy.org/). PAScual makes heavy use of the mathematical libraries of this project.
+* Qt (http://trolltech.com/products/qt). This is the great graphical library used in the GUI
+* PyQT (http://www.riverbankcomputing.co.uk/pyqt/). Thanks  for making QT easy!
+* PyQwt (http://pyqwt.sourceforge.net/). The plots in the GUI are possible thanks to this project.
+
+Thanks also to the authors of the L-BFGS-B algorithm, for making it public:
+				* C. Zhu, R. H. Byrd and J. Nocedal. L-BFGS-B: Algorithm 778: L-BFGS-B,
+				FORTRAN routines for large scale bound constrained optimization (1997),
+				ACM Transactions on Mathematical Software, Vol 23, Num. 4, pp. 550 - 560

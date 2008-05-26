@@ -1,0 +1,290 @@
+<ui version="4.0" >
+ <class>FitparWidget</class>
+ <widget class="QWidget" name="FitparWidget" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>657</width>
+    <height>33</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Form</string>
+  </property>
+  <widget class="QCheckBox" name="CBFix" >
+   <property name="geometry" >
+    <rect>
+     <x>240</x>
+     <y>0</y>
+     <width>20</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="minimumSize" >
+    <size>
+     <width>0</width>
+     <height>0</height>
+    </size>
+   </property>
+   <property name="toolTip" >
+    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal; text-decoration:none;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;">Fixed parameter?&lt;/p>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;">If checked, this paramer won't be fitted.&lt;/p>&lt;/body>&lt;/html></string>
+   </property>
+   <property name="text" >
+    <string/>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="CBCommon" >
+   <property name="geometry" >
+    <rect>
+     <x>260</x>
+     <y>0</y>
+     <width>16</width>
+     <height>18</height>
+    </rect>
+   </property>
+   <property name="toolTip" >
+    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal; text-decoration:none;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Common Parameter?&lt;/p>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">If multiple spectra are selected, this parameter will be &lt;span style=" font-weight:600;">common&lt;/span> to all of them, grouping them in the same set.&lt;/p>&lt;/body>&lt;/html></string>
+   </property>
+   <property name="text" >
+    <string/>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="LEMax" >
+   <property name="geometry" >
+    <rect>
+     <x>450</x>
+     <y>0</y>
+     <width>108</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="sizePolicy" >
+    <sizepolicy>
+     <hsizetype>7</hsizetype>
+     <vsizetype>0</vsizetype>
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize" >
+    <size>
+     <width>70</width>
+     <height>20</height>
+    </size>
+   </property>
+   <property name="toolTip" >
+    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal; text-decoration:none;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Maximum&lt;/p>&lt;/body>&lt;/html></string>
+   </property>
+   <property name="alignment" >
+    <set>Qt::AlignRight</set>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="LEMin" >
+   <property name="geometry" >
+    <rect>
+     <x>340</x>
+     <y>0</y>
+     <width>108</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="sizePolicy" >
+    <sizepolicy>
+     <hsizetype>7</hsizetype>
+     <vsizetype>0</vsizetype>
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize" >
+    <size>
+     <width>70</width>
+     <height>20</height>
+    </size>
+   </property>
+   <property name="toolTip" >
+    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal; text-decoration:none;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Minimum&lt;/p>&lt;/body>&lt;/html></string>
+   </property>
+   <property name="text" >
+    <string>0</string>
+   </property>
+   <property name="alignment" >
+    <set>Qt::AlignRight</set>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label" >
+   <property name="geometry" >
+    <rect>
+     <x>11</x>
+     <y>1</y>
+     <width>84</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="minimumSize" >
+    <size>
+     <width>0</width>
+     <height>20</height>
+    </size>
+   </property>
+   <property name="text" >
+    <string>Parameter [units]</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="LEValue" >
+   <property name="geometry" >
+    <rect>
+     <x>128</x>
+     <y>1</y>
+     <width>108</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="sizePolicy" >
+    <sizepolicy>
+     <hsizetype>7</hsizetype>
+     <vsizetype>0</vsizetype>
+     <horstretch>0</horstretch>
+     <verstretch>1</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimumSize" >
+    <size>
+     <width>70</width>
+     <height>20</height>
+    </size>
+   </property>
+   <property name="baseSize" >
+    <size>
+     <width>0</width>
+     <height>20</height>
+    </size>
+   </property>
+   <property name="toolTip" >
+    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal; text-decoration:none;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" font-size:8pt;">Value&lt;/span>&lt;/p>&lt;/body>&lt;/html></string>
+   </property>
+   <property name="alignment" >
+    <set>Qt::AlignRight</set>
+   </property>
+  </widget>
+  <widget class="QToolButton" name="BTApply" >
+   <property name="geometry" >
+    <rect>
+     <x>560</x>
+     <y>0</y>
+     <width>20</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="toolTip" >
+    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal; text-decoration:none;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;">Apply &lt;/p>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;">Applies this parameter to the selected spectra.&lt;/p>&lt;/body>&lt;/html></string>
+   </property>
+   <property name="text" >
+    <string>A</string>
+   </property>
+   <property name="icon" >
+    <iconset resource="PAScual.qrc" >:/Icons/Icons/mine/CRbutton_ok.png</iconset>
+   </property>
+  </widget>
+  <widget class="QToolButton" name="BTAutoFill" >
+   <property name="enabled" >
+    <bool>true</bool>
+   </property>
+   <property name="geometry" >
+    <rect>
+     <x>101</x>
+     <y>1</y>
+     <width>21</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="toolTip" >
+    <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal; text-decoration:none;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">Alternative setting&lt;/p>&lt;/body>&lt;/html></string>
+   </property>
+   <property name="text" >
+    <string/>
+   </property>
+   <property name="icon" >
+    <iconset resource="PAScual.qrc" >:/Icons/Icons/mine/CRcalc.png</iconset>
+   </property>
+  </widget>
+ </widget>
+ <resources>
+  <include location="PAScual.qrc" />
+ </resources>
+ <connections>
+  <connection>
+   <sender>CBFix</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>LEMax</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>259</x>
+     <y>15</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>557</x>
+     <y>19</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>CBFix</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>LEMin</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>259</x>
+     <y>15</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>447</x>
+     <y>19</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>CBFix</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>CBCommon</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>240</x>
+     <y>7</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>273</x>
+     <y>12</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

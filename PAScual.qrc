@@ -1,0 +1,22 @@
+<RCC>
+    <qresource prefix="/Icons" >
+        <file>Icons/mine/CRbutton_ok.png</file>
+        <file>Icons/mine/CRcalc.png</file>
+        <file>Icons/mine/CRdelete.png</file>
+        <file>Icons/mine/CRfileopen.png</file>
+        <file>Icons/mine/CRfilesave.png</file>
+        <file>Icons/mine/CRmix_audio.png</file>
+        <file>Icons/mine/CRplayer_end.png</file>
+        <file>Icons/mine/CRplayer_play.png</file>
+        <file>Icons/mine/CRplayer_stop.png</file>
+        <file>Icons/mine/PAScual-64x64.png</file>
+        <file>Icons/mine/checkall.png</file>
+        <file>Icons/mine/checkmarked.png</file>
+        <file>Icons/mine/checknone.png</file>
+        <file>Icons/mine/greenbullet.png</file>
+        <file>Icons/mine/questionmark.png</file>
+        <file>Icons/mine/redbullet.png</file>
+        <file>Icons/mine/sigma.png</file>
+        <file>Icons/mine/yellowbullet.png</file>
+    </qresource>
+</RCC>
