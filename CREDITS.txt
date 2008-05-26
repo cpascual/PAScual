@@ -18,6 +18,7 @@ PAScual uses code from third parties who generously made it available under free
 * Qt (http://trolltech.com/products/qt). This is the great graphical library used in the GUI
 * PyQT (http://www.riverbankcomputing.co.uk/pyqt/). Thanks  for making QT easy!
 * PyQwt (http://pyqwt.sourceforge.net/). The plots in the GUI are possible thanks to this project.
+* Some of the icons have been obtained from the Crystal Project by Everaldo Coelho ( www.everaldo.com )
 
 Thanks also to the authors of the L-BFGS-B algorithm, for making it public:
 				* C. Zhu, R. H. Byrd and J. Nocedal. L-BFGS-B: Algorithm 778: L-BFGS-B,
