@@ -227,6 +227,10 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.commandsTable.setModel(self.commandsModel)
 		self.commandsTable.setItemDelegate(self.commandsDelegate)
 		
+		#PreviousFits Log
+		self.currentOutputKey=None
+		self.previousOutputDict={}  
+		
 		#Other, misc
 		self.LEpsperchannel.setValidator(QDoubleValidator(0,S.inf,3,self)) #add validator to the psperchannel edit	
 		self.resultsTable.addActions([self.actionCopy_Results_Selection,self.actionSave_results_as]) #context menu
@@ -278,6 +282,9 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		QObject.connect(self.resultsTable,SIGNAL("doubleClicked(QModelIndex)"),self.onResultsTableDoubleClick)
 		QObject.connect(self.resultsFileSelectBT,SIGNAL("clicked()"),self.onResultsFileSelectBT)
 		QObject.connect(self.outputFileSelectBT,SIGNAL("clicked()"),self.onOutputFileSelectBT)
+		QObject.connect(self.showPreviousOutputBT,SIGNAL("clicked()"),self.onShowPreviousOutputBT)
+		
+		
 # 		QObject.connect(self.saveOutputBT,SIGNAL("clicked()"),self.onSaveOutput)
 		
 		
@@ -478,7 +485,16 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		mytee=tee(sys.__stdout__, self.outputfile)
 		mytee.setEmitEnabled(True)
 		#Copy the current output box to the Previous Fits box and then clear the current one
+		if not self.currentOutputKey is None: 
+			self.previousOutputDict[self.currentOutputKey]=self.outputTE.document().clone() #store the previous output in the dict
+			self.previousOutputCB.insertItem(0,self.currentOutputKey) #put a new entry in the combo box
+		self.currentOutputKey=unicode(time.strftime('%Y/%m/%d %H:%M:%S')) #Update the current Output key
 		
+		
+# 		'DEBUG: >>>>>>>>>',unicode(self.outputTE.toPlainText()),'<<<<<<<<<<<<<<'
+# 		self.previousOutputDict[self.currentOutputKey]=self.outputTE.document().clone()
+# 		self.currentOutputKey=time.strftime('%Y/%m/%d %H:%M:%S') #This is the key where  this 
+# 		self.previousOutputDict[key]
 		#reset the output box if the overwrite mode is on
 		if self.outputWriteMode=="w": self.outputTE.clear()
 #		QObject.connect(emitter,SIGNAL("teeOutput"), self.kk)
@@ -514,6 +530,16 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		print 60*'*'
 		#Start the fit
 		self.advanceFitQueue()
+		
+	def onShowPreviousOutputBT(self):
+		'''prints the previous output in a pop up window)'''
+		key=unicode(self.previousOutputCB.currentText())
+		if key=="All":
+			pass
+		else: 
+			doc=self.previousOutputDict[key]
+		
+		
 			
 	def loadCustomFitModes(self,file=None):
 		try: customFitModesdict=pickle.load(open(self.fitModeFileName,'rb'))

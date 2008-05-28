@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Documents and Settings\pas064\My Documents\src\PAScual-dev\PAScualGUI.ui'
 #
-# Created: Wed May 28 16:45:24 2008
+# Created: Wed May 28 18:32:21 2008
 #      by: PyQt4 UI code generator 4.3.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -402,13 +402,13 @@ class Ui_PAScual(object):
         self.hboxlayout10 = QtGui.QHBoxLayout(self.groupBox_3)
         self.hboxlayout10.setObjectName("hboxlayout10")
 
-        self.previousFitsCB = QtGui.QComboBox(self.groupBox_3)
-        self.previousFitsCB.setObjectName("previousFitsCB")
-        self.hboxlayout10.addWidget(self.previousFitsCB)
+        self.previousOutputCB = QtGui.QComboBox(self.groupBox_3)
+        self.previousOutputCB.setObjectName("previousOutputCB")
+        self.hboxlayout10.addWidget(self.previousOutputCB)
 
-        self.showPreviousFitsPB = QtGui.QToolButton(self.groupBox_3)
-        self.showPreviousFitsPB.setObjectName("showPreviousFitsPB")
-        self.hboxlayout10.addWidget(self.showPreviousFitsPB)
+        self.showPreviousOutputBT = QtGui.QToolButton(self.groupBox_3)
+        self.showPreviousOutputBT.setObjectName("showPreviousOutputBT")
+        self.hboxlayout10.addWidget(self.showPreviousOutputBT)
         self.vboxlayout4.addWidget(self.groupBox_3)
 
         self.groupBox_4 = QtGui.QGroupBox(self.OutputTab)
@@ -641,7 +641,7 @@ class Ui_PAScual(object):
         self.toolBar.addAction(self.actionAbout)
 
         self.retranslateUi(PAScual)
-        self.tabWidget.setCurrentIndex(3)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(PAScual)
 
     def retranslateUi(self, PAScual):
@@ -735,8 +735,8 @@ class Ui_PAScual(object):
         self.saveResultsBT.setText(QtGui.QApplication.translate("PAScual", "...", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.ResultsTab), QtGui.QApplication.translate("PAScual", "Results", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_3.setTitle(QtGui.QApplication.translate("PAScual", "Previous fits", None, QtGui.QApplication.UnicodeUTF8))
-        self.previousFitsCB.addItem(QtGui.QApplication.translate("PAScual", "All fits", None, QtGui.QApplication.UnicodeUTF8))
-        self.showPreviousFitsPB.setText(QtGui.QApplication.translate("PAScual", "...", None, QtGui.QApplication.UnicodeUTF8))
+        self.previousOutputCB.addItem(QtGui.QApplication.translate("PAScual", "All fits", None, QtGui.QApplication.UnicodeUTF8))
+        self.showPreviousOutputBT.setText(QtGui.QApplication.translate("PAScual", "...", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_4.setTitle(QtGui.QApplication.translate("PAScual", "Current Fit", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("PAScual", "Output File", None, QtGui.QApplication.UnicodeUTF8))
         self.outputFileLE.setText(QtGui.QApplication.translate("PAScual", "PASoutput.txt", None, QtGui.QApplication.UnicodeUTF8))
