@@ -229,7 +229,8 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		
 		#PreviousFits Log
 		self.currentOutputKey=None
-		self.previousOutputDict={}  
+		self.previousOutputDict={}
+		self.previousOutputTE.hide()
 		
 		#Other, misc
 		self.LEpsperchannel.setValidator(QDoubleValidator(0,S.inf,3,self)) #add validator to the psperchannel edit	
@@ -282,8 +283,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		QObject.connect(self.resultsTable,SIGNAL("doubleClicked(QModelIndex)"),self.onResultsTableDoubleClick)
 		QObject.connect(self.resultsFileSelectBT,SIGNAL("clicked()"),self.onResultsFileSelectBT)
 		QObject.connect(self.outputFileSelectBT,SIGNAL("clicked()"),self.onOutputFileSelectBT)
-		QObject.connect(self.showPreviousOutputBT,SIGNAL("clicked()"),self.onShowPreviousOutputBT)
-		
+		QObject.connect(self.previousOutputCB,SIGNAL("currentIndexChanged(const QString&)"),self.onPreviousOutputCBChange)
 		
 # 		QObject.connect(self.saveOutputBT,SIGNAL("clicked()"),self.onSaveOutput)
 		
@@ -488,6 +488,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		if not self.currentOutputKey is None: 
 			self.previousOutputDict[self.currentOutputKey]=self.outputTE.document().clone() #store the previous output in the dict
 			self.previousOutputCB.insertItem(0,self.currentOutputKey) #put a new entry in the combo box
+			self.outputTE.clear()
 		self.currentOutputKey=unicode(time.strftime('%Y/%m/%d %H:%M:%S')) #Update the current Output key
 		
 		
@@ -495,8 +496,8 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 # 		self.previousOutputDict[self.currentOutputKey]=self.outputTE.document().clone()
 # 		self.currentOutputKey=time.strftime('%Y/%m/%d %H:%M:%S') #This is the key where  this 
 # 		self.previousOutputDict[key]
-		#reset the output box if the overwrite mode is on
-		if self.outputWriteMode=="w": self.outputTE.clear()
+# 		#reset the output box if the overwrite mode is on
+# 		if self.outputWriteMode=="w": self.outputTE.clear()
 #		QObject.connect(emitter,SIGNAL("teeOutput"), self.kk)
 #		mytee.addQTextEdit(self.outputTE)
 		sys.stdout=mytee
@@ -531,13 +532,23 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		#Start the fit
 		self.advanceFitQueue()
 		
-	def onShowPreviousOutputBT(self):
+	def onPreviousOutputCBChange(self,key):
 		'''prints the previous output in a pop up window)'''
-		key=unicode(self.previousOutputCB.currentText())
+		key=unicode(key)
 		if key=="All":
-			pass
-		else: 
-			doc=self.previousOutputDict[key]
+			self.previousOutputTE.clear()
+			for k in sorted(self.previousOutputDict.keys()):
+				self.previousOutputTE.insertPlainText(self.previousOutputDict[k].toPlainText())
+			self.outputTE.hide()
+			self.previousOutputTE.show()			
+		elif key=="Current":
+			self.previousOutputTE.hide()
+			self.outputTE.show()		
+		else:
+			self.previousOutputTE.clear()
+			self.previousOutputTE.insertPlainText(self.previousOutputDict[key].toPlainText())
+			self.outputTE.hide()
+			self.previousOutputTE.show()		
 		
 		
 			

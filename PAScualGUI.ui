@@ -920,57 +920,51 @@ p, li { white-space: pre-wrap; }
        </attribute>
        <layout class="QVBoxLayout" >
         <item>
-         <widget class="QGroupBox" name="groupBox_3" >
-          <property name="sizePolicy" >
-           <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="title" >
-           <string>Previous fits</string>
-          </property>
-          <layout class="QHBoxLayout" >
-           <item>
-            <widget class="QComboBox" name="previousOutputCB" >
-             <item>
-              <property name="text" >
-               <string>All fits</string>
-              </property>
-             </item>
-            </widget>
-           </item>
-           <item>
-            <widget class="QToolButton" name="showPreviousOutputBT" >
+         <layout class="QHBoxLayout" >
+          <item>
+           <widget class="QLabel" name="label_3" >
+            <property name="text" >
+             <string>Show:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="previousOutputCB" >
+            <property name="sizePolicy" >
+             <sizepolicy vsizetype="Fixed" hsizetype="Expanding" >
+              <horstretch>0</horstretch>
+              <verstretch>0</verstretch>
+             </sizepolicy>
+            </property>
+            <item>
              <property name="text" >
-              <string>...</string>
+              <string>Current</string>
              </property>
-            </widget>
-           </item>
-          </layout>
+            </item>
+            <item>
+             <property name="text" >
+              <string>All</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QTextEdit" name="outputTE" >
+          <property name="lineWrapMode" >
+           <enum>QTextEdit::NoWrap</enum>
+          </property>
+          <property name="readOnly" >
+           <bool>true</bool>
+          </property>
+          <property name="textInteractionFlags" >
+           <set>Qt::NoTextInteraction</set>
+          </property>
          </widget>
         </item>
         <item>
-         <widget class="QGroupBox" name="groupBox_4" >
-          <property name="title" >
-           <string>Current Fit</string>
-          </property>
-          <layout class="QVBoxLayout" >
-           <item>
-            <widget class="QTextEdit" name="outputTE" >
-             <property name="lineWrapMode" >
-              <enum>QTextEdit::NoWrap</enum>
-             </property>
-             <property name="readOnly" >
-              <bool>true</bool>
-             </property>
-             <property name="textInteractionFlags" >
-              <set>Qt::NoTextInteraction</set>
-             </property>
-            </widget>
-           </item>
-          </layout>
-         </widget>
+         <widget class="QTextEdit" name="previousOutputTE" />
         </item>
         <item>
          <layout class="QHBoxLayout" >
