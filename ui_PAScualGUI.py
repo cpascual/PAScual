@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Documents and Settings\pas064\My Documents\src\PAScual\PAScualGUI.ui'
+# Form implementation generated from reading ui file 'C:\Documents and Settings\pas064\My Documents\src\PAScual-dev\PAScualGUI.ui'
 #
-# Created: Thu Nov 01 09:37:37 2007
-#      by: PyQt4 UI code generator 4.2
+# Created: Wed May 28 16:45:24 2008
+#      by: PyQt4 UI code generator 4.3.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -13,19 +13,25 @@ class Ui_PAScual(object):
     def setupUi(self, PAScual):
         PAScual.setObjectName("PAScual")
         PAScual.resize(QtCore.QSize(QtCore.QRect(0,0,804,638).size()).expandedTo(PAScual.minimumSizeHint()))
+
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(PAScual.sizePolicy().hasHeightForWidth())
+        PAScual.setSizePolicy(sizePolicy)
         PAScual.setWindowIcon(QtGui.QIcon(":/Icons/Icons/mine/PAScual-64x64.png"))
 
         self.centralwidget = QtGui.QWidget(PAScual)
         self.centralwidget.setObjectName("centralwidget")
 
         self.vboxlayout = QtGui.QVBoxLayout(self.centralwidget)
-        self.vboxlayout.setMargin(9)
         self.vboxlayout.setSpacing(6)
+        self.vboxlayout.setMargin(9)
         self.vboxlayout.setObjectName("vboxlayout")
 
         self.tabWidget = QtGui.QTabWidget(self.centralwidget)
 
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Policy(5),QtGui.QSizePolicy.Policy(7))
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred,QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.tabWidget.sizePolicy().hasHeightForWidth())
@@ -37,13 +43,13 @@ class Ui_PAScual(object):
         self.parametersTab.setObjectName("parametersTab")
 
         self.vboxlayout1 = QtGui.QVBoxLayout(self.parametersTab)
-        self.vboxlayout1.setMargin(9)
         self.vboxlayout1.setSpacing(6)
+        self.vboxlayout1.setMargin(9)
         self.vboxlayout1.setObjectName("vboxlayout1")
 
         self.hboxlayout = QtGui.QHBoxLayout()
-        self.hboxlayout.setMargin(0)
         self.hboxlayout.setSpacing(6)
+        self.hboxlayout.setMargin(0)
         self.hboxlayout.setObjectName("hboxlayout")
 
         self.label = QtGui.QLabel(self.parametersTab)
@@ -71,7 +77,7 @@ class Ui_PAScual(object):
 
         self.FitparFrame = QtGui.QFrame(self.parametersTab)
 
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Policy(5),QtGui.QSizePolicy.Policy(4))
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred,QtGui.QSizePolicy.Maximum)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.FitparFrame.sizePolicy().hasHeightForWidth())
@@ -88,13 +94,13 @@ class Ui_PAScual(object):
         self.componentsGroupBox.setObjectName("componentsGroupBox")
 
         self.vboxlayout2 = QtGui.QVBoxLayout(self.componentsGroupBox)
-        self.vboxlayout2.setMargin(9)
         self.vboxlayout2.setSpacing(6)
+        self.vboxlayout2.setMargin(9)
         self.vboxlayout2.setObjectName("vboxlayout2")
 
         self.hboxlayout1 = QtGui.QHBoxLayout()
-        self.hboxlayout1.setMargin(0)
         self.hboxlayout1.setSpacing(6)
+        self.hboxlayout1.setMargin(0)
         self.hboxlayout1.setObjectName("hboxlayout1")
 
         self.label_5 = QtGui.QLabel(self.componentsGroupBox)
@@ -108,8 +114,8 @@ class Ui_PAScual(object):
         self.hboxlayout1.addWidget(self.SBoxNcomp)
 
         self.hboxlayout2 = QtGui.QHBoxLayout()
-        self.hboxlayout2.setMargin(0)
         self.hboxlayout2.setSpacing(6)
+        self.hboxlayout2.setMargin(0)
         self.hboxlayout2.setObjectName("hboxlayout2")
 
         self.showtauRB = QtGui.QRadioButton(self.componentsGroupBox)
@@ -137,8 +143,8 @@ class Ui_PAScual(object):
         self.vboxlayout1.addWidget(self.componentsGroupBox)
 
         self.hboxlayout3 = QtGui.QHBoxLayout()
-        self.hboxlayout3.setMargin(0)
         self.hboxlayout3.setSpacing(6)
+        self.hboxlayout3.setMargin(0)
         self.hboxlayout3.setObjectName("hboxlayout3")
 
         spacerItem2 = QtGui.QSpacerItem(40,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Minimum)
@@ -159,8 +165,8 @@ class Ui_PAScual(object):
         self.fittingTab.setObjectName("fittingTab")
 
         self.vboxlayout3 = QtGui.QVBoxLayout(self.fittingTab)
-        self.vboxlayout3.setMargin(9)
         self.vboxlayout3.setSpacing(6)
+        self.vboxlayout3.setMargin(9)
         self.vboxlayout3.setObjectName("vboxlayout3")
 
         self.groupBox = QtGui.QGroupBox(self.fittingTab)
@@ -172,8 +178,8 @@ class Ui_PAScual(object):
         self.gridlayout.setObjectName("gridlayout")
 
         self.hboxlayout4 = QtGui.QHBoxLayout()
-        self.hboxlayout4.setMargin(0)
         self.hboxlayout4.setSpacing(6)
+        self.hboxlayout4.setMargin(0)
         self.hboxlayout4.setObjectName("hboxlayout4")
 
         self.label_8 = QtGui.QLabel(self.groupBox)
@@ -182,7 +188,7 @@ class Ui_PAScual(object):
 
         self.unasignedLE = QtGui.QLineEdit(self.groupBox)
 
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Policy(5),QtGui.QSizePolicy.Policy(0))
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred,QtGui.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.unasignedLE.sizePolicy().hasHeightForWidth())
@@ -197,8 +203,8 @@ class Ui_PAScual(object):
         self.gridlayout.addLayout(self.hboxlayout4,2,1,1,1)
 
         self.hboxlayout5 = QtGui.QHBoxLayout()
-        self.hboxlayout5.setMargin(0)
         self.hboxlayout5.setSpacing(6)
+        self.hboxlayout5.setMargin(0)
         self.hboxlayout5.setObjectName("hboxlayout5")
 
         self.applyFitModeBT = QtGui.QToolButton(self.groupBox)
@@ -224,8 +230,8 @@ class Ui_PAScual(object):
         self.gridlayout.addWidget(self.commandsTable,1,0,1,1)
 
         self.hboxlayout6 = QtGui.QHBoxLayout()
-        self.hboxlayout6.setMargin(0)
         self.hboxlayout6.setSpacing(6)
+        self.hboxlayout6.setMargin(0)
         self.hboxlayout6.setObjectName("hboxlayout6")
 
         self.fitModeCB = QtGui.QComboBox(self.groupBox)
@@ -249,8 +255,8 @@ class Ui_PAScual(object):
         self.gridlayout1.setObjectName("gridlayout1")
 
         self.hboxlayout7 = QtGui.QHBoxLayout()
-        self.hboxlayout7.setMargin(0)
         self.hboxlayout7.setSpacing(6)
+        self.hboxlayout7.setMargin(0)
         self.hboxlayout7.setObjectName("hboxlayout7")
 
         self.goFitBT = QtGui.QToolButton(self.groupBox_2)
@@ -310,8 +316,8 @@ class Ui_PAScual(object):
         self.gridlayout2.setObjectName("gridlayout2")
 
         self.hboxlayout8 = QtGui.QHBoxLayout()
-        self.hboxlayout8.setMargin(0)
         self.hboxlayout8.setSpacing(6)
+        self.hboxlayout8.setMargin(0)
         self.hboxlayout8.setObjectName("hboxlayout8")
 
         self.hideResultsBT = QtGui.QToolButton(self.ResultsTab)
@@ -325,7 +331,7 @@ class Ui_PAScual(object):
 
         self.resultsColumnsListWidget = QtGui.QListWidget(self.ResultsTab)
 
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Policy(5),QtGui.QSizePolicy.Policy(7))
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred,QtGui.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.resultsColumnsListWidget.sizePolicy().hasHeightForWidth())
@@ -341,8 +347,8 @@ class Ui_PAScual(object):
         self.gridlayout2.addWidget(self.resultsTable,0,1,1,1)
 
         self.hboxlayout9 = QtGui.QHBoxLayout()
-        self.hboxlayout9.setMargin(0)
         self.hboxlayout9.setSpacing(6)
+        self.hboxlayout9.setMargin(0)
         self.hboxlayout9.setObjectName("hboxlayout9")
 
         self.label_9 = QtGui.QLabel(self.ResultsTab)
@@ -365,7 +371,7 @@ class Ui_PAScual(object):
 
         self.residualsFrame = QtGui.QFrame(self.ResultsTab)
 
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Policy(7),QtGui.QSizePolicy.Policy(5))
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Preferred)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.residualsFrame.sizePolicy().hasHeightForWidth())
@@ -382,39 +388,65 @@ class Ui_PAScual(object):
         self.OutputTab.setObjectName("OutputTab")
 
         self.vboxlayout4 = QtGui.QVBoxLayout(self.OutputTab)
-        self.vboxlayout4.setMargin(9)
-        self.vboxlayout4.setSpacing(6)
         self.vboxlayout4.setObjectName("vboxlayout4")
 
-        self.outputTE = QtGui.QTextEdit(self.OutputTab)
+        self.groupBox_3 = QtGui.QGroupBox(self.OutputTab)
+
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred,QtGui.QSizePolicy.Preferred)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.groupBox_3.sizePolicy().hasHeightForWidth())
+        self.groupBox_3.setSizePolicy(sizePolicy)
+        self.groupBox_3.setObjectName("groupBox_3")
+
+        self.hboxlayout10 = QtGui.QHBoxLayout(self.groupBox_3)
+        self.hboxlayout10.setObjectName("hboxlayout10")
+
+        self.previousFitsCB = QtGui.QComboBox(self.groupBox_3)
+        self.previousFitsCB.setObjectName("previousFitsCB")
+        self.hboxlayout10.addWidget(self.previousFitsCB)
+
+        self.showPreviousFitsPB = QtGui.QToolButton(self.groupBox_3)
+        self.showPreviousFitsPB.setObjectName("showPreviousFitsPB")
+        self.hboxlayout10.addWidget(self.showPreviousFitsPB)
+        self.vboxlayout4.addWidget(self.groupBox_3)
+
+        self.groupBox_4 = QtGui.QGroupBox(self.OutputTab)
+        self.groupBox_4.setObjectName("groupBox_4")
+
+        self.vboxlayout5 = QtGui.QVBoxLayout(self.groupBox_4)
+        self.vboxlayout5.setObjectName("vboxlayout5")
+
+        self.outputTE = QtGui.QTextEdit(self.groupBox_4)
         self.outputTE.setLineWrapMode(QtGui.QTextEdit.NoWrap)
         self.outputTE.setReadOnly(True)
         self.outputTE.setTextInteractionFlags(QtCore.Qt.NoTextInteraction)
         self.outputTE.setObjectName("outputTE")
-        self.vboxlayout4.addWidget(self.outputTE)
+        self.vboxlayout5.addWidget(self.outputTE)
+        self.vboxlayout4.addWidget(self.groupBox_4)
 
-        self.hboxlayout10 = QtGui.QHBoxLayout()
-        self.hboxlayout10.setMargin(0)
-        self.hboxlayout10.setSpacing(6)
-        self.hboxlayout10.setObjectName("hboxlayout10")
+        self.hboxlayout11 = QtGui.QHBoxLayout()
+        self.hboxlayout11.setSpacing(6)
+        self.hboxlayout11.setMargin(0)
+        self.hboxlayout11.setObjectName("hboxlayout11")
 
         self.label_2 = QtGui.QLabel(self.OutputTab)
         self.label_2.setObjectName("label_2")
-        self.hboxlayout10.addWidget(self.label_2)
+        self.hboxlayout11.addWidget(self.label_2)
 
         self.outputFileLE = QtGui.QLineEdit(self.OutputTab)
         self.outputFileLE.setObjectName("outputFileLE")
-        self.hboxlayout10.addWidget(self.outputFileLE)
+        self.hboxlayout11.addWidget(self.outputFileLE)
 
         self.outputFileSelectBT = QtGui.QToolButton(self.OutputTab)
         self.outputFileSelectBT.setObjectName("outputFileSelectBT")
-        self.hboxlayout10.addWidget(self.outputFileSelectBT)
+        self.hboxlayout11.addWidget(self.outputFileSelectBT)
 
         self.saveOutputBT = QtGui.QToolButton(self.OutputTab)
         self.saveOutputBT.setIcon(QtGui.QIcon(":/Icons/Icons/mine/CRfilesave.png"))
         self.saveOutputBT.setObjectName("saveOutputBT")
-        self.hboxlayout10.addWidget(self.saveOutputBT)
-        self.vboxlayout4.addLayout(self.hboxlayout10)
+        self.hboxlayout11.addWidget(self.saveOutputBT)
+        self.vboxlayout4.addLayout(self.hboxlayout11)
         self.tabWidget.addTab(self.OutputTab,"")
         self.vboxlayout.addWidget(self.tabWidget)
         PAScual.setCentralWidget(self.centralwidget)
@@ -439,7 +471,7 @@ class Ui_PAScual(object):
 
         self.spectraDockWidget = QtGui.QDockWidget(PAScual)
 
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Policy(3),QtGui.QSizePolicy.Policy(3))
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding,QtGui.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.spectraDockWidget.sizePolicy().hasHeightForWidth())
@@ -452,51 +484,51 @@ class Ui_PAScual(object):
         self.dockWidgetContents = QtGui.QWidget(self.spectraDockWidget)
         self.dockWidgetContents.setObjectName("dockWidgetContents")
 
-        self.vboxlayout5 = QtGui.QVBoxLayout(self.dockWidgetContents)
-        self.vboxlayout5.setMargin(9)
-        self.vboxlayout5.setSpacing(6)
-        self.vboxlayout5.setObjectName("vboxlayout5")
+        self.vboxlayout6 = QtGui.QVBoxLayout(self.dockWidgetContents)
+        self.vboxlayout6.setSpacing(6)
+        self.vboxlayout6.setMargin(9)
+        self.vboxlayout6.setObjectName("vboxlayout6")
 
         self.spectraTable = QtGui.QTableView(self.dockWidgetContents)
         self.spectraTable.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
         self.spectraTable.setShowGrid(False)
         self.spectraTable.setObjectName("spectraTable")
-        self.vboxlayout5.addWidget(self.spectraTable)
+        self.vboxlayout6.addWidget(self.spectraTable)
 
-        self.hboxlayout11 = QtGui.QHBoxLayout()
-        self.hboxlayout11.setMargin(0)
-        self.hboxlayout11.setSpacing(6)
-        self.hboxlayout11.setObjectName("hboxlayout11")
+        self.hboxlayout12 = QtGui.QHBoxLayout()
+        self.hboxlayout12.setSpacing(6)
+        self.hboxlayout12.setMargin(0)
+        self.hboxlayout12.setObjectName("hboxlayout12")
 
         self.selectAllTB = QtGui.QToolButton(self.dockWidgetContents)
         self.selectAllTB.setIcon(QtGui.QIcon(":/Icons/Icons/mine/checkall.png"))
         self.selectAllTB.setObjectName("selectAllTB")
-        self.hboxlayout11.addWidget(self.selectAllTB)
+        self.hboxlayout12.addWidget(self.selectAllTB)
 
         self.selectNoneTB = QtGui.QToolButton(self.dockWidgetContents)
         self.selectNoneTB.setIcon(QtGui.QIcon(":/Icons/Icons/mine/checknone.png"))
         self.selectNoneTB.setObjectName("selectNoneTB")
-        self.hboxlayout11.addWidget(self.selectNoneTB)
+        self.hboxlayout12.addWidget(self.selectNoneTB)
 
         self.selectMarkedTB = QtGui.QToolButton(self.dockWidgetContents)
         self.selectMarkedTB.setIcon(QtGui.QIcon(":/Icons/Icons/mine/checkmarked.png"))
         self.selectMarkedTB.setObjectName("selectMarkedTB")
-        self.hboxlayout11.addWidget(self.selectMarkedTB)
+        self.hboxlayout12.addWidget(self.selectMarkedTB)
 
         spacerItem4 = QtGui.QSpacerItem(40,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Minimum)
-        self.hboxlayout11.addItem(spacerItem4)
+        self.hboxlayout12.addItem(spacerItem4)
 
         self.removeSpectraTB = QtGui.QToolButton(self.dockWidgetContents)
         self.removeSpectraTB.setIcon(QtGui.QIcon(":/Icons/Icons/mine/CRdelete.png"))
         self.removeSpectraTB.setObjectName("removeSpectraTB")
-        self.hboxlayout11.addWidget(self.removeSpectraTB)
-        self.vboxlayout5.addLayout(self.hboxlayout11)
+        self.hboxlayout12.addWidget(self.removeSpectraTB)
+        self.vboxlayout6.addLayout(self.hboxlayout12)
         self.spectraDockWidget.setWidget(self.dockWidgetContents)
         PAScual.addDockWidget(QtCore.Qt.DockWidgetArea(1),self.spectraDockWidget)
 
         self.plotDockWidget = QtGui.QDockWidget(PAScual)
 
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Policy(3),QtGui.QSizePolicy.Policy(3))
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding,QtGui.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.plotDockWidget.sizePolicy().hasHeightForWidth())
@@ -509,14 +541,14 @@ class Ui_PAScual(object):
         self.dockWidgetContents_2 = QtGui.QWidget(self.plotDockWidget)
         self.dockWidgetContents_2.setObjectName("dockWidgetContents_2")
 
-        self.vboxlayout6 = QtGui.QVBoxLayout(self.dockWidgetContents_2)
-        self.vboxlayout6.setMargin(9)
-        self.vboxlayout6.setSpacing(6)
-        self.vboxlayout6.setObjectName("vboxlayout6")
+        self.vboxlayout7 = QtGui.QVBoxLayout(self.dockWidgetContents_2)
+        self.vboxlayout7.setSpacing(6)
+        self.vboxlayout7.setMargin(9)
+        self.vboxlayout7.setObjectName("vboxlayout7")
 
         self.plotFrame = QtGui.QFrame(self.dockWidgetContents_2)
 
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Policy(3),QtGui.QSizePolicy.Policy(3))
+        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.MinimumExpanding,QtGui.QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
         sizePolicy.setHeightForWidth(self.plotFrame.sizePolicy().hasHeightForWidth())
@@ -525,14 +557,14 @@ class Ui_PAScual(object):
         self.plotFrame.setFrameShape(QtGui.QFrame.StyledPanel)
         self.plotFrame.setFrameShadow(QtGui.QFrame.Raised)
         self.plotFrame.setObjectName("plotFrame")
-        self.vboxlayout6.addWidget(self.plotFrame)
+        self.vboxlayout7.addWidget(self.plotFrame)
         self.plotDockWidget.setWidget(self.dockWidgetContents_2)
         PAScual.addDockWidget(QtCore.Qt.DockWidgetArea(1),self.plotDockWidget)
 
         self.toolBar = QtGui.QToolBar(PAScual)
         self.toolBar.setOrientation(QtCore.Qt.Horizontal)
         self.toolBar.setObjectName("toolBar")
-        PAScual.addToolBar(self.toolBar)
+        PAScual.addToolBar(QtCore.Qt.TopToolBarArea,self.toolBar)
 
         self.actionLoad_Spectra = QtGui.QAction(PAScual)
         self.actionLoad_Spectra.setIcon(QtGui.QIcon(":/Icons/Icons/mine/CRfileopen.png"))
@@ -609,7 +641,7 @@ class Ui_PAScual(object):
         self.toolBar.addAction(self.actionAbout)
 
         self.retranslateUi(PAScual)
-        self.tabWidget.setCurrentIndex(0)
+        self.tabWidget.setCurrentIndex(3)
         QtCore.QMetaObject.connectSlotsByName(PAScual)
 
     def retranslateUi(self, PAScual):
@@ -702,6 +734,10 @@ class Ui_PAScual(object):
         "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Save the results table to an ASCII file.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.saveResultsBT.setText(QtGui.QApplication.translate("PAScual", "...", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.ResultsTab), QtGui.QApplication.translate("PAScual", "Results", None, QtGui.QApplication.UnicodeUTF8))
+        self.groupBox_3.setTitle(QtGui.QApplication.translate("PAScual", "Previous fits", None, QtGui.QApplication.UnicodeUTF8))
+        self.previousFitsCB.addItem(QtGui.QApplication.translate("PAScual", "All fits", None, QtGui.QApplication.UnicodeUTF8))
+        self.showPreviousFitsPB.setText(QtGui.QApplication.translate("PAScual", "...", None, QtGui.QApplication.UnicodeUTF8))
+        self.groupBox_4.setTitle(QtGui.QApplication.translate("PAScual", "Current Fit", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("PAScual", "Output File", None, QtGui.QApplication.UnicodeUTF8))
         self.outputFileLE.setText(QtGui.QApplication.translate("PAScual", "PASoutput.txt", None, QtGui.QApplication.UnicodeUTF8))
         self.outputFileSelectBT.setText(QtGui.QApplication.translate("PAScual", "...", None, QtGui.QApplication.UnicodeUTF8))
@@ -767,4 +803,4 @@ class Ui_PAScual(object):
         self.actionSave_Parameters.setText(QtGui.QApplication.translate("PAScual", "Save Parameters", None, QtGui.QApplication.UnicodeUTF8))
         self.actionCopy_Results_Selection.setText(QtGui.QApplication.translate("PAScual", "Copy Results (Selection)", None, QtGui.QApplication.UnicodeUTF8))
 
-import qrc_PAScual
+import PAScual_rc

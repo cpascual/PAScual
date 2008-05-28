@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Documents and Settings\pas064\My Documents\src\PAScual-dev\TEcalcGUI.ui'
 #
-# Created: Wed May 28 14:25:49 2008
+# Created: Wed May 28 16:45:24 2008
 #      by: PyQt4 UI code generator 4.3.3
 #
 # WARNING! All changes made in this file will be lost!

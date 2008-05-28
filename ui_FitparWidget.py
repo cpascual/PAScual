@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'C:\Documents and Settings\pas064\My Documents\src\PAScual\FitparWidget.ui'
+# Form implementation generated from reading ui file 'C:\Documents and Settings\pas064\My Documents\src\PAScual-dev\FitparWidget.ui'
 #
-# Created: Wed Sep 26 18:32:41 2007
-#      by: PyQt4 UI code generator 4.2
+# Created: Wed May 28 16:45:24 2008
+#      by: PyQt4 UI code generator 4.3.3
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -119,4 +119,4 @@ class Ui_FitparWidget(object):
         "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal; text-decoration:none;\">\n"
         "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Alternative setting</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
 
-import qrc_PAScual
+import PAScual_rc

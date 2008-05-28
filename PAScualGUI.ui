@@ -9,6 +9,12 @@
     <height>638</height>
    </rect>
   </property>
+  <property name="sizePolicy" >
+   <sizepolicy vsizetype="Preferred" hsizetype="Expanding" >
+    <horstretch>0</horstretch>
+    <verstretch>0</verstretch>
+   </sizepolicy>
+  </property>
   <property name="windowTitle" >
    <string>PAScual</string>
   </property>
@@ -17,18 +23,25 @@
   </property>
   <widget class="QWidget" name="centralwidget" >
    <layout class="QVBoxLayout" >
-    <property name="margin" >
-     <number>9</number>
-    </property>
     <property name="spacing" >
      <number>6</number>
+    </property>
+    <property name="leftMargin" >
+     <number>9</number>
+    </property>
+    <property name="topMargin" >
+     <number>9</number>
+    </property>
+    <property name="rightMargin" >
+     <number>9</number>
+    </property>
+    <property name="bottomMargin" >
+     <number>9</number>
     </property>
     <item>
      <widget class="QTabWidget" name="tabWidget" >
       <property name="sizePolicy" >
-       <sizepolicy>
-        <hsizetype>5</hsizetype>
-        <vsizetype>7</vsizetype>
+       <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
@@ -62,19 +75,37 @@ p, li { white-space: pre-wrap; }
         <string>Parameters</string>
        </attribute>
        <layout class="QVBoxLayout" >
-        <property name="margin" >
-         <number>9</number>
-        </property>
         <property name="spacing" >
          <number>6</number>
         </property>
+        <property name="leftMargin" >
+         <number>9</number>
+        </property>
+        <property name="topMargin" >
+         <number>9</number>
+        </property>
+        <property name="rightMargin" >
+         <number>9</number>
+        </property>
+        <property name="bottomMargin" >
+         <number>9</number>
+        </property>
         <item>
          <layout class="QHBoxLayout" >
-          <property name="margin" >
-           <number>0</number>
-          </property>
           <property name="spacing" >
            <number>6</number>
+          </property>
+          <property name="leftMargin" >
+           <number>0</number>
+          </property>
+          <property name="topMargin" >
+           <number>0</number>
+          </property>
+          <property name="rightMargin" >
+           <number>0</number>
+          </property>
+          <property name="bottomMargin" >
+           <number>0</number>
           </property>
           <item>
            <widget class="QLabel" name="label" >
@@ -144,9 +175,7 @@ p, li { white-space: pre-wrap; }
         <item>
          <widget class="QFrame" name="FitparFrame" >
           <property name="sizePolicy" >
-           <sizepolicy>
-            <hsizetype>5</hsizetype>
-            <vsizetype>4</vsizetype>
+           <sizepolicy vsizetype="Maximum" hsizetype="Preferred" >
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -183,19 +212,37 @@ p, li { white-space: pre-wrap; }
            <string>Components</string>
           </property>
           <layout class="QVBoxLayout" >
-           <property name="margin" >
-            <number>9</number>
-           </property>
            <property name="spacing" >
             <number>6</number>
            </property>
+           <property name="leftMargin" >
+            <number>9</number>
+           </property>
+           <property name="topMargin" >
+            <number>9</number>
+           </property>
+           <property name="rightMargin" >
+            <number>9</number>
+           </property>
+           <property name="bottomMargin" >
+            <number>9</number>
+           </property>
            <item>
             <layout class="QHBoxLayout" >
-             <property name="margin" >
-              <number>0</number>
-             </property>
              <property name="spacing" >
               <number>6</number>
+             </property>
+             <property name="leftMargin" >
+              <number>0</number>
+             </property>
+             <property name="topMargin" >
+              <number>0</number>
+             </property>
+             <property name="rightMargin" >
+              <number>0</number>
+             </property>
+             <property name="bottomMargin" >
+              <number>0</number>
              </property>
              <item>
               <widget class="QLabel" name="label_5" >
@@ -216,11 +263,20 @@ p, li { white-space: pre-wrap; }
              </item>
              <item>
               <layout class="QHBoxLayout" >
-               <property name="margin" >
-                <number>0</number>
-               </property>
                <property name="spacing" >
                 <number>6</number>
+               </property>
+               <property name="leftMargin" >
+                <number>0</number>
+               </property>
+               <property name="topMargin" >
+                <number>0</number>
+               </property>
+               <property name="rightMargin" >
+                <number>0</number>
+               </property>
+               <property name="bottomMargin" >
+                <number>0</number>
                </property>
                <item>
                 <widget class="QRadioButton" name="showtauRB" >
@@ -274,11 +330,20 @@ p, li { white-space: pre-wrap; }
         </item>
         <item>
          <layout class="QHBoxLayout" >
-          <property name="margin" >
-           <number>0</number>
-          </property>
           <property name="spacing" >
            <number>6</number>
+          </property>
+          <property name="leftMargin" >
+           <number>0</number>
+          </property>
+          <property name="topMargin" >
+           <number>0</number>
+          </property>
+          <property name="rightMargin" >
+           <number>0</number>
+          </property>
+          <property name="bottomMargin" >
+           <number>0</number>
           </property>
           <item>
            <spacer>
@@ -319,11 +384,20 @@ p, li { white-space: pre-wrap; }
         <string>Fitting</string>
        </attribute>
        <layout class="QVBoxLayout" >
-        <property name="margin" >
-         <number>9</number>
-        </property>
         <property name="spacing" >
          <number>6</number>
+        </property>
+        <property name="leftMargin" >
+         <number>9</number>
+        </property>
+        <property name="topMargin" >
+         <number>9</number>
+        </property>
+        <property name="rightMargin" >
+         <number>9</number>
+        </property>
+        <property name="bottomMargin" >
+         <number>9</number>
         </property>
         <item>
          <widget class="QGroupBox" name="groupBox" >
@@ -331,19 +405,40 @@ p, li { white-space: pre-wrap; }
            <string>Commands</string>
           </property>
           <layout class="QGridLayout" >
-           <property name="margin" >
+           <property name="leftMargin" >
             <number>9</number>
            </property>
-           <property name="spacing" >
+           <property name="topMargin" >
+            <number>9</number>
+           </property>
+           <property name="rightMargin" >
+            <number>9</number>
+           </property>
+           <property name="bottomMargin" >
+            <number>9</number>
+           </property>
+           <property name="horizontalSpacing" >
+            <number>6</number>
+           </property>
+           <property name="verticalSpacing" >
             <number>6</number>
            </property>
            <item row="2" column="1" >
             <layout class="QHBoxLayout" >
-             <property name="margin" >
-              <number>0</number>
-             </property>
              <property name="spacing" >
               <number>6</number>
+             </property>
+             <property name="leftMargin" >
+              <number>0</number>
+             </property>
+             <property name="topMargin" >
+              <number>0</number>
+             </property>
+             <property name="rightMargin" >
+              <number>0</number>
+             </property>
+             <property name="bottomMargin" >
+              <number>0</number>
              </property>
              <item>
               <widget class="QLabel" name="label_8" >
@@ -355,9 +450,7 @@ p, li { white-space: pre-wrap; }
              <item>
               <widget class="QLineEdit" name="unasignedLE" >
                <property name="sizePolicy" >
-                <sizepolicy>
-                 <hsizetype>5</hsizetype>
-                 <vsizetype>0</vsizetype>
+                <sizepolicy vsizetype="Fixed" hsizetype="Preferred" >
                  <horstretch>0</horstretch>
                  <verstretch>0</verstretch>
                 </sizepolicy>
@@ -390,11 +483,20 @@ p, li { white-space: pre-wrap; }
            </item>
            <item row="0" column="1" >
             <layout class="QHBoxLayout" >
-             <property name="margin" >
-              <number>0</number>
-             </property>
              <property name="spacing" >
               <number>6</number>
+             </property>
+             <property name="leftMargin" >
+              <number>0</number>
+             </property>
+             <property name="topMargin" >
+              <number>0</number>
+             </property>
+             <property name="rightMargin" >
+              <number>0</number>
+             </property>
+             <property name="bottomMargin" >
+              <number>0</number>
              </property>
              <item>
               <widget class="QToolButton" name="applyFitModeBT" >
@@ -454,11 +556,20 @@ p, li { white-space: pre-wrap; }
            </item>
            <item row="0" column="0" >
             <layout class="QHBoxLayout" >
-             <property name="margin" >
-              <number>0</number>
-             </property>
              <property name="spacing" >
               <number>6</number>
+             </property>
+             <property name="leftMargin" >
+              <number>0</number>
+             </property>
+             <property name="topMargin" >
+              <number>0</number>
+             </property>
+             <property name="rightMargin" >
+              <number>0</number>
+             </property>
+             <property name="bottomMargin" >
+              <number>0</number>
              </property>
              <item>
               <widget class="QComboBox" name="fitModeCB" >
@@ -504,19 +615,40 @@ p, li { white-space: pre-wrap; }
            <string>Execution</string>
           </property>
           <layout class="QGridLayout" >
-           <property name="margin" >
+           <property name="leftMargin" >
             <number>9</number>
            </property>
-           <property name="spacing" >
+           <property name="topMargin" >
+            <number>9</number>
+           </property>
+           <property name="rightMargin" >
+            <number>9</number>
+           </property>
+           <property name="bottomMargin" >
+            <number>9</number>
+           </property>
+           <property name="horizontalSpacing" >
+            <number>6</number>
+           </property>
+           <property name="verticalSpacing" >
             <number>6</number>
            </property>
            <item row="2" column="2" >
             <layout class="QHBoxLayout" >
-             <property name="margin" >
-              <number>0</number>
-             </property>
              <property name="spacing" >
               <number>6</number>
+             </property>
+             <property name="leftMargin" >
+              <number>0</number>
+             </property>
+             <property name="topMargin" >
+              <number>0</number>
+             </property>
+             <property name="rightMargin" >
+              <number>0</number>
+             </property>
+             <property name="bottomMargin" >
+              <number>0</number>
              </property>
              <item>
               <widget class="QToolButton" name="goFitBT" >
@@ -611,19 +743,40 @@ p, li { white-space: pre-wrap; }
         <string>Results</string>
        </attribute>
        <layout class="QGridLayout" >
-        <property name="margin" >
+        <property name="leftMargin" >
          <number>9</number>
         </property>
-        <property name="spacing" >
+        <property name="topMargin" >
+         <number>9</number>
+        </property>
+        <property name="rightMargin" >
+         <number>9</number>
+        </property>
+        <property name="bottomMargin" >
+         <number>9</number>
+        </property>
+        <property name="horizontalSpacing" >
+         <number>6</number>
+        </property>
+        <property name="verticalSpacing" >
          <number>6</number>
         </property>
         <item row="1" column="0" >
          <layout class="QHBoxLayout" >
-          <property name="margin" >
-           <number>0</number>
-          </property>
           <property name="spacing" >
            <number>6</number>
+          </property>
+          <property name="leftMargin" >
+           <number>0</number>
+          </property>
+          <property name="topMargin" >
+           <number>0</number>
+          </property>
+          <property name="rightMargin" >
+           <number>0</number>
+          </property>
+          <property name="bottomMargin" >
+           <number>0</number>
           </property>
           <item>
            <widget class="QToolButton" name="hideResultsBT" >
@@ -644,9 +797,7 @@ p, li { white-space: pre-wrap; }
         <item row="0" column="0" >
          <widget class="QListWidget" name="resultsColumnsListWidget" >
           <property name="sizePolicy" >
-           <sizepolicy>
-            <hsizetype>5</hsizetype>
-            <vsizetype>7</vsizetype>
+           <sizepolicy vsizetype="Expanding" hsizetype="Preferred" >
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -679,11 +830,20 @@ p, li { white-space: pre-wrap; }
         </item>
         <item row="1" column="1" >
          <layout class="QHBoxLayout" >
-          <property name="margin" >
-           <number>0</number>
-          </property>
           <property name="spacing" >
            <number>6</number>
+          </property>
+          <property name="leftMargin" >
+           <number>0</number>
+          </property>
+          <property name="topMargin" >
+           <number>0</number>
+          </property>
+          <property name="rightMargin" >
+           <number>0</number>
+          </property>
+          <property name="bottomMargin" >
+           <number>0</number>
           </property>
           <item>
            <widget class="QLabel" name="label_9" >
@@ -727,9 +887,7 @@ p, li { white-space: pre-wrap; }
         <item row="2" column="0" colspan="2" >
          <widget class="QFrame" name="residualsFrame" >
           <property name="sizePolicy" >
-           <sizepolicy>
-            <hsizetype>7</hsizetype>
-            <vsizetype>5</vsizetype>
+           <sizepolicy vsizetype="Preferred" hsizetype="Expanding" >
             <horstretch>0</horstretch>
             <verstretch>0</verstretch>
            </sizepolicy>
@@ -761,39 +919,31 @@ p, li { white-space: pre-wrap; }
         <string>Output</string>
        </attribute>
        <layout class="QVBoxLayout" >
-        <property name="margin" >
-         <number>9</number>
-        </property>
-        <property name="spacing" >
-         <number>6</number>
-        </property>
         <item>
          <widget class="QGroupBox" name="groupBox_3" >
-          <property name="title" >
-           <string>Previous Fits</string>
+          <property name="sizePolicy" >
+           <sizepolicy vsizetype="Preferred" hsizetype="Preferred" >
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
-          <layout class="QVBoxLayout" >
-           <property name="margin" >
-            <number>9</number>
-           </property>
-           <property name="spacing" >
-            <number>6</number>
-           </property>
+          <property name="title" >
+           <string>Previous fits</string>
+          </property>
+          <layout class="QHBoxLayout" >
            <item>
-            <widget class="QTextBrowser" name="prevOutputsTB" >
-             <property name="sizePolicy" >
-              <sizepolicy>
-               <hsizetype>7</hsizetype>
-               <vsizetype>4</vsizetype>
-               <horstretch>0</horstretch>
-               <verstretch>0</verstretch>
-              </sizepolicy>
-             </property>
-             <property name="maximumSize" >
-              <size>
-               <width>16777215</width>
-               <height>100</height>
-              </size>
+            <widget class="QComboBox" name="previousFitsCB" >
+             <item>
+              <property name="text" >
+               <string>All fits</string>
+              </property>
+             </item>
+            </widget>
+           </item>
+           <item>
+            <widget class="QToolButton" name="showPreviousFitsPB" >
+             <property name="text" >
+              <string>...</string>
              </property>
             </widget>
            </item>
@@ -806,12 +956,6 @@ p, li { white-space: pre-wrap; }
            <string>Current Fit</string>
           </property>
           <layout class="QVBoxLayout" >
-           <property name="margin" >
-            <number>9</number>
-           </property>
-           <property name="spacing" >
-            <number>6</number>
-           </property>
            <item>
             <widget class="QTextEdit" name="outputTE" >
              <property name="lineWrapMode" >
@@ -821,7 +965,7 @@ p, li { white-space: pre-wrap; }
               <bool>true</bool>
              </property>
              <property name="textInteractionFlags" >
-              <enum>Qt::NoTextInteraction</enum>
+              <set>Qt::NoTextInteraction</set>
              </property>
             </widget>
            </item>
@@ -830,11 +974,20 @@ p, li { white-space: pre-wrap; }
         </item>
         <item>
          <layout class="QHBoxLayout" >
-          <property name="margin" >
-           <number>0</number>
-          </property>
           <property name="spacing" >
            <number>6</number>
+          </property>
+          <property name="leftMargin" >
+           <number>0</number>
+          </property>
+          <property name="topMargin" >
+           <number>0</number>
+          </property>
+          <property name="rightMargin" >
+           <number>0</number>
+          </property>
+          <property name="bottomMargin" >
+           <number>0</number>
           </property>
           <item>
            <widget class="QLabel" name="label_2" >
@@ -923,9 +1076,7 @@ p, li { white-space: pre-wrap; }
   <widget class="QStatusBar" name="statusbar" />
   <widget class="QDockWidget" name="spectraDockWidget" >
    <property name="sizePolicy" >
-    <sizepolicy>
-     <hsizetype>3</hsizetype>
-     <vsizetype>3</vsizetype>
+    <sizepolicy vsizetype="MinimumExpanding" hsizetype="MinimumExpanding" >
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -965,11 +1116,20 @@ p, li { white-space: pre-wrap; }
    </attribute>
    <widget class="QWidget" name="dockWidgetContents" >
     <layout class="QVBoxLayout" >
-     <property name="margin" >
-      <number>9</number>
-     </property>
      <property name="spacing" >
       <number>6</number>
+     </property>
+     <property name="leftMargin" >
+      <number>9</number>
+     </property>
+     <property name="topMargin" >
+      <number>9</number>
+     </property>
+     <property name="rightMargin" >
+      <number>9</number>
+     </property>
+     <property name="bottomMargin" >
+      <number>9</number>
      </property>
      <item>
       <widget class="QTableView" name="spectraTable" >
@@ -983,11 +1143,20 @@ p, li { white-space: pre-wrap; }
      </item>
      <item>
       <layout class="QHBoxLayout" >
-       <property name="margin" >
-        <number>0</number>
-       </property>
        <property name="spacing" >
         <number>6</number>
+       </property>
+       <property name="leftMargin" >
+        <number>0</number>
+       </property>
+       <property name="topMargin" >
+        <number>0</number>
+       </property>
+       <property name="rightMargin" >
+        <number>0</number>
+       </property>
+       <property name="bottomMargin" >
+        <number>0</number>
        </property>
        <item>
         <widget class="QToolButton" name="selectAllTB" >
@@ -1073,9 +1242,7 @@ p, li { white-space: pre-wrap; }
   </widget>
   <widget class="QDockWidget" name="plotDockWidget" >
    <property name="sizePolicy" >
-    <sizepolicy>
-     <hsizetype>3</hsizetype>
-     <vsizetype>3</vsizetype>
+    <sizepolicy vsizetype="MinimumExpanding" hsizetype="MinimumExpanding" >
      <horstretch>0</horstretch>
      <verstretch>0</verstretch>
     </sizepolicy>
@@ -1109,18 +1276,25 @@ p, li { white-space: pre-wrap; }
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_2" >
     <layout class="QVBoxLayout" >
-     <property name="margin" >
-      <number>9</number>
-     </property>
      <property name="spacing" >
       <number>6</number>
+     </property>
+     <property name="leftMargin" >
+      <number>9</number>
+     </property>
+     <property name="topMargin" >
+      <number>9</number>
+     </property>
+     <property name="rightMargin" >
+      <number>9</number>
+     </property>
+     <property name="bottomMargin" >
+      <number>9</number>
      </property>
      <item>
       <widget class="QFrame" name="plotFrame" >
        <property name="sizePolicy" >
-        <sizepolicy>
-         <hsizetype>3</hsizetype>
-         <vsizetype>3</vsizetype>
+        <sizepolicy vsizetype="MinimumExpanding" hsizetype="MinimumExpanding" >
          <horstretch>0</horstretch>
          <verstretch>0</verstretch>
         </sizepolicy>
@@ -1147,7 +1321,10 @@ p, li { white-space: pre-wrap; }
     <enum>Qt::Horizontal</enum>
    </property>
    <attribute name="toolBarArea" >
-    <number>4</number>
+    <enum>TopToolBarArea</enum>
+   </attribute>
+   <attribute name="toolBarBreak" >
+    <bool>false</bool>
    </attribute>
    <addaction name="actionLoad_Spectra" />
    <addaction name="actionSum_Spectra" />

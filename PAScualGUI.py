@@ -477,6 +477,8 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.outputfile=open(unicode(self.outputFileLE.text()),self.outputWriteMode)#self.outputWriteMode is one of  'w' or 'a'
 		mytee=tee(sys.__stdout__, self.outputfile)
 		mytee.setEmitEnabled(True)
+		#Copy the current output box to the Previous Fits box and then clear the current one
+		
 		#reset the output box if the overwrite mode is on
 		if self.outputWriteMode=="w": self.outputTE.clear()
 #		QObject.connect(emitter,SIGNAL("teeOutput"), self.kk)
