@@ -18,6 +18,7 @@
         <file>Icons/mine/redbullet.png</file>
         <file>Icons/mine/sigma.png</file>
         <file>Icons/mine/yellowbullet.png</file>
+        <file>icons/mine/TaoEldrup64x64.png</file>
     </qresource>
     <qresource prefix="/new/prefix1" />
 </RCC>

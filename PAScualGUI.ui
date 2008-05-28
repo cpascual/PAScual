@@ -1040,9 +1040,6 @@ p, li { white-space: pre-wrap; }
     <addaction name="actionSave_Output_as" />
     <addaction name="actionSave_results_as" />
     <addaction name="separator" />
-    <addaction name="actionSum_Spectra" />
-    <addaction name="actionSimulate_spectrum" />
-    <addaction name="separator" />
     <addaction name="actionLoad_Parameters" />
     <addaction name="actionSave_Parameters" />
    </widget>
@@ -1063,8 +1060,17 @@ p, li { white-space: pre-wrap; }
     <addaction name="separator" />
     <addaction name="actionAbout" />
    </widget>
+   <widget class="QMenu" name="menuTools" >
+    <property name="title" >
+     <string>Tools</string>
+    </property>
+    <addaction name="actionSimulate_spectrum" />
+    <addaction name="actionSum_Spectra" />
+    <addaction name="actionTao_Eldrup_Calculator" />
+   </widget>
    <addaction name="menuFile" />
    <addaction name="menuView" />
+   <addaction name="menuTools" />
    <addaction name="menuHelp" />
   </widget>
   <widget class="QStatusBar" name="statusbar" />
@@ -1322,6 +1328,7 @@ p, li { white-space: pre-wrap; }
    </attribute>
    <addaction name="actionLoad_Spectra" />
    <addaction name="actionSum_Spectra" />
+   <addaction name="actionTao_Eldrup_Calculator" />
    <addaction name="separator" />
    <addaction name="actionWhat_s_This" />
    <addaction name="actionAbout" />
@@ -1415,6 +1422,14 @@ p, li { white-space: pre-wrap; }
   <action name="actionCopy_Results_Selection" >
    <property name="text" >
     <string>Copy Results (Selection)</string>
+   </property>
+  </action>
+  <action name="actionTao_Eldrup_Calculator" >
+   <property name="icon" >
+    <iconset resource="PAScual.qrc" >:/Icons/icons/mine/TaoEldrup64x64.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Tao Eldrup Calculator</string>
    </property>
   </action>
  </widget>

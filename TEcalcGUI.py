@@ -23,9 +23,9 @@ from PyQt4.QtGui import *
 import ui_TEcalcGUI
 from pyTaoEldrup import *
 
-class demo(QDialog,ui_TEcalcGUI.Ui_TEcalcGUI):
+class TEcalcDialog(QDialog,ui_TEcalcGUI.Ui_TEcalcGUI):
 	def __init__(self, parent=None):
-		super(demo,self).__init__(parent)
+		super(TEcalcDialog,self).__init__(parent)
 		self.setupUi(self)
 # 		self.resultsTable.clear()
 		
@@ -163,6 +163,6 @@ class demo(QDialog,ui_TEcalcGUI.Ui_TEcalcGUI):
 		
 if __name__ == "__main__":
  	app = QApplication(sys.argv)
-	form = demo()
+	form = TEcalcDialog()
 	form.show()
 	sys.exit(app.exec_())

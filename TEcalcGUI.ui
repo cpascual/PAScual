@@ -10,7 +10,10 @@
    </rect>
   </property>
   <property name="windowTitle" >
-   <string>Dialog</string>
+   <string>Tao-Eldrup Calculator</string>
+  </property>
+  <property name="windowIcon" >
+   <iconset resource="PAScual.qrc" >:/Icons/icons/mine/TaoEldrup64x64.png</iconset>
   </property>
   <layout class="QVBoxLayout" >
    <item>
@@ -363,12 +366,17 @@ p, li { white-space: pre-wrap; }
    </item>
   </layout>
   <action name="actionCopy_Results_Selection" >
+   <property name="icon" >
+    <iconset resource="PAScual.qrc" >:/Icons/icons/mine/TaoEldrup64x64.png</iconset>
+   </property>
    <property name="text" >
     <string>Copy_Results_Selection</string>
    </property>
   </action>
  </widget>
- <resources/>
+ <resources>
+  <include location="PAScual.qrc" />
+ </resources>
  <connections>
   <connection>
    <sender>ClearPB</sender>

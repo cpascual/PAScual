@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Documents and Settings\pas064\My Documents\src\PAScual-dev\TEcalcGUI.ui'
 #
-# Created: Wed May 28 22:49:12 2008
+# Created: Thu May 29 01:12:16 2008
 #      by: PyQt4 UI code generator 4.3.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -13,6 +13,7 @@ class Ui_TEcalcGUI(object):
     def setupUi(self, TEcalcGUI):
         TEcalcGUI.setObjectName("TEcalcGUI")
         TEcalcGUI.resize(QtCore.QSize(QtCore.QRect(0,0,487,574).size()).expandedTo(TEcalcGUI.minimumSizeHint()))
+        TEcalcGUI.setWindowIcon(QtGui.QIcon(":/Icons/icons/mine/TaoEldrup64x64.png"))
 
         self.vboxlayout = QtGui.QVBoxLayout(TEcalcGUI)
         self.vboxlayout.setObjectName("vboxlayout")
@@ -162,6 +163,7 @@ class Ui_TEcalcGUI(object):
         self.vboxlayout.addLayout(self.hboxlayout1)
 
         self.actionCopy_Results_Selection = QtGui.QAction(TEcalcGUI)
+        self.actionCopy_Results_Selection.setIcon(QtGui.QIcon(":/Icons/icons/mine/TaoEldrup64x64.png"))
         self.actionCopy_Results_Selection.setObjectName("actionCopy_Results_Selection")
 
         self.retranslateUi(TEcalcGUI)
@@ -174,7 +176,7 @@ class Ui_TEcalcGUI(object):
         QtCore.QMetaObject.connectSlotsByName(TEcalcGUI)
 
     def retranslateUi(self, TEcalcGUI):
-        TEcalcGUI.setWindowTitle(QtGui.QApplication.translate("TEcalcGUI", "Dialog", None, QtGui.QApplication.UnicodeUTF8))
+        TEcalcGUI.setWindowTitle(QtGui.QApplication.translate("TEcalcGUI", "Tao-Eldrup Calculator", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_2.setTitle(QtGui.QApplication.translate("TEcalcGUI", "Inputs", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("TEcalcGUI", "Lifetimes", None, QtGui.QApplication.UnicodeUTF8))
         self.nsRB.setText(QtGui.QApplication.translate("TEcalcGUI", "ns", None, QtGui.QApplication.UnicodeUTF8))
@@ -269,3 +271,4 @@ class Ui_TEcalcGUI(object):
         self.CalculatePB.setText(QtGui.QApplication.translate("TEcalcGUI", "Calculate", None, QtGui.QApplication.UnicodeUTF8))
         self.actionCopy_Results_Selection.setText(QtGui.QApplication.translate("TEcalcGUI", "Copy_Results_Selection", None, QtGui.QApplication.UnicodeUTF8))
 
+import PAScual_rc

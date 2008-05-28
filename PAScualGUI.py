@@ -48,9 +48,11 @@ import SpectraTableMV as STMV
 import CommandsTableMV as CMDTMV
 import CHNfiles
 import PASCommandProcess as PCP
+from TEcalcGUI import TEcalcDialog
+
 # import AdvOpt as advopt
 
-__version__="1.0.0"
+__version__="1.1.0"
 __homepage__="http://pascual.sourceforge.net"
 __citation__="C. Pascual-Izarra et al., <i>Characterisation of Amphiphile Self-Assembly Materials using Positron Annihilation Lifetime Spectroscopy (PALS)-Part1: Advanced Fitting Algorithms for Data Analysis</i>, Journal of Physical Chemistry B,  [in review], 2008. <p>see %s for up-to-date information about citing</p>"%__homepage__
 
@@ -244,11 +246,14 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		QObject.connect(self.actionAbout,SIGNAL("triggered()"),self.helpAbout)
 		QObject.connect(self.actionLicense,SIGNAL("triggered()"),self.showlicense)
 		QObject.connect(self.actionSum_Spectra,SIGNAL("triggered()"),self.sumspectra)
+		QObject.connect(self.actionTao_Eldrup_Calculator,SIGNAL("triggered()"),self.launchTEcalc)
 		QObject.connect(self.actionWhat_s_This,SIGNAL("triggered()"),lambda:QWhatsThis.enterWhatsThisMode())
 		QObject.connect(self.actionLoad_Parameters,SIGNAL("triggered()"), self.loadParameters)
 		QObject.connect(self.actionSimulate_spectrum,SIGNAL("triggered()"), self.createFakeSpectrum)
 		QObject.connect(self.actionCopy_Results_Selection,SIGNAL("triggered()"), self.copy_Results_Selection)	
 		QObject.connect(self.actionShow_hide_Plot,SIGNAL("triggered()"), self.plotDockWidget.toggleViewAction().toggle)	
+		QObject.connect(self.actionManual,SIGNAL("triggered()"),self.showManual)
+		
 		
 #		QObject.connect(self.actionSaveResults,SIGNAL("triggered()"),self.onSaveResults)
 		QObject.connect(self.spectraTable,SIGNAL("doubleClicked(QModelIndex)"),self.onSpectraTableDoubleClick)
@@ -1047,11 +1052,29 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		dp=discretepals(name='fake', expdata=None, roi=roi, taulist=taulist, itylist=itylist, bg=bg, fwhm=fwhm, c0=c0, psperchannel=psperchannel, area=area, fake=True)
 		#save it
 		self.savespectrum(dp)	
+	
 		
+	def launchTEcalc(self):
+		TEcalc=TEcalcDialog(self)
+		TEcalc.show()
+		
+			
 	def loadParameters(self,dp=None):
 		'''uses a dp to fill the parameters. If no spectra si given, it asks to load a file which is expected to contain a pickled discretepals'''
 		pass #TODO
 	
+	def showManual(self):
+		'''Shows the User Manual in a window'''
+		#TODO: make it nicer... make it follow links. Possibly use a resource file for the manual,...
+		manualBrowser=QDialog(self)
+		manualTB=QTextBrowser()
+		layout=QVBoxLayout()
+		layout.addWidget(manualTB)
+		manualBrowser.setLayout(layout)
+		url="Manual/PAScual-UserManual.html"
+		manualTB.setSource(QUrl(url))
+		manualBrowser.show()
+		
 	def helpAbout(self):
 		QMessageBox.about(self, "About PAScual",
 							"""<b>PAScual</b> v %s

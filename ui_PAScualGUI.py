@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Documents and Settings\pas064\My Documents\src\PAScual-dev\PAScualGUI.ui'
 #
-# Created: Wed May 28 22:49:42 2008
+# Created: Thu May 29 01:12:16 2008
 #      by: PyQt4 UI code generator 4.3.3
 #
 # WARNING! All changes made in this file will be lost!
@@ -457,6 +457,9 @@ class Ui_PAScual(object):
 
         self.menuHelp = QtGui.QMenu(self.menubar)
         self.menuHelp.setObjectName("menuHelp")
+
+        self.menuTools = QtGui.QMenu(self.menubar)
+        self.menuTools.setObjectName("menuTools")
         PAScual.setMenuBar(self.menubar)
 
         self.statusbar = QtGui.QStatusBar(PAScual)
@@ -608,13 +611,14 @@ class Ui_PAScual(object):
 
         self.actionCopy_Results_Selection = QtGui.QAction(PAScual)
         self.actionCopy_Results_Selection.setObjectName("actionCopy_Results_Selection")
+
+        self.actionTao_Eldrup_Calculator = QtGui.QAction(PAScual)
+        self.actionTao_Eldrup_Calculator.setIcon(QtGui.QIcon(":/Icons/icons/mine/TaoEldrup64x64.png"))
+        self.actionTao_Eldrup_Calculator.setObjectName("actionTao_Eldrup_Calculator")
         self.menuFile.addAction(self.actionLoad_Spectra)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionSave_Output_as)
         self.menuFile.addAction(self.actionSave_results_as)
-        self.menuFile.addSeparator()
-        self.menuFile.addAction(self.actionSum_Spectra)
-        self.menuFile.addAction(self.actionSimulate_spectrum)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionLoad_Parameters)
         self.menuFile.addAction(self.actionSave_Parameters)
@@ -625,11 +629,16 @@ class Ui_PAScual(object):
         self.menuHelp.addAction(self.actionLicense)
         self.menuHelp.addSeparator()
         self.menuHelp.addAction(self.actionAbout)
+        self.menuTools.addAction(self.actionSimulate_spectrum)
+        self.menuTools.addAction(self.actionSum_Spectra)
+        self.menuTools.addAction(self.actionTao_Eldrup_Calculator)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuView.menuAction())
+        self.menubar.addAction(self.menuTools.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
         self.toolBar.addAction(self.actionLoad_Spectra)
         self.toolBar.addAction(self.actionSum_Spectra)
+        self.toolBar.addAction(self.actionTao_Eldrup_Calculator)
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.actionWhat_s_This)
         self.toolBar.addAction(self.actionAbout)
@@ -739,6 +748,7 @@ class Ui_PAScual(object):
         self.menuFile.setTitle(QtGui.QApplication.translate("PAScual", "File", None, QtGui.QApplication.UnicodeUTF8))
         self.menuView.setTitle(QtGui.QApplication.translate("PAScual", "View", None, QtGui.QApplication.UnicodeUTF8))
         self.menuHelp.setTitle(QtGui.QApplication.translate("PAScual", "Help", None, QtGui.QApplication.UnicodeUTF8))
+        self.menuTools.setTitle(QtGui.QApplication.translate("PAScual", "Tools", None, QtGui.QApplication.UnicodeUTF8))
         self.spectraDockWidget.setWhatsThis(QtGui.QApplication.translate("PAScual", "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
         "p, li { white-space: pre-wrap; }\n"
         "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal; text-decoration:none;\">\n"
@@ -795,5 +805,6 @@ class Ui_PAScual(object):
         self.actionSimulate_spectrum.setText(QtGui.QApplication.translate("PAScual", "Simulate spectrum", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSave_Parameters.setText(QtGui.QApplication.translate("PAScual", "Save Parameters", None, QtGui.QApplication.UnicodeUTF8))
         self.actionCopy_Results_Selection.setText(QtGui.QApplication.translate("PAScual", "Copy Results (Selection)", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionTao_Eldrup_Calculator.setText(QtGui.QApplication.translate("PAScual", "Tao Eldrup Calculator", None, QtGui.QApplication.UnicodeUTF8))
 
 import PAScual_rc
