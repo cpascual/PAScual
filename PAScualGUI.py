@@ -1,7 +1,7 @@
 '''
 	PAScualGUI: Graphical User Interface for PAScual
     PAScual: Positron Annihilation Spectroscopy data analysis
-    Copyright (C) 2007  Carlos Pascual-Izarra <carlos.pascual-izarra@csiro.au>
+    Copyright (C) 2007  Carlos Pascual-Izarra < cpascual [AT] users.sourceforge.net >
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -48,7 +48,6 @@ import SpectraTableMV as STMV
 import CommandsTableMV as CMDTMV
 import CHNfiles
 import PASCommandProcess as PCP
-from TEcalcGUI import TEcalcDialog
 
 # import AdvOpt as advopt
 
@@ -1055,8 +1054,9 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 	
 		
 	def launchTEcalc(self):
-		TEcalc=TEcalcDialog(self)
-		TEcalc.show()
+		from TEcalcGUI import TEcalcDialog
+		self.TEcalc=TEcalcDialog()
+		self.TEcalc.show()
 		
 			
 	def loadParameters(self,dp=None):
@@ -1066,19 +1066,20 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 	def showManual(self):
 		'''Shows the User Manual in a window'''
 		#TODO: make it nicer... make it follow links. Possibly use a resource file for the manual,...
-		manualBrowser=QDialog(self)
+		self.manualBrowser=QDialog()
 		manualTB=QTextBrowser()
 		layout=QVBoxLayout()
 		layout.addWidget(manualTB)
-		manualBrowser.setLayout(layout)
+		self.manualBrowser.setLayout(layout)
 		url="Manual/PAScual-UserManual.html"
 		manualTB.setSource(QUrl(url))
-		manualBrowser.show()
+		self.manualBrowser.resize(800, 400)
+		self.manualBrowser.show()
 		
 	def helpAbout(self):
 		QMessageBox.about(self, "About PAScual",
 							"""<b>PAScual</b> v %s
-							<p>Author: Carlos Pascual-Izarra. carlos.pascual-izarra@csiro.au
+							<p>Author: Carlos Pascual-Izarra. <cpascual [AT] users.sourceforge.net>
 							<p>Home page: <a href='%s'>%s</a>
 							<p>Copyright &copy; 2008 All rights reserved. 
 							<p>See Credits.txt for acknowledgements
@@ -1094,10 +1095,10 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 							"""<b>PAScual</b> v %s
 							<p>	
 							<p>PAScual and PAScualGUI
-							<p>by Carlos Pascual-Izarra carlos.pascual-izarra@csiro.au  2007
+							<p>by Carlos Pascual-Izarra <cpascual [AT] users.sourceforge.net>  2007
 							
 						    <p>Positron Annihilation Spectroscopy data analysis
-						    <p>Copyright (C) 2007  Carlos Pascual-Izarra <carlos.pascual-izarra@csiro.au>
+						    <p>Copyright (C) 2007  Carlos Pascual-Izarra < cpascual [AT] users.sourceforge.net >
 						
 						    <p>This program is free software: you can redistribute it and/or modify
 						    it under the terms of the GNU General Public License as published by

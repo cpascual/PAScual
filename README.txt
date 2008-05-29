@@ -1,6 +1,6 @@
 PAScual: a Positron Annihilation Spectroscopy data analysis program.
 (c) 2007 Carlos Pascual-Izarra 
-email: carlos.pascual-izarra [AT] csiro.au
+email: < cpascual [AT] users.sourceforge.net >
 Home page: http://pascual.sourceforge.net
 
 See the most up-to date information in the documentation

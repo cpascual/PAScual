@@ -7,7 +7,7 @@ C. Pascual-Izarra et al., Characterisation of Amphiphile Self-Assembly Materials
 See http://pascual.sourceforge.net for the latest information
 
 PAScual has been written and is maintained by Carlos Pascual-Izarra. 
-Contact by email: carlos.pascual-izarra [AT] csiro.au 
+Contact by email: <cpascual [AT] users.sourceforge.net> 
 
 
 

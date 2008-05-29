@@ -5,7 +5,7 @@
 pyTaoEldrup, Collection of Python functions for (extended) Tao-Eldrup calculations.
 pyTaoEldrup is used by the TEcalc, webTEcalc and TEcalcGUI applications.
 
-by Carlos Pascual-Izarra <carlos.pascual-izarra@csiro.au>  (2007)
+by Carlos Pascual-Izarra < cpascual [AT] users.sourceforge.net >  (2007)
 
 Translates oPs lifetime into pore size using the Tao-Eldrup model and also the "Rectangular Tao-Eldrup model"
 
@@ -14,7 +14,7 @@ See: TL Dull et al., J. Phys Chem B 105, 4657 (2001)
 '''
 	This file is part of PAScual.
     PAScual: Positron Annihilation Spectroscopy data analysis
-    Copyright (C) 2007  Carlos Pascual-Izarra <carlos.pascual-izarra@csiro.au>
+    Copyright (C) 2007  Carlos Pascual-Izarra < cpascual [AT] users.sourceforge.net >
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by

@@ -1,7 +1,7 @@
 
 ###################################################################################
 #     CHNfiles: support for reading/converting MAESTRO CHN Files
-#     Copyright (C) 2007  Carlos Pascual-Izarra <carlos.pascual-izarra@csiro.au>
+#     Copyright (C) 2007  Carlos Pascual-Izarra < cpascual [AT] users.sourceforge.net >
 #
 #     This program is free software: you can redistribute it and/or modify
 #     it under the terms of the GNU General Public License as published by

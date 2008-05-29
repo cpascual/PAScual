@@ -1,9 +1,9 @@
 ### Input parameters for PAScual.
-### by Carlos Pascual-Izarra <carlos.pascual-izarra@csiro.au>  2007
+### by Carlos Pascual-Izarra < cpascual [AT] users.sourceforge.net >  2007
 ### '''
 ### 	This file is part of PAScual.
 ###     PAScual: Positron Annihilation Spectroscopy data analysis
-###     Copyright (C) 2007  Carlos Pascual-Izarra <carlos.pascual-izarra@csiro.au>
+###     Copyright (C) 2007  Carlos Pascual-Izarra < cpascual [AT] users.sourceforge.net >
 ###
 ###     This program is free software: you can redistribute it and/or modify
 ###     it under the terms of the GNU General Public License as published by
