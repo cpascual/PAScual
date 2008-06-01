@@ -16,7 +16,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
-
+#TODO: (General) reimplement loadFiles dialog. Buggy behaviour if LTheader warning dialog is cancelled on multiple files load
 #TODO: (General) implement load/save of discretepals and of palssets
 #TODO: (General) save queue to file before starting and delete file when finished. Check for existence of old files indicating unfinished calcs and offer resume.
 #TODO: (General) implement summary view of sets. A list containing which sets with which spectra each, which fitmode and nuber of free parameters and names of common parameters
@@ -46,8 +46,8 @@ from ROISelectorDlg import ROISelectorDialog
 import ComponentTableMV as CTMV
 import SpectraTableMV as STMV
 import CommandsTableMV as CMDTMV
-import CHNfiles
 import PASCommandProcess as PCP
+import SpecFiles
 
 # import AdvOpt as advopt
 
@@ -153,7 +153,7 @@ class FitparWidget(QWidget, ui_FitparWidget.Ui_FitparWidget):
 		gridlayout.addWidget(hdrCom, row,4)
 		gridlayout.addWidget(hdrMin, row,5)
 		gridlayout.addWidget(hdrMax, row,6)
-		
+
 
 class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 	def __init__(self, parent=None):
@@ -170,17 +170,20 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		###add hand-coded widgets and modifications to ui_ widgets here
 		
 		#General OpenFile Dialog (it is never closed, just hidden)
+		self.openFilesDlg=QFileDialog(self, "%s - Open spectra"%QApplication.applicationName(), "./","")
+		self.openFilesDlg.specFileLoaderDict={	'ASCII':SpecFiles.ASCIIfileloader('ASCII','*.dat *.txt *.al2 *.chn',0,'ASCII without header'),
+												'ASCII-custom':SpecFiles.ASCIIfileloader('ASCII-custom','*',None,'ASCII with user-selected header','qt',self.openFilesDlg),
+												'LT':SpecFiles.ASCIIfileloader('LT','*.dat *.txt *.al2 *.chn',4,'ASCII with a 4 rows header'),
+												'L80':SpecFiles.ASCIIfileloader('L80','*.80',0,'multicolumn ASCII with no header'),
+												'MAESTRO':SpecFiles.MAESTROfileLoader('MAESTRO') } #instantiate file loaders and put them in a dict belonging to the OpenFile dialog
+		self.openFilesDlg.specFileLoaderDict['ASCII-custom'].needExtraInput=True #makes
+		filefilters=["%s (%s)"%(self.openFilesDlg.specFileLoaderDict[k].name,self.openFilesDlg.specFileLoaderDict[k].filenamefilter) for k in sorted(self.openFilesDlg.specFileLoaderDict.keys())]
 		WorkDirectory= settings.value("WorkDirectory", QVariant(QDir.homePath())).toString()
-		self.openFilesDlg=QFileDialog(self, "%s - Open spectra"%QApplication.applicationName(), "./",
-		        									 "LT files (*.dat *.txt *.al2 *.chn)\n"+
-		        									 "L80 files (*.l80)\n"+
-											         "ASCII Files with NO HEADER (*.dat *.txt *.al2 *.chn)\n"+
-											         "MAESTRO Binary files (*.chn)\n"+
-											         "All (*)")
 		self.openFilesDlg.setFileMode(QFileDialog.ExistingFiles)
 		self.openFilesDlg.setViewMode(QFileDialog.Detail )
+		self.openFilesDlg.setFilters(filefilters)
 		self.openFilesDlg.setDirectory(WorkDirectory)
-		
+
 		#The fitter thread
 		self.fitter=PCP.fitter(self)
 		
@@ -601,7 +604,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.setsTree.clear()
 		for ps in palssetslist:
 			item=QTreeWidgetItem(self.setsTree, [ps.name,QString.number(len(ps.spectralist))] )
-		item.addChildren ( [QTreeWidgetItem([dp.name]) for dp in ps.spectralist] )
+			item.addChildren ( [QTreeWidgetItem([dp.name]) for dp in ps.spectralist] )
 		#Show the number of failed (unasigned) spectra
 		self.unasignedLE.setText(QString.number(len(failed)))
 		#readjust columns in TreeWidget
@@ -888,22 +891,13 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 	def changePPlot(self, dp, index=None, replot=True):
 		if dp.selected: self.pplot.attachCurve(S.arange(dp.exp.size),dp.exp,name=dp.name)
 		else: self.pplot.detachCurve(dp.name)
-		if replot: self.pplot.replot()
+		if replot: self.pplot.replot()	
 
 	def loadSpectra(self):
 		#Todo: do an inteligent identification of files (LT header present?) possibly also get data from the LT header (psperchannel and fwhm)
 		fileNames=[]
-		if not self.openFilesDlg.exec_(): return
-
+		if not self.openFilesDlg.exec_(): return		
 		fileNames = [unicode(item) for item in self.openFilesDlg.selectedFiles()]
-		filetype=unicode(self.openFilesDlg.selectedFilter())
-#		print "DEBUG: loadSpectra:", type(filetype), filetype
-		if filetype.startswith("LT"): filetype,hdrlns=1,4
-		elif filetype.startswith("L80"): filetype,hdrlns=2,0
-		elif filetype.startswith("ASCII"): filetype,hdrlns=3,0
-		elif filetype.startswith("MAESTRO"): filetype,hdrlns=4,0
-		else: filetype,hdrlns=0,0
-		
 		dps=[]
 		answer=None
 		progress=QProgressDialog("Loading Files...", "Abort load", 0, len(fileNames), self)
@@ -917,21 +911,13 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 			app.processEvents()
 			if progress.wasCanceled(): break
 			#read data
-			if filetype==4: 
-				hdr,expdata=CHNfiles.CHN.readCHN(fname)
-				expdata=S.array(expdata, dtype='d')
-			else:
-				try: 
-					expdata=S.loadtxt(fname,skiprows=hdrlns,dtype='d').flatten()
-				except ValueError:
-					if answer!=QMessageBox.YesToAll:
-						answer=QMessageBox.warning(self, "Wrong file format",
-													"Unexpected format in: %s\n"
-													"Maybe the file was modified to include an LT header?\n"
-													"Do you want to try to load it as an LT file?"%os.path.basename(fname),
-													QMessageBox.Yes|QMessageBox.YesToAll|QMessageBox.Cancel)	
-					if answer==QMessageBox.Yes or answer==QMessageBox.YesToAll: expdata=S.loadtxt(fname,skiprows=4,dtype='d').flatten()
-					if answer==QMessageBox.Cancel: break
+			selectedfilter=unicode(self.openFilesDlg.selectedFilter()).split('(')[0].strip()
+			try:
+				expdata=self.openFilesDlg.specFileLoaderDict[selectedfilter].expdata(fname)
+			except:
+				expected=self.openFilesDlg.specFileLoaderDict[selectedfilter].name
+				QMessageBox.warning(self, "Wrong file format", "Unexpected format in: %s\n (expected %s format)"%(os.path.basename(fname),expected))
+				break		
 			#find a unique key for this file
 			usednames=[dp.name for dp in self.spectraModel.spectra]
 			basename_=basename=os.path.basename(fname)
@@ -941,25 +927,29 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 				basename="%s(%i)"%(basename_,i)	
 			#create a discretepals with this basename 
 			dps.append(discretepals(name=basename, expdata=expdata))
-		#Uncheck previously checked spectra
-		self.spectraModel.checkAll(False)
-		#insert the just created dps in the list
-		self.spectraModel.insertRows(position=None,rows=len(dps),dps=dps)
-		self.spectraTable.resizeColumnToContents(STMV.NAME)
-		#Maybe the "soft" selection changed?
-		self.onspectraSelectionChanged()
-		#mark that the sets might be dirty now
-		self.dirtysets=True	
-		#signal regeneration of sets
-		self.emit(SIGNAL("regenerateSets"),False)
-		self.statusbar.showMessage("Done", 0) 
-		#propose to set the ROI
-		answer=QMessageBox.question(self, "Set ROI?",
-									"Do you want to set the Region Of Interest (ROI) for the loaded spectra now?\n"
-									"(It can also be done later, with the Set ROI button)"
-									,QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)	
-		if answer==QMessageBox.Yes: self.setROI()
-
+			
+		#Make sure the progress dialog is closed (In case the load didn't finish normally)
+		progress.done(0)
+		#Once (if) we have the list of new spectra, make necessary changes in the GUI
+		if len(dps)>0: 
+			#Uncheck previously checked spectra
+			self.spectraModel.checkAll(False)
+			#insert the just created dps in the list
+			self.spectraModel.insertRows(position=None,rows=len(dps),dps=dps)
+			self.spectraTable.resizeColumnToContents(STMV.NAME)
+			#Maybe the "soft" selection changed?
+			self.onspectraSelectionChanged()
+			#mark that the sets might be dirty now
+			self.dirtysets=True	
+			#signal regeneration of sets
+			self.emit(SIGNAL("regenerateSets"),False)
+			self.statusbar.showMessage("Done", 0) 
+			#propose to set the ROI
+			answer=QMessageBox.question(self, "Set ROI?",
+										"Do you want to set the Region Of Interest (ROI) for the loaded spectra now?\n"
+										"(It can also be done later, with the Set ROI button)"
+										,QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)	
+			if answer==QMessageBox.Yes: self.setROI()
 		
 	def savespectrum(self,spectrum, filename=None, columns=1, fileformat=None):
 		#TODO: save in different formats

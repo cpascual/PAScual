@@ -85,6 +85,7 @@ class tee(object):
 	def flush(self):
 		for fileobject in self.fileobjects: fileobject.flush()
 
+		
 def updatestats(m_old,S2_old,n,x_new):
 	'''Calculates the new mean and variance after adding a new state 
 		See algorithm III in http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance (20060919), or 
@@ -1378,7 +1379,7 @@ def distributeinsets(dplist):
 	for i in exclude: connections.pop(i)
 	#Finally, we instantiate palssets with the non-connected unique groups
 	result=[]
-	pad=int(S.ceil(S.log10(len(connections))))  #find the number of digits that needed for 0-padded sequential number
+	pad=int(S.ceil(S.log10(max(1,len(connections)))))  #find the number of digits needed for 0-padded sequential number
 	for i in xrange(len(connections)):
 		result.append(palsset(name='SET_%0*i'%(pad,i), spectralist=connections[i])) #instantiate spectrum set and init it with a group of connected spectra 
 	return result
