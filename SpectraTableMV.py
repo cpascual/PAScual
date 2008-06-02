@@ -26,7 +26,7 @@ from PAScual import discretepals,palsset
 _ncolumns=8
 [SEL,NAME,ROI,PSPC,FWHM,BG,C0,COMP]=range(_ncolumns)
 
-import qrc_PAScual
+import PAScual_rc
 
 #Spectra Table Model			
 class PASspectraTableModel(QAbstractTableModel):	
