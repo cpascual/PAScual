@@ -1056,14 +1056,16 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 	def showManual(self):
 		'''Shows the User Manual in a window'''
 		#TODO: make it nicer... make it follow links. Possibly use a resource file for the manual,...
+		import docs_rc
 		self.manualBrowser=QDialog()
+		self.manualBrowser.setWindowTitle("PAScual User Manual")
 		manualTB=QTextBrowser()
 		layout=QVBoxLayout()
 		layout.addWidget(manualTB)
 		self.manualBrowser.setLayout(layout)
-		url="Manual/PAScual-UserManual.html"
+		url="qrc:/Manual/ExtraStuff/Manual/pascual/User_Manual.html"			 
 		manualTB.setSource(QUrl(url))
-		self.manualBrowser.resize(800, 400)
+		self.manualBrowser.resize(1000, 400)
 		self.manualBrowser.show()
 		
 	def helpAbout(self):
