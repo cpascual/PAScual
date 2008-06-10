@@ -16,6 +16,8 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
+
+#TODO: Add a reverse selection button to the Spectra selection list
 #TODO: (General) implement load/save of discretepals and of palssets
 #TODO: (General) save queue to file before starting and delete file when finished. Check for existence of old files indicating unfinished calcs and offer resume.
 #TODO: (General) implement summary view of sets. A list containing which sets with which spectra each, which fitmode and nuber of free parameters and names of common parameters

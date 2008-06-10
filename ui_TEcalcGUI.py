@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Documents and Settings\pas064\My Documents\src\PAScual-dev\TEcalcGUI.ui'
 #
-# Created: Tue Jun 10 14:51:32 2008
+# Created: Tue Jun 10 16:25:02 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -14,7 +14,7 @@ class Ui_TEcalcGUI(object):
         TEcalcGUI.setObjectName("TEcalcGUI")
         TEcalcGUI.resize(487,574)
         icon = QtGui.QIcon()
-        icon.addFile(":/Icons/icons/mine/TaoEldrup64x64.png")
+        icon.addPixmap(QtGui.QPixmap(":/Icons/icons/mine/TaoEldrup32x32.png"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
         TEcalcGUI.setWindowIcon(icon)
         self.vboxlayout = QtGui.QVBoxLayout(TEcalcGUI)
         self.vboxlayout.setObjectName("vboxlayout")
@@ -131,7 +131,7 @@ class Ui_TEcalcGUI(object):
         self.vboxlayout.addLayout(self.hboxlayout1)
         self.actionCopy_Results_Selection = QtGui.QAction(TEcalcGUI)
         icon = QtGui.QIcon()
-        icon.addFile(":/Icons/icons/mine/TaoEldrup64x64.png")
+        icon.addPixmap(QtGui.QPixmap(":/Icons/icons/mine/TaoEldrup64x64.png"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
         self.actionCopy_Results_Selection.setIcon(icon)
         self.actionCopy_Results_Selection.setObjectName("actionCopy_Results_Selection")
 
@@ -202,7 +202,8 @@ class Ui_TEcalcGUI(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Lists of values can be separated by spaces, carriage returns, tabulators or semicolons.</p>\n"
 "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">If you want to calculate many lifetimes for the same temperature, enter a single value here and check the \"Same temp.\" option below.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.TempTE.setHtml(QtGui.QApplication.translate("TEcalcGUI", "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+        self.TempTE.setHtml(QtGui.QApplication.translate("TEcalcGUI", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\">0</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
