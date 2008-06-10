@@ -1052,11 +1052,10 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 
 	def	show_hidePlot(self):
 		self.plotDockWidget.setVisible(not(self.plotDockWidget.isVisible()))
+	
 	def showSpectraList(self):
 		self.spectraDockWidget.setVisible(not(self.spectraDockWidget.isVisible()))
-			
-		
-			
+				
 	def loadParameters(self,dp=None):
 		'''uses a dp to fill the parameters. If no spectra si given, it asks to load a file which is expected to contain a pickled discretepals'''
 		pass #TODO
@@ -1068,8 +1067,12 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.manualBrowser=QDialog()
 		self.manualBrowser.setWindowTitle("PAScual User Manual")
 		manualTB=QTextBrowser()
+		manualTB.setOpenExternalLinks(True)
+		extLinkLabel=QLabel("""For the most up-to-date version of the manual, check the <a href="http://pascual.wiki.sourceforge.net/User+Manual">Online User Manual</a>""")
+		extLinkLabel.setOpenExternalLinks(True)
 		layout=QVBoxLayout()
 		layout.addWidget(manualTB)
+		layout.addWidget(extLinkLabel)
 		self.manualBrowser.setLayout(layout)
 		url="qrc:/Manual/ExtraStuff/Manual/pascual/User_Manual.html"			 
 		manualTB.setSource(QUrl(url))
