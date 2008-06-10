@@ -56,10 +56,16 @@ except:	print "Failed"
 else: 
 	print 'ok, version:','??'
 
-print '\n\nTesting PAScual.py'
+print '\n\nTesting PAScual.py',
 try: import PAScual as t6
 except:	print "Failed"
 else: 
 	print 'ok, version:',t6.__version__
+	
+print '\n\nTesting PAScualGUI.py',
+try: import PAScualGUI as t7
+except:	print "Failed"
+else: 
+	print 'ok, version:',t7.__version__
 
 raw_input('\n\nPress <Enter> key to finish')

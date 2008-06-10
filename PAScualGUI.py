@@ -16,7 +16,6 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
-#TODO: (General) reimplement loadFiles dialog. Buggy behaviour if LTheader warning dialog is cancelled on multiple files load
 #TODO: (General) implement load/save of discretepals and of palssets
 #TODO: (General) save queue to file before starting and delete file when finished. Check for existence of old files indicating unfinished calcs and offer resume.
 #TODO: (General) implement summary view of sets. A list containing which sets with which spectra each, which fitmode and nuber of free parameters and names of common parameters
@@ -29,7 +28,7 @@
 #TODO: (General) offset should be calculated automatically if not set (possible warning). 
 #TODO: (General) same for background (e.g. use last 1% of ROI). Call if ROI is set AND the background is not already assigned)
 #TODO: (General) Implement passing default values to left and right lims in ROISelector. Pass [-5rel,end] for ROI and [ROIright-max(5,0.01*(ROIright-ROIleft)), ROIright] for bgROI
-#TODO: (General) add an animation in thestatus bar indicating "fit in progress" (possibly the pPs.gif)
+#TODO: (General) add an animation in the status bar indicating "fit in progress" (possibly the pPs.gif)
 #TODO: (General) add estimated time for fit (or at least for BI command)
 #TODO: (General) Incorporate plothistory.py to the GUI. It could also be used to display ellipses taken from the covariance matrix when no history has been stored
 #TODO: (General) make installer?
@@ -51,7 +50,7 @@ import SpecFiles
 
 # import AdvOpt as advopt
 
-__version__="1.1.0"
+__version__="1.2.0"
 __homepage__="http://pascual.sourceforge.net"
 __citation__="C. Pascual-Izarra et al., <i>Characterisation of Amphiphile Self-Assembly Materials using Positron Annihilation Lifetime Spectroscopy (PALS)-Part1: Advanced Fitting Algorithms for Data Analysis</i>, Journal of Physical Chemistry B,  [in review], 2008. <p>see %s for up-to-date information about citing</p>"%__homepage__
 
@@ -253,7 +252,8 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		QObject.connect(self.actionLoad_Parameters,SIGNAL("triggered()"), self.loadParameters)
 		QObject.connect(self.actionSimulate_spectrum,SIGNAL("triggered()"), self.createFakeSpectrum)
 		QObject.connect(self.actionCopy_Results_Selection,SIGNAL("triggered()"), self.copy_Results_Selection)	
-		QObject.connect(self.actionShow_hide_Plot,SIGNAL("triggered()"), self.plotDockWidget.toggleViewAction().toggle)	
+		QObject.connect(self.actionShow_hide_Plot,SIGNAL("triggered()"), self.show_hidePlot)
+		QObject.connect(self.actionShowSpectraSel,SIGNAL("triggered()"), self.showSpectraList)	
 		QObject.connect(self.actionManual,SIGNAL("triggered()"),self.showManual)
 		
 		
@@ -302,7 +302,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.move(position)
 		self.restoreState(settings.value("MainWindow/State").toByteArray())
 		self.fitModeCB.setCurrentIndex(self.fitModeCB.findText(defaultFitMode))
-#		self.plotDockWidget.show()
+
 		
 	def copy_Results_Selection(self):
 		'''copies the selected results to the clipboard'''
@@ -1047,6 +1047,12 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		from TEcalcGUI import TEcalcDialog
 		self.TEcalc=TEcalcDialog()
 		self.TEcalc.show()
+
+	def	show_hidePlot(self):
+		self.plotDockWidget.setVisible(not(self.plotDockWidget.isVisible()))
+	def showSpectraList(self):
+		self.spectraDockWidget.setVisible(not(self.spectraDockWidget.isVisible()))
+			
 		
 			
 	def loadParameters(self,dp=None):

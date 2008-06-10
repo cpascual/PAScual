@@ -19,23 +19,23 @@
    <string>PAScual</string>
   </property>
   <property name="windowIcon" >
-   <iconset resource="PAScual.qrc" >:/Icons/Icons/mine/PAScual-64x64.png</iconset>
+   <iconset resource="PAScual.qrc" >
+    <normaloff>:/Icons/Icons/mine/PAScual-64x64.png</normaloff>:/Icons/Icons/mine/PAScual-64x64.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget" >
+   <property name="geometry" >
+    <rect>
+     <x>304</x>
+     <y>55</y>
+     <width>500</width>
+     <height>564</height>
+    </rect>
+   </property>
    <layout class="QVBoxLayout" >
     <property name="spacing" >
      <number>6</number>
     </property>
-    <property name="leftMargin" >
-     <number>9</number>
-    </property>
-    <property name="topMargin" >
-     <number>9</number>
-    </property>
-    <property name="rightMargin" >
-     <number>9</number>
-    </property>
-    <property name="bottomMargin" >
+    <property name="margin" >
      <number>9</number>
     </property>
     <item>
@@ -71,6 +71,14 @@ p, li { white-space: pre-wrap; }
        <property name="enabled" >
         <bool>true</bool>
        </property>
+       <property name="geometry" >
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>476</width>
+         <height>519</height>
+        </rect>
+       </property>
        <attribute name="title" >
         <string>Parameters</string>
        </attribute>
@@ -78,16 +86,7 @@ p, li { white-space: pre-wrap; }
         <property name="spacing" >
          <number>6</number>
         </property>
-        <property name="leftMargin" >
-         <number>9</number>
-        </property>
-        <property name="topMargin" >
-         <number>9</number>
-        </property>
-        <property name="rightMargin" >
-         <number>9</number>
-        </property>
-        <property name="bottomMargin" >
+        <property name="margin" >
          <number>9</number>
         </property>
         <item>
@@ -95,16 +94,7 @@ p, li { white-space: pre-wrap; }
           <property name="spacing" >
            <number>6</number>
           </property>
-          <property name="leftMargin" >
-           <number>0</number>
-          </property>
-          <property name="topMargin" >
-           <number>0</number>
-          </property>
-          <property name="rightMargin" >
-           <number>0</number>
-          </property>
-          <property name="bottomMargin" >
+          <property name="margin" >
            <number>0</number>
           </property>
           <item>
@@ -146,7 +136,8 @@ p, li { white-space: pre-wrap; }
              <string>A</string>
             </property>
             <property name="icon" >
-             <iconset resource="PAScual.qrc" >:/Icons/Icons/mine/CRbutton_ok.png</iconset>
+             <iconset resource="PAScual.qrc" >
+              <normaloff>:/Icons/Icons/mine/CRbutton_ok.png</normaloff>:/Icons/Icons/mine/CRbutton_ok.png</iconset>
             </property>
            </widget>
           </item>
@@ -155,7 +146,7 @@ p, li { white-space: pre-wrap; }
             <property name="orientation" >
              <enum>Qt::Horizontal</enum>
             </property>
-            <property name="sizeHint" >
+            <property name="sizeHint" stdset="0" >
              <size>
               <width>40</width>
               <height>20</height>
@@ -215,16 +206,7 @@ p, li { white-space: pre-wrap; }
            <property name="spacing" >
             <number>6</number>
            </property>
-           <property name="leftMargin" >
-            <number>9</number>
-           </property>
-           <property name="topMargin" >
-            <number>9</number>
-           </property>
-           <property name="rightMargin" >
-            <number>9</number>
-           </property>
-           <property name="bottomMargin" >
+           <property name="margin" >
             <number>9</number>
            </property>
            <item>
@@ -232,16 +214,7 @@ p, li { white-space: pre-wrap; }
              <property name="spacing" >
               <number>6</number>
              </property>
-             <property name="leftMargin" >
-              <number>0</number>
-             </property>
-             <property name="topMargin" >
-              <number>0</number>
-             </property>
-             <property name="rightMargin" >
-              <number>0</number>
-             </property>
-             <property name="bottomMargin" >
+             <property name="margin" >
               <number>0</number>
              </property>
              <item>
@@ -266,16 +239,7 @@ p, li { white-space: pre-wrap; }
                <property name="spacing" >
                 <number>6</number>
                </property>
-               <property name="leftMargin" >
-                <number>0</number>
-               </property>
-               <property name="topMargin" >
-                <number>0</number>
-               </property>
-               <property name="rightMargin" >
-                <number>0</number>
-               </property>
-               <property name="bottomMargin" >
+               <property name="margin" >
                 <number>0</number>
                </property>
                <item>
@@ -302,7 +266,7 @@ p, li { white-space: pre-wrap; }
                <property name="orientation" >
                 <enum>Qt::Horizontal</enum>
                </property>
-               <property name="sizeHint" >
+               <property name="sizeHint" stdset="0" >
                 <size>
                  <width>40</width>
                  <height>20</height>
@@ -316,7 +280,8 @@ p, li { white-space: pre-wrap; }
                 <string>A</string>
                </property>
                <property name="icon" >
-                <iconset resource="PAScual.qrc" >:/Icons/Icons/mine/CRbutton_ok.png</iconset>
+                <iconset resource="PAScual.qrc" >
+                 <normaloff>:/Icons/Icons/mine/CRbutton_ok.png</normaloff>:/Icons/Icons/mine/CRbutton_ok.png</iconset>
                </property>
               </widget>
              </item>
@@ -333,16 +298,7 @@ p, li { white-space: pre-wrap; }
           <property name="spacing" >
            <number>6</number>
           </property>
-          <property name="leftMargin" >
-           <number>0</number>
-          </property>
-          <property name="topMargin" >
-           <number>0</number>
-          </property>
-          <property name="rightMargin" >
-           <number>0</number>
-          </property>
-          <property name="bottomMargin" >
+          <property name="margin" >
            <number>0</number>
           </property>
           <item>
@@ -350,7 +306,7 @@ p, li { white-space: pre-wrap; }
             <property name="orientation" >
              <enum>Qt::Horizontal</enum>
             </property>
-            <property name="sizeHint" >
+            <property name="sizeHint" stdset="0" >
              <size>
               <width>40</width>
               <height>20</height>
@@ -371,7 +327,8 @@ p, li { white-space: pre-wrap; }
              <string>Apply All</string>
             </property>
             <property name="icon" >
-             <iconset resource="PAScual.qrc" >:/Icons/Icons/mine/CRbutton_ok.png</iconset>
+             <iconset resource="PAScual.qrc" >
+              <normaloff>:/Icons/Icons/mine/CRbutton_ok.png</normaloff>:/Icons/Icons/mine/CRbutton_ok.png</iconset>
             </property>
            </widget>
           </item>
@@ -380,6 +337,14 @@ p, li { white-space: pre-wrap; }
        </layout>
       </widget>
       <widget class="QWidget" name="fittingTab" >
+       <property name="geometry" >
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>476</width>
+         <height>519</height>
+        </rect>
+       </property>
        <attribute name="title" >
         <string>Fitting</string>
        </attribute>
@@ -387,16 +352,7 @@ p, li { white-space: pre-wrap; }
         <property name="spacing" >
          <number>6</number>
         </property>
-        <property name="leftMargin" >
-         <number>9</number>
-        </property>
-        <property name="topMargin" >
-         <number>9</number>
-        </property>
-        <property name="rightMargin" >
-         <number>9</number>
-        </property>
-        <property name="bottomMargin" >
+        <property name="margin" >
          <number>9</number>
         </property>
         <item>
@@ -405,22 +361,10 @@ p, li { white-space: pre-wrap; }
            <string>Commands</string>
           </property>
           <layout class="QGridLayout" >
-           <property name="leftMargin" >
+           <property name="margin" >
             <number>9</number>
            </property>
-           <property name="topMargin" >
-            <number>9</number>
-           </property>
-           <property name="rightMargin" >
-            <number>9</number>
-           </property>
-           <property name="bottomMargin" >
-            <number>9</number>
-           </property>
-           <property name="horizontalSpacing" >
-            <number>6</number>
-           </property>
-           <property name="verticalSpacing" >
+           <property name="spacing" >
             <number>6</number>
            </property>
            <item row="2" column="1" >
@@ -428,16 +372,7 @@ p, li { white-space: pre-wrap; }
              <property name="spacing" >
               <number>6</number>
              </property>
-             <property name="leftMargin" >
-              <number>0</number>
-             </property>
-             <property name="topMargin" >
-              <number>0</number>
-             </property>
-             <property name="rightMargin" >
-              <number>0</number>
-             </property>
-             <property name="bottomMargin" >
+             <property name="margin" >
               <number>0</number>
              </property>
              <item>
@@ -471,7 +406,7 @@ p, li { white-space: pre-wrap; }
                <property name="orientation" >
                 <enum>Qt::Horizontal</enum>
                </property>
-               <property name="sizeHint" >
+               <property name="sizeHint" stdset="0" >
                 <size>
                  <width>40</width>
                  <height>20</height>
@@ -486,16 +421,7 @@ p, li { white-space: pre-wrap; }
              <property name="spacing" >
               <number>6</number>
              </property>
-             <property name="leftMargin" >
-              <number>0</number>
-             </property>
-             <property name="topMargin" >
-              <number>0</number>
-             </property>
-             <property name="rightMargin" >
-              <number>0</number>
-             </property>
-             <property name="bottomMargin" >
+             <property name="margin" >
               <number>0</number>
              </property>
              <item>
@@ -504,7 +430,8 @@ p, li { white-space: pre-wrap; }
                 <string>Apply Fit Mode</string>
                </property>
                <property name="icon" >
-                <iconset resource="PAScual.qrc" >:/Icons/Icons/mine/CRbutton_ok.png</iconset>
+                <iconset resource="PAScual.qrc" >
+                 <normaloff>:/Icons/Icons/mine/CRbutton_ok.png</normaloff>:/Icons/Icons/mine/CRbutton_ok.png</iconset>
                </property>
                <property name="toolButtonStyle" >
                 <enum>Qt::ToolButtonTextBesideIcon</enum>
@@ -559,16 +486,7 @@ p, li { white-space: pre-wrap; }
              <property name="spacing" >
               <number>6</number>
              </property>
-             <property name="leftMargin" >
-              <number>0</number>
-             </property>
-             <property name="topMargin" >
-              <number>0</number>
-             </property>
-             <property name="rightMargin" >
-              <number>0</number>
-             </property>
-             <property name="bottomMargin" >
+             <property name="margin" >
               <number>0</number>
              </property>
              <item>
@@ -600,7 +518,8 @@ p, li { white-space: pre-wrap; }
                 <string>...</string>
                </property>
                <property name="icon" >
-                <iconset resource="PAScual.qrc" >:/Icons/Icons/mine/CRfilesave.png</iconset>
+                <iconset resource="PAScual.qrc" >
+                 <normaloff>:/Icons/Icons/mine/CRfilesave.png</normaloff>:/Icons/Icons/mine/CRfilesave.png</iconset>
                </property>
               </widget>
              </item>
@@ -615,22 +534,10 @@ p, li { white-space: pre-wrap; }
            <string>Execution</string>
           </property>
           <layout class="QGridLayout" >
-           <property name="leftMargin" >
+           <property name="margin" >
             <number>9</number>
            </property>
-           <property name="topMargin" >
-            <number>9</number>
-           </property>
-           <property name="rightMargin" >
-            <number>9</number>
-           </property>
-           <property name="bottomMargin" >
-            <number>9</number>
-           </property>
-           <property name="horizontalSpacing" >
-            <number>6</number>
-           </property>
-           <property name="verticalSpacing" >
+           <property name="spacing" >
             <number>6</number>
            </property>
            <item row="2" column="2" >
@@ -638,16 +545,7 @@ p, li { white-space: pre-wrap; }
              <property name="spacing" >
               <number>6</number>
              </property>
-             <property name="leftMargin" >
-              <number>0</number>
-             </property>
-             <property name="topMargin" >
-              <number>0</number>
-             </property>
-             <property name="rightMargin" >
-              <number>0</number>
-             </property>
-             <property name="bottomMargin" >
+             <property name="margin" >
               <number>0</number>
              </property>
              <item>
@@ -656,7 +554,8 @@ p, li { white-space: pre-wrap; }
                 <string>...</string>
                </property>
                <property name="icon" >
-                <iconset resource="PAScual.qrc" >:/Icons/Icons/mine/CRplayer_play.png</iconset>
+                <iconset resource="PAScual.qrc" >
+                 <normaloff>:/Icons/Icons/mine/CRplayer_play.png</normaloff>:/Icons/Icons/mine/CRplayer_play.png</iconset>
                </property>
               </widget>
              </item>
@@ -666,7 +565,8 @@ p, li { white-space: pre-wrap; }
                 <string>...</string>
                </property>
                <property name="icon" >
-                <iconset resource="PAScual.qrc" >:/Icons/Icons/mine/CRplayer_end.png</iconset>
+                <iconset resource="PAScual.qrc" >
+                 <normaloff>:/Icons/Icons/mine/CRplayer_end.png</normaloff>:/Icons/Icons/mine/CRplayer_end.png</iconset>
                </property>
               </widget>
              </item>
@@ -676,7 +576,8 @@ p, li { white-space: pre-wrap; }
                 <string>...</string>
                </property>
                <property name="icon" >
-                <iconset resource="PAScual.qrc" >:/Icons/Icons/mine/CRplayer_stop.png</iconset>
+                <iconset resource="PAScual.qrc" >
+                 <normaloff>:/Icons/Icons/mine/CRplayer_stop.png</normaloff>:/Icons/Icons/mine/CRplayer_stop.png</iconset>
                </property>
               </widget>
              </item>
@@ -739,26 +640,22 @@ p, li { white-space: pre-wrap; }
        </layout>
       </widget>
       <widget class="QWidget" name="ResultsTab" >
+       <property name="geometry" >
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>476</width>
+         <height>519</height>
+        </rect>
+       </property>
        <attribute name="title" >
         <string>Results</string>
        </attribute>
        <layout class="QGridLayout" >
-        <property name="leftMargin" >
+        <property name="margin" >
          <number>9</number>
         </property>
-        <property name="topMargin" >
-         <number>9</number>
-        </property>
-        <property name="rightMargin" >
-         <number>9</number>
-        </property>
-        <property name="bottomMargin" >
-         <number>9</number>
-        </property>
-        <property name="horizontalSpacing" >
-         <number>6</number>
-        </property>
-        <property name="verticalSpacing" >
+        <property name="spacing" >
          <number>6</number>
         </property>
         <item row="1" column="0" >
@@ -766,16 +663,7 @@ p, li { white-space: pre-wrap; }
           <property name="spacing" >
            <number>6</number>
           </property>
-          <property name="leftMargin" >
-           <number>0</number>
-          </property>
-          <property name="topMargin" >
-           <number>0</number>
-          </property>
-          <property name="rightMargin" >
-           <number>0</number>
-          </property>
-          <property name="bottomMargin" >
+          <property name="margin" >
            <number>0</number>
           </property>
           <item>
@@ -833,16 +721,7 @@ p, li { white-space: pre-wrap; }
           <property name="spacing" >
            <number>6</number>
           </property>
-          <property name="leftMargin" >
-           <number>0</number>
-          </property>
-          <property name="topMargin" >
-           <number>0</number>
-          </property>
-          <property name="rightMargin" >
-           <number>0</number>
-          </property>
-          <property name="bottomMargin" >
+          <property name="margin" >
            <number>0</number>
           </property>
           <item>
@@ -878,7 +757,8 @@ p, li { white-space: pre-wrap; }
              <string>...</string>
             </property>
             <property name="icon" >
-             <iconset resource="PAScual.qrc" >:/Icons/Icons/mine/CRfilesave.png</iconset>
+             <iconset resource="PAScual.qrc" >
+              <normaloff>:/Icons/Icons/mine/CRfilesave.png</normaloff>:/Icons/Icons/mine/CRfilesave.png</iconset>
             </property>
            </widget>
           </item>
@@ -915,6 +795,14 @@ p, li { white-space: pre-wrap; }
        </layout>
       </widget>
       <widget class="QWidget" name="OutputTab" >
+       <property name="geometry" >
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>476</width>
+         <height>519</height>
+        </rect>
+       </property>
        <attribute name="title" >
         <string>Output</string>
        </attribute>
@@ -971,16 +859,7 @@ p, li { white-space: pre-wrap; }
           <property name="spacing" >
            <number>6</number>
           </property>
-          <property name="leftMargin" >
-           <number>0</number>
-          </property>
-          <property name="topMargin" >
-           <number>0</number>
-          </property>
-          <property name="rightMargin" >
-           <number>0</number>
-          </property>
-          <property name="bottomMargin" >
+          <property name="margin" >
            <number>0</number>
           </property>
           <item>
@@ -1010,7 +889,8 @@ p, li { white-space: pre-wrap; }
              <string>...</string>
             </property>
             <property name="icon" >
-             <iconset resource="PAScual.qrc" >:/Icons/Icons/mine/CRfilesave.png</iconset>
+             <iconset resource="PAScual.qrc" >
+              <normaloff>:/Icons/Icons/mine/CRfilesave.png</normaloff>:/Icons/Icons/mine/CRfilesave.png</iconset>
             </property>
            </widget>
           </item>
@@ -1047,6 +927,7 @@ p, li { white-space: pre-wrap; }
     <property name="title" >
      <string>View</string>
     </property>
+    <addaction name="actionShowSpectraSel" />
     <addaction name="actionShow_hide_Plot" />
    </widget>
    <widget class="QMenu" name="menuHelp" >
@@ -1073,8 +954,25 @@ p, li { white-space: pre-wrap; }
    <addaction name="menuTools" />
    <addaction name="menuHelp" />
   </widget>
-  <widget class="QStatusBar" name="statusbar" />
+  <widget class="QStatusBar" name="statusbar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>619</y>
+     <width>804</width>
+     <height>19</height>
+    </rect>
+   </property>
+  </widget>
   <widget class="QDockWidget" name="spectraDockWidget" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>55</y>
+     <width>300</width>
+     <height>280</height>
+    </rect>
+   </property>
    <property name="sizePolicy" >
     <sizepolicy vsizetype="MinimumExpanding" hsizetype="MinimumExpanding" >
      <horstretch>0</horstretch>
@@ -1105,8 +1003,11 @@ p, li { white-space: pre-wrap; }
    <property name="floating" >
     <bool>false</bool>
    </property>
+   <property name="features" >
+    <set>QDockWidget::AllDockWidgetFeatures</set>
+   </property>
    <property name="allowedAreas" >
-    <set>Qt::LeftDockWidgetArea|Qt::NoDockWidgetArea|Qt::RightDockWidgetArea</set>
+    <set>Qt::LeftDockWidgetArea|Qt::RightDockWidgetArea</set>
    </property>
    <property name="windowTitle" >
     <string>Spectra selection</string>
@@ -1115,20 +1016,19 @@ p, li { white-space: pre-wrap; }
     <number>1</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents" >
+    <property name="geometry" >
+     <rect>
+      <x>0</x>
+      <y>22</y>
+      <width>300</width>
+      <height>258</height>
+     </rect>
+    </property>
     <layout class="QVBoxLayout" >
      <property name="spacing" >
       <number>6</number>
      </property>
-     <property name="leftMargin" >
-      <number>9</number>
-     </property>
-     <property name="topMargin" >
-      <number>9</number>
-     </property>
-     <property name="rightMargin" >
-      <number>9</number>
-     </property>
-     <property name="bottomMargin" >
+     <property name="margin" >
       <number>9</number>
      </property>
      <item>
@@ -1146,16 +1046,7 @@ p, li { white-space: pre-wrap; }
        <property name="spacing" >
         <number>6</number>
        </property>
-       <property name="leftMargin" >
-        <number>0</number>
-       </property>
-       <property name="topMargin" >
-        <number>0</number>
-       </property>
-       <property name="rightMargin" >
-        <number>0</number>
-       </property>
-       <property name="bottomMargin" >
+       <property name="margin" >
         <number>0</number>
        </property>
        <item>
@@ -1170,7 +1061,8 @@ p, li { white-space: pre-wrap; }
           <string>...</string>
          </property>
          <property name="icon" >
-          <iconset resource="PAScual.qrc" >:/Icons/Icons/mine/checkall.png</iconset>
+          <iconset resource="PAScual.qrc" >
+           <normaloff>:/Icons/Icons/mine/checkall.png</normaloff>:/Icons/Icons/mine/checkall.png</iconset>
          </property>
         </widget>
        </item>
@@ -1186,7 +1078,8 @@ p, li { white-space: pre-wrap; }
           <string>...</string>
          </property>
          <property name="icon" >
-          <iconset resource="PAScual.qrc" >:/Icons/Icons/mine/checknone.png</iconset>
+          <iconset resource="PAScual.qrc" >
+           <normaloff>:/Icons/Icons/mine/checknone.png</normaloff>:/Icons/Icons/mine/checknone.png</iconset>
          </property>
         </widget>
        </item>
@@ -1202,7 +1095,8 @@ p, li { white-space: pre-wrap; }
           <string>...</string>
          </property>
          <property name="icon" >
-          <iconset resource="PAScual.qrc" >:/Icons/Icons/mine/checkmarked.png</iconset>
+          <iconset resource="PAScual.qrc" >
+           <normaloff>:/Icons/Icons/mine/checkmarked.png</normaloff>:/Icons/Icons/mine/checkmarked.png</iconset>
          </property>
         </widget>
        </item>
@@ -1211,7 +1105,7 @@ p, li { white-space: pre-wrap; }
          <property name="orientation" >
           <enum>Qt::Horizontal</enum>
          </property>
-         <property name="sizeHint" >
+         <property name="sizeHint" stdset="0" >
           <size>
            <width>40</width>
            <height>20</height>
@@ -1231,7 +1125,8 @@ p, li { white-space: pre-wrap; }
           <string>...</string>
          </property>
          <property name="icon" >
-          <iconset resource="PAScual.qrc" >:/Icons/Icons/mine/CRdelete.png</iconset>
+          <iconset resource="PAScual.qrc" >
+           <normaloff>:/Icons/Icons/mine/CRdelete.png</normaloff>:/Icons/Icons/mine/CRdelete.png</iconset>
          </property>
         </widget>
        </item>
@@ -1241,6 +1136,14 @@ p, li { white-space: pre-wrap; }
    </widget>
   </widget>
   <widget class="QDockWidget" name="plotDockWidget" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>339</y>
+     <width>300</width>
+     <height>280</height>
+    </rect>
+   </property>
    <property name="sizePolicy" >
     <sizepolicy vsizetype="MinimumExpanding" hsizetype="MinimumExpanding" >
      <horstretch>0</horstretch>
@@ -1265,6 +1168,9 @@ p, li { white-space: pre-wrap; }
    <property name="floating" >
     <bool>false</bool>
    </property>
+   <property name="features" >
+    <set>QDockWidget::AllDockWidgetFeatures</set>
+   </property>
    <property name="allowedAreas" >
     <set>Qt::AllDockWidgetAreas</set>
    </property>
@@ -1275,20 +1181,19 @@ p, li { white-space: pre-wrap; }
     <number>1</number>
    </attribute>
    <widget class="QWidget" name="dockWidgetContents_2" >
+    <property name="geometry" >
+     <rect>
+      <x>0</x>
+      <y>22</y>
+      <width>300</width>
+      <height>258</height>
+     </rect>
+    </property>
     <layout class="QVBoxLayout" >
      <property name="spacing" >
       <number>6</number>
      </property>
-     <property name="leftMargin" >
-      <number>9</number>
-     </property>
-     <property name="topMargin" >
-      <number>9</number>
-     </property>
-     <property name="rightMargin" >
-      <number>9</number>
-     </property>
-     <property name="bottomMargin" >
+     <property name="margin" >
       <number>9</number>
      </property>
      <item>
@@ -1317,6 +1222,14 @@ p, li { white-space: pre-wrap; }
    </widget>
   </widget>
   <widget class="QToolBar" name="toolBar" >
+   <property name="geometry" >
+    <rect>
+     <x>0</x>
+     <y>21</y>
+     <width>804</width>
+     <height>34</height>
+    </rect>
+   </property>
    <property name="orientation" >
     <enum>Qt::Horizontal</enum>
    </property>
@@ -1335,7 +1248,8 @@ p, li { white-space: pre-wrap; }
   </widget>
   <action name="actionLoad_Spectra" >
    <property name="icon" >
-    <iconset resource="PAScual.qrc" >:/Icons/Icons/mine/CRfileopen.png</iconset>
+    <iconset resource="PAScual.qrc" >
+     <normaloff>:/Icons/Icons/mine/CRfileopen.png</normaloff>:/Icons/Icons/mine/CRfileopen.png</iconset>
    </property>
    <property name="text" >
     <string>Load Spectra</string>
@@ -1343,20 +1257,28 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionAbout" >
    <property name="icon" >
-    <iconset resource="PAScual.qrc" >:/Icons/Icons/mine/PAScual-64x64.png</iconset>
+    <iconset resource="PAScual.qrc" >
+     <normaloff>:/Icons/Icons/mine/PAScual-64x64.png</normaloff>:/Icons/Icons/mine/PAScual-64x64.png</iconset>
    </property>
    <property name="text" >
     <string>About</string>
    </property>
   </action>
   <action name="actionShow_hide_Plot" >
+   <property name="checkable" >
+    <bool>false</bool>
+   </property>
+   <property name="checked" >
+    <bool>false</bool>
+   </property>
    <property name="text" >
-    <string>Show/hide Plot</string>
+    <string>Show/Hide Plot</string>
    </property>
   </action>
   <action name="actionRegenerateSets" >
    <property name="icon" >
-    <iconset resource="PAScual.qrc" >:/Icons/Icons/mine/yellowbullet.png</iconset>
+    <iconset resource="PAScual.qrc" >
+     <normaloff>:/Icons/Icons/mine/yellowbullet.png</normaloff>:/Icons/Icons/mine/yellowbullet.png</iconset>
    </property>
    <property name="text" >
     <string>RegenerateSets</string>
@@ -1364,7 +1286,8 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionSave_Output_as" >
    <property name="icon" >
-    <iconset resource="PAScual.qrc" >:/Icons/Icons/mine/CRfilesave.png</iconset>
+    <iconset resource="PAScual.qrc" >
+     <normaloff>:/Icons/Icons/mine/CRfilesave.png</normaloff>:/Icons/Icons/mine/CRfilesave.png</iconset>
    </property>
    <property name="text" >
     <string>Save Output as...</string>
@@ -1372,7 +1295,8 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionSave_results_as" >
    <property name="icon" >
-    <iconset resource="PAScual.qrc" >:/Icons/Icons/mine/CRfilesave.png</iconset>
+    <iconset resource="PAScual.qrc" >
+     <normaloff>:/Icons/Icons/mine/CRfilesave.png</normaloff>:/Icons/Icons/mine/CRfilesave.png</iconset>
    </property>
    <property name="text" >
     <string>Save results  as:</string>
@@ -1380,7 +1304,8 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionWhat_s_This" >
    <property name="icon" >
-    <iconset resource="PAScual.qrc" >:/Icons/Icons/mine/questionmark.png</iconset>
+    <iconset resource="PAScual.qrc" >
+     <normaloff>:/Icons/Icons/mine/questionmark.png</normaloff>:/Icons/Icons/mine/questionmark.png</iconset>
    </property>
    <property name="text" >
     <string>What's This?</string>
@@ -1398,7 +1323,8 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionSum_Spectra" >
    <property name="icon" >
-    <iconset resource="PAScual.qrc" >:/Icons/Icons/mine/sigma.png</iconset>
+    <iconset resource="PAScual.qrc" >
+     <normaloff>:/Icons/Icons/mine/sigma.png</normaloff>:/Icons/Icons/mine/sigma.png</iconset>
    </property>
    <property name="text" >
     <string>Sum Spectra</string>
@@ -1426,10 +1352,22 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionTao_Eldrup_Calculator" >
    <property name="icon" >
-    <iconset resource="PAScual.qrc" >:/Icons/icons/mine/TaoEldrup64x64.png</iconset>
+    <iconset resource="PAScual.qrc" >
+     <normaloff>:/Icons/icons/mine/TaoEldrup64x64.png</normaloff>:/Icons/icons/mine/TaoEldrup64x64.png</iconset>
    </property>
    <property name="text" >
     <string>Tao Eldrup Calculator</string>
+   </property>
+  </action>
+  <action name="actionShowSpectraSel" >
+   <property name="checkable" >
+    <bool>false</bool>
+   </property>
+   <property name="checked" >
+    <bool>false</bool>
+   </property>
+   <property name="text" >
+    <string>show/hide spectra selector</string>
    </property>
   </action>
  </widget>
