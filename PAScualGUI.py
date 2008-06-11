@@ -243,6 +243,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.outputWriteMode=unicode(settings.value("outputWriteMode", QVariant(QString("a"))).toString()) #get user prefs regarding the output file management #TODO: include this in options menu
 		self.warning_chi2_low=settings.value("warning_chi2_low", QVariant(0.6)).toDouble()[0] #TODO: include this in options menu
 		self.warning_chi2_high=settings.value("warning_chi2_high", QVariant(1.4)).toDouble()[0] #TODO: include this in options menu
+		self.outputFileName=None
 		
 		#Add connections here
 		QObject.connect(self.actionLoad_Spectra,SIGNAL("triggered()"),self.loadSpectra)
@@ -257,6 +258,9 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		QObject.connect(self.actionShow_hide_Plot,SIGNAL("triggered()"), self.show_hidePlot)
 		QObject.connect(self.actionShowSpectraSel,SIGNAL("triggered()"), self.showSpectraList)	
 		QObject.connect(self.actionManual,SIGNAL("triggered()"),self.showManual)
+		QObject.connect(self.actionSave_Output_as,SIGNAL("triggered()"),self.onSaveOutput_as)
+		
+		
 		
 		
 #		QObject.connect(self.actionSaveResults,SIGNAL("triggered()"),self.onSaveResults)
@@ -291,10 +295,8 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		QObject.connect(self.saveResultsBT,SIGNAL("clicked()"),self.onSaveResults)
 		QObject.connect(self.resultsTable,SIGNAL("doubleClicked(QModelIndex)"),self.onResultsTableDoubleClick)
 		QObject.connect(self.resultsFileSelectBT,SIGNAL("clicked()"),self.onResultsFileSelectBT)
-		QObject.connect(self.outputFileSelectBT,SIGNAL("clicked()"),self.onOutputFileSelectBT)
 		QObject.connect(self.previousOutputCB,SIGNAL("currentIndexChanged(const QString&)"),self.onPreviousOutputCBChange)
-		
-# 		QObject.connect(self.saveOutputBT,SIGNAL("clicked()"),self.onSaveOutput)
+		QObject.connect(self.saveOutputBT,SIGNAL("clicked()"),self.onSaveOutput_as)
 		
 		
 		#Restore last session Window state
@@ -325,11 +327,35 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 											"ASCII (*.txt)"+
 											"All (*)",'',QFileDialog.DontConfirmOverwrite)
 		if filename: self.resultsFileLE.setText(filename)
-	def onOutputFileSelectBT(self):
-		filename=QFileDialog.getSaveFileName ( self, "Output File Selection", self.openFilesDlg.directory().path()+'/PASoutput.txt',
-											"ASCII (*.txt)"+
-											"All (*)",'',QFileDialog.DontConfirmOverwrite)
-		if filename: self.outputFileLE.setText(filename)	
+		
+	def onSaveOutput_as(self,ofile=None ):
+		#Make sure only finished outputs are saved
+		if self.outputTE.isVisible():
+			QMessageBox.warning(self, "Cannot save unfinished fit","You can only save the output from finished fits. Output won't be written\n Select a different output from the list.")
+			return
+		if ofile is None: #if a file is not given, prompt the user for a file name
+			if self.outputFileName is None: self.outputFileName=self.openFilesDlg.directory().path()+'/PASoutput.txt' #set default file name
+			ofile=QFileDialog.getSaveFileName (self, "Output File Selection", self.outputFileName,"ASCII (*.txt)\nAll (*)",'',QFileDialog.DontConfirmOverwrite)
+			if not ofile: return #failed to get a valid filename
+		
+		#Manage the file
+		if not isinstance(ofile,file): 
+			ofile=unicode(ofile)
+			self.outputFileName=ofile #store the file name for future use
+			openmode='a'
+			if os.path.exists(ofile):
+				answer=QMessageBox.question(self, "Append data?","'%s' already exists.\nAppend data?\n (Yes for Append. No for Overwrite)"%os.path.basename(ofile),QMessageBox.Yes|QMessageBox.No|QMessageBox.Cancel)	
+				if answer==QMessageBox.Yes: openmode='a'
+				elif answer==QMessageBox.No: openmode='w'
+				else: return
+			try:
+				ofile=open(ofile,openmode)
+			except IOError:
+				QMessageBox.warning(self, "Error opening file","Error opening file. Output won't be written")
+				return
+		#Write the output to the file
+		print >>ofile, "\n"+unicode(self.previousOutputTE.toPlainText())+"\n"
+		ofile.close()
 	
 	def onResultsTableDoubleClick(self,index):
 		self.plotresiduals(self.resultsdplist[index.row()])
@@ -458,6 +484,12 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.statusbar.showMessage("Fitting finished", 0) 
 		#activate the startbutton
 		self.goFitBT.setEnabled(True)
+		#Copy the current output box to the Previous Fits box and then clear the current one
+		if not self.currentOutputKey is None: 
+			self.previousOutputDict[self.currentOutputKey]=self.outputTE.document().clone() #store the previous output in the dict
+			self.previousOutputCB.insertItem(0,self.currentOutputKey) #put a new entry in the combo box
+			self.outputTE.clear()
+			self.previousOutputCB.setCurrentIndex(0) #switch the view to thelast to the last
 		
 	def onGoFit(self):
 		'''launches the fit'''
@@ -490,16 +522,15 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		#deactivate the startbutton
 		self.goFitBT.setEnabled(False)
 		#initialise a tee for output 
-		self.outputfile=open(unicode(self.outputFileLE.text()),self.outputWriteMode)#self.outputWriteMode is one of  'w' or 'a'
+		if self.autosaveOutputCB.isChecked():
+			self.outputfile=open(unicode(self.outputFileLE.text()),self.outputWriteMode)#self.outputWriteMode is one of  'w' or 'a'
+		else: self.outputfile=None
 		mytee=tee(sys.__stdout__, self.outputfile)
 		mytee.setEmitEnabled(True)
-		#Copy the current output box to the Previous Fits box and then clear the current one
-		if not self.currentOutputKey is None: 
-			self.previousOutputDict[self.currentOutputKey]=self.outputTE.document().clone() #store the previous output in the dict
-			self.previousOutputCB.insertItem(0,self.currentOutputKey) #put a new entry in the combo box
-			self.outputTE.clear()
-		self.currentOutputKey=unicode(time.strftime('%Y/%m/%d %H:%M:%S')) #Update the current Output key
-		
+		#Update the current Output key
+		self.currentOutputKey=unicode(time.strftime('%Y/%m/%d %H:%M:%S')) 
+		#show the current output
+		self.previousOutputCB.setCurrentIndex(self.previousOutputCB.findText("Current", Qt.MatchExactly | Qt.MatchCaseSensitive))
 		
 # 		'DEBUG: >>>>>>>>>',unicode(self.outputTE.toPlainText()),'<<<<<<<<<<<<<<'
 # 		self.previousOutputDict[self.currentOutputKey]=self.outputTE.document().clone()
@@ -557,7 +588,9 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 			self.previousOutputTE.clear()
 			self.previousOutputTE.insertPlainText(self.previousOutputDict[key].toPlainText())
 			self.outputTE.hide()
-			self.previousOutputTE.show()		
+			self.previousOutputTE.show()
+		#disable the posibility of saving output from current fit
+		self.saveOutputBT.setEnabled(not(self.outputTE.isVisible()))
 		
 		
 			
@@ -973,7 +1006,6 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 			return filename
 		return None
 		
-		
 	def onSaveResults(self,ofile=None):
 		#Manage the file
 		if ofile is None: ofile=unicode(self.resultsFileLE.text())
@@ -1019,6 +1051,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 					ofile.write(fmt%unicode(self.resultsTable.item(row,col).text()))					
 		ofile.close()
 		self.dirtyresults=False
+	
 		
 	def createFakeSpectrum(self, area=None, roi=S.arange(1024), name=None):
 #		if roi is None: roi=S.arange(1024)

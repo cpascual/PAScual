@@ -18,7 +18,7 @@
 '''
 
 
-__version__="1.0.0"
+__version__="1.2.0"
 
 import time, copy, sys, random, os, string
 import cPickle as pickle
@@ -64,7 +64,9 @@ class newcolor(object):
 class tee(object):
 	'''defines tee like object. Allows to print to various files simultaneously'''
 	def __init__(self, *fileobjects):
-		self.fileobjects=fileobjects
+		self.fileobjects=[]
+		for ob in fileobjects: 
+			if isinstance(ob,file): self.fileobjects.append(ob)
 		self.qtextedit=[]
 		self.emitEnabled=False
 #		for ob in self.fileobjects:
