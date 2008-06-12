@@ -166,25 +166,10 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.dirtysets=True
 		self.dirtyresults=False
 		self.palssetsdict={}
-		settings = QSettings()  #This  gets the settings from wherever they are stored (the storage point is plattform dependent)
+		self.settings = QSettings()  #This  gets the settings from wherever they are stored (the storage point is plattform dependent)
 		
 		###add hand-coded widgets and modifications to ui_ widgets here
 		
-		#General OpenFile Dialog (it is never closed, just hidden)
-		self.openFilesDlg=QFileDialog(self, "%s - Open spectra"%QApplication.applicationName(), "./","")
-		self.openFilesDlg.specFileLoaderDict={	'ASCII':SpecFiles.ASCIIfileloader('ASCII','*.dat *.txt *.al2 *.chn',0,'ASCII without header'),
-												'ASCII-custom':SpecFiles.ASCIIfileloader('ASCII-custom','*',None,'ASCII with user-selected header','qt',self.openFilesDlg),
-												'LT':SpecFiles.ASCIIfileloader('LT','*.dat *.txt *.al2 *.chn',4,'ASCII with a 4 rows header'),
-												'L80':SpecFiles.ASCIIfileloader('L80','*.80',0,'multicolumn ASCII with no header'),
-												'MAESTRO':SpecFiles.MAESTROfileLoader('MAESTRO') } #instantiate file loaders and put them in a dict belonging to the OpenFile dialog
-		self.openFilesDlg.specFileLoaderDict['ASCII-custom'].needExtraInput=True #makes
-		filefilters=["%s (%s)"%(self.openFilesDlg.specFileLoaderDict[k].name,self.openFilesDlg.specFileLoaderDict[k].filenamefilter) for k in sorted(self.openFilesDlg.specFileLoaderDict.keys())]
-		WorkDirectory= settings.value("WorkDirectory", QVariant(QDir.homePath())).toString()
-		self.openFilesDlg.setFileMode(QFileDialog.ExistingFiles)
-		self.openFilesDlg.setViewMode(QFileDialog.Detail )
-		self.openFilesDlg.setFilters(filefilters)
-		self.openFilesDlg.setDirectory(WorkDirectory)
-
 		#The fitter thread
 		self.fitter=PCP.fitter(self)
 		
@@ -224,7 +209,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		
 		#fitmodes
 		self.fitmodesdict=defaultFitModesDict #global dict storing hardcoded default FitModes
-		self.fitModeFileName=unicode(settings.value("fitModeFileName", QVariant(QString("fitmode.pck"))).toString())
+		self.fitModeFileName=unicode(self.settings.value("fitModeFileName", QVariant(QString("fitmode.pck"))).toString())
 		self.fitmodesdict.update(self.loadCustomFitModes(self.fitModeFileName))
 		self.fitModeCB.insertItems(0,sorted(self.fitmodesdict.keys()))
 		self.commandsModel=CMDTMV.CommandTableModel()
@@ -240,10 +225,10 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		#Other, misc
 		self.LEpsperchannel.setValidator(QDoubleValidator(0,S.inf,3,self)) #add validator to the psperchannel edit	
 		self.resultsTable.addActions([self.actionCopy_Results_Selection,self.actionSave_results_as]) #context menu
-		self.outputWriteMode=unicode(settings.value("outputWriteMode", QVariant(QString("a"))).toString()) #get user prefs regarding the output file management #TODO: include this in options menu
-		self.warning_chi2_low=settings.value("warning_chi2_low", QVariant(0.6)).toDouble()[0] #TODO: include this in options menu
-		self.warning_chi2_high=settings.value("warning_chi2_high", QVariant(1.4)).toDouble()[0] #TODO: include this in options menu
-		self.nextupdatechk=settings.value("nextupdatechk", QVariant(0)).toInt()[0] #TODO: include this in options menu
+		self.outputWriteMode=unicode(self.settings.value("outputWriteMode", QVariant(QString("a"))).toString()) #get user prefs regarding the output file management #TODO: include this in options menu
+		self.warning_chi2_low=self.settings.value("warning_chi2_low", QVariant(0.6)).toDouble()[0] #TODO: include this in options menu
+		self.warning_chi2_high=self.settings.value("warning_chi2_high", QVariant(1.4)).toDouble()[0] #TODO: include this in options menu
+		self.nextupdatechk=self.settings.value("nextupdatechk", QVariant(0)).toInt()[0] #TODO: include this in options menu
 		self.outputFileName=None
 		
 		#Add connections here
@@ -261,9 +246,6 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		QObject.connect(self.actionManual,SIGNAL("triggered()"),self.showManual)
 		QObject.connect(self.actionSave_Output_as,SIGNAL("triggered()"),self.onSaveOutput_as)
 		QObject.connect(self.actionCheck_for_Updates,SIGNAL("triggered()"),lambda: self.check_for_Updates(force=True))
-		
-		
-		
 		
 #		QObject.connect(self.actionSaveResults,SIGNAL("triggered()"),self.onSaveResults)
 		QObject.connect(self.spectraTable,SIGNAL("doubleClicked(QModelIndex)"),self.onSpectraTableDoubleClick)
@@ -302,14 +284,36 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 				
 		
 		#Restore last session Window state
-		size = settings.value("MainWindow/Size", QVariant(QSize(800, 600))).toSize()
+		size = self.settings.value("MainWindow/Size", QVariant(QSize(800, 600))).toSize()
 		self.resize(size)
-		position = settings.value("MainWindow/Position", QVariant(QPoint(0, 0))).toPoint()
+		position = self.settings.value("MainWindow/Position", QVariant(QPoint(0, 0))).toPoint()
 		self.move(position)
-		self.restoreState(settings.value("MainWindow/State").toByteArray())
+		self.restoreState(self.settings.value("MainWindow/State").toByteArray())
 		self.fitModeCB.setCurrentIndex(self.fitModeCB.findText(defaultFitMode))
-		#Manage autocheck updates
-		QTimer.singleShot(0, self.check_for_Updates)
+		
+		#Launch low-priority initializations (to speed up load time)
+		QTimer.singleShot(0, self.createOpenFilesDlg) #create the OpenFiles dialog
+		QTimer.singleShot(0, self.check_for_Updates) #Manage autocheck updates
+		
+		
+	def createOpenFilesDlg(self):
+		#General OpenFile Dialog (it is never closed, just hidden)
+		self.openFilesDlg=QFileDialog(self, "%s - Open spectra"%QApplication.applicationName(), "./","")
+		self.openFilesDlg.specFileLoaderDict={	'ASCII':SpecFiles.ASCIIfileloader('ASCII','*.dat *.txt *.al2 *.chn',0,'ASCII without header'),
+												'ASCII-custom':SpecFiles.ASCIIfileloader('ASCII-custom','*',None,'ASCII with user-selected header','qt',self.openFilesDlg),
+												'LT':SpecFiles.ASCIIfileloader('LT','*.dat *.txt *.al2 *.chn',4,'ASCII with a 4 rows header'),
+												'L80':SpecFiles.ASCIIfileloader('L80','*.80',0,'multicolumn ASCII with no header'),
+												'MAESTRO':SpecFiles.MAESTROfileLoader('MAESTRO') } #instantiate file loaders and put them in a dict belonging to the OpenFile dialog
+		self.openFilesDlg.specFileLoaderDict['ASCII-custom'].needExtraInput=True #makes
+		filefilters=["%s (%s)"%(self.openFilesDlg.specFileLoaderDict[k].name,self.openFilesDlg.specFileLoaderDict[k].filenamefilter) for k in sorted(self.openFilesDlg.specFileLoaderDict.keys())]
+		WorkDirectory= self.settings.value("WorkDirectory", QVariant(QDir.homePath())).toString()
+		self.openFilesDlg.setFileMode(QFileDialog.ExistingFiles)
+		self.openFilesDlg.setViewMode(QFileDialog.Detail )
+		self.openFilesDlg.setFilters(filefilters)
+		self.openFilesDlg.setDirectory(WorkDirectory)	
+		self.outputWriteMode=unicode(self.settings.value("outputWriteMode", QVariant(QString("a"))).toString())
+		selectedfilter=self.settings.value("openfilefilter", QVariant(QString(self.openFilesDlg.specFileLoaderDict['ASCII'].name))).toString()
+		self.openFilesDlg.selectFilter(selectedfilter)
 				
 	def copy_Results_Selection(self):
 		'''copies the selected results to the clipboard'''
@@ -607,16 +611,16 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 	def closeEvent(self,event):
 		'''This event handler receives widget close events'''
 		#save current window state before closing
-		settings = QSettings()
-		settings.setValue("MainWindow/Size", QVariant(self.size()))
-		settings.setValue("MainWindow/Position",QVariant(self.pos()))
-		settings.setValue("MainWindow/State",QVariant(self.saveState()))
-		settings.setValue("MainWindow/Position",QVariant(QString(self.fitModeFileName)))
-		settings.setValue("outputWriteMode",QVariant(QString(self.outputWriteMode)))
-		settings.setValue("WorkDirectory",QVariant(self.openFilesDlg.directory().path()))
-		settings.setValue("warning_chi2_low",QVariant(self.warning_chi2_low)) 
-		settings.setValue("warning_chi2_high",QVariant(self.warning_chi2_high))
-		settings.setValue("nextupdatechk", QVariant(self.nextupdatechk))
+		self.settings.setValue("MainWindow/Size", QVariant(self.size()))
+		self.settings.setValue("MainWindow/Position",QVariant(self.pos()))
+		self.settings.setValue("MainWindow/State",QVariant(self.saveState()))
+		self.settings.setValue("MainWindow/Position",QVariant(QString(self.fitModeFileName)))
+		self.settings.setValue("outputWriteMode",QVariant(QString(self.outputWriteMode)))
+		self.settings.setValue("WorkDirectory",QVariant(self.openFilesDlg.directory().path()))
+		self.settings.setValue("warning_chi2_low",QVariant(self.warning_chi2_low)) 
+		self.settings.setValue("warning_chi2_high",QVariant(self.warning_chi2_high))
+		self.settings.setValue("nextupdatechk", QVariant(self.nextupdatechk))
+		self.settings.setValue("openfilefilter",QVariant(self.openFilesDlg.selectedFilter()))
 		
 		
 	def onTabChanged(self,tabindex):
@@ -984,11 +988,15 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 			self.emit(SIGNAL("regenerateSets"),False)
 			self.statusbar.showMessage("Done", 0) 
 			#propose to set the ROI
-			answer=QMessageBox.question(self, "Set ROI?",
-										"Do you want to set the Region Of Interest (ROI) for the loaded spectra now?\n"
-										"(It can also be done later, with the Set ROI button)"
-										,QMessageBox.Yes|QMessageBox.No, QMessageBox.Yes)	
-			if answer==QMessageBox.Yes: self.setROI()
+			self.setROI()
+			#propose to set the gain
+			psperchannel,okflag=self.LEpsperchannel.text().toFloat()
+			if not okflag:psperchannel=50 #in case no valid number is already in the LEpsperchannel box, default to 50.
+			psperchannel,okflag= QInputDialog.getDouble (self,"Gain", "Set gain [ps/ch] for the just loaded spectra ", psperchannel, 0., 1000., 2)
+			if okflag: 
+				self.LEpsperchannel.setText(QString.number(psperchannel))
+				self.setpsperchannel()
+			
 		
 	def savespectrum(self,spectrum, filename=None, columns=1, fileformat=None):
 		#TODO: save in different formats
