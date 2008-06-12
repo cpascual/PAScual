@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Documents and Settings\pas064\My Documents\src\PAScual-dev\PAScualGUI.ui'
 #
-# Created: Wed Jun 11 16:57:19 2008
+# Created: Wed Jun 11 22:23:32 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -556,6 +556,8 @@ class Ui_PAScual(object):
         self.actionShowSpectraSel.setCheckable(False)
         self.actionShowSpectraSel.setChecked(False)
         self.actionShowSpectraSel.setObjectName("actionShowSpectraSel")
+        self.actionCheck_for_Updates = QtGui.QAction(PAScual)
+        self.actionCheck_for_Updates.setObjectName("actionCheck_for_Updates")
         self.menuFile.addAction(self.actionLoad_Spectra)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionSave_Output_as)
@@ -574,6 +576,8 @@ class Ui_PAScual(object):
         self.menuTools.addAction(self.actionSimulate_spectrum)
         self.menuTools.addAction(self.actionSum_Spectra)
         self.menuTools.addAction(self.actionTao_Eldrup_Calculator)
+        self.menuTools.addSeparator()
+        self.menuTools.addAction(self.actionCheck_for_Updates)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuView.menuAction())
         self.menubar.addAction(self.menuTools.menuAction())
@@ -753,5 +757,6 @@ class Ui_PAScual(object):
         self.actionCopy_Results_Selection.setText(QtGui.QApplication.translate("PAScual", "Copy Results (Selection)", None, QtGui.QApplication.UnicodeUTF8))
         self.actionTao_Eldrup_Calculator.setText(QtGui.QApplication.translate("PAScual", "Tao Eldrup Calculator", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShowSpectraSel.setText(QtGui.QApplication.translate("PAScual", "show/hide spectra selector", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionCheck_for_Updates.setText(QtGui.QApplication.translate("PAScual", "Check for Updates", None, QtGui.QApplication.UnicodeUTF8))
 
 import PAScual_rc

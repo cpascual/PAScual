@@ -36,7 +36,7 @@
 #TODO: (General) make installer?
 
 
-import sys, os, copy, platform
+import sys, os, copy, platform, time
 import cPickle as pickle
 import scipy as S
 from PyQt4.QtCore import *
@@ -243,6 +243,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.outputWriteMode=unicode(settings.value("outputWriteMode", QVariant(QString("a"))).toString()) #get user prefs regarding the output file management #TODO: include this in options menu
 		self.warning_chi2_low=settings.value("warning_chi2_low", QVariant(0.6)).toDouble()[0] #TODO: include this in options menu
 		self.warning_chi2_high=settings.value("warning_chi2_high", QVariant(1.4)).toDouble()[0] #TODO: include this in options menu
+		self.nextupdatechk=settings.value("nextupdatechk", QVariant(0)).toInt()[0] #TODO: include this in options menu
 		self.outputFileName=None
 		
 		#Add connections here
@@ -259,6 +260,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		QObject.connect(self.actionShowSpectraSel,SIGNAL("triggered()"), self.showSpectraList)	
 		QObject.connect(self.actionManual,SIGNAL("triggered()"),self.showManual)
 		QObject.connect(self.actionSave_Output_as,SIGNAL("triggered()"),self.onSaveOutput_as)
+		QObject.connect(self.actionCheck_for_Updates,SIGNAL("triggered()"),lambda: self.check_for_Updates(force=True))
 		
 		
 		
@@ -297,7 +299,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		QObject.connect(self.resultsFileSelectBT,SIGNAL("clicked()"),self.onResultsFileSelectBT)
 		QObject.connect(self.previousOutputCB,SIGNAL("currentIndexChanged(const QString&)"),self.onPreviousOutputCBChange)
 		QObject.connect(self.saveOutputBT,SIGNAL("clicked()"),self.onSaveOutput_as)
-		
+				
 		
 		#Restore last session Window state
 		size = settings.value("MainWindow/Size", QVariant(QSize(800, 600))).toSize()
@@ -306,8 +308,9 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.move(position)
 		self.restoreState(settings.value("MainWindow/State").toByteArray())
 		self.fitModeCB.setCurrentIndex(self.fitModeCB.findText(defaultFitMode))
-
-		
+		#Manage autocheck updates
+		QTimer.singleShot(0, self.check_for_Updates)
+				
 	def copy_Results_Selection(self):
 		'''copies the selected results to the clipboard'''
 		string=''
@@ -613,6 +616,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		settings.setValue("WorkDirectory",QVariant(self.openFilesDlg.directory().path()))
 		settings.setValue("warning_chi2_low",QVariant(self.warning_chi2_low)) 
 		settings.setValue("warning_chi2_high",QVariant(self.warning_chi2_high))
+		settings.setValue("nextupdatechk", QVariant(self.nextupdatechk))
 		
 		
 	def onTabChanged(self,tabindex):
@@ -1088,7 +1092,16 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 	
 	def showSpectraList(self):
 		self.spectraDockWidget.setVisible(not(self.spectraDockWidget.isVisible()))
-				
+	
+	def check_for_Updates(self,force=False):
+		'''It shows a reminder for checking for updates. 
+		It only does so if it is time for the next scheduled reminder (or if called with force=True)'''
+		if force or time.time()>self.nextupdatechk:
+			import ChkUpdt
+			self.updaterDlg=ChkUpdt.updater(self,'PAScual-Autocheck Updates',"""Do you want to check for updated versions? """,__version__,__homepage__+"/lastrls.txt")
+			self.updaterDlg.exec_()
+			self.nextupdatechk=self.updaterDlg.nextupdatechk #retrieve the sggested time for next updates check
+					
 	def loadParameters(self,dp=None):
 		'''uses a dp to fill the parameters. If no spectra si given, it asks to load a file which is expected to contain a pickled discretepals'''
 		pass #TODO
@@ -1184,5 +1197,7 @@ if __name__ == "__main__":
 	QObject.connect(emitter,SIGNAL("initCommandPBar(int,int)"), form.commandPBar.setRange)
 	QObject.connect(emitter,SIGNAL("commandPBarValue(int)"), form.commandPBar,SLOT("setValue(int)"))
 	QObject.connect(emitter,SIGNAL("teeOutput"), form.outputTE.insertPlainText)
-	abort.abortRequested=form.fitter.isStopped  #reassign the  abortRequested() method from the abort object defined in PAScual
+	abort.abortRequested=form.fitter.isStopped  #reassign the  abortRequested() method from the abort object defined in PAScual	
+
+		
 	sys.exit(app.exec_())

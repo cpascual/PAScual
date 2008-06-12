@@ -966,6 +966,8 @@ p, li { white-space: pre-wrap; }
     <addaction name="actionSimulate_spectrum" />
     <addaction name="actionSum_Spectra" />
     <addaction name="actionTao_Eldrup_Calculator" />
+    <addaction name="separator" />
+    <addaction name="actionCheck_for_Updates" />
    </widget>
    <addaction name="menuFile" />
    <addaction name="menuView" />
@@ -1388,6 +1390,11 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="text" >
     <string>show/hide spectra selector</string>
+   </property>
+  </action>
+  <action name="actionCheck_for_Updates" >
+   <property name="text" >
+    <string>Check for Updates</string>
    </property>
   </action>
  </widget>
