@@ -1,6 +1,7 @@
 <RCC>
   <qresource prefix="/Icons" >
     <file>icons/mine/TaoEldrup32x32.png</file>
+    <file>icons/mine/Wizard.png</file>
     <file>Icons/mine/CRbutton_ok.png</file>
     <file>Icons/mine/CRcalc.png</file>
     <file>Icons/mine/CRdelete.png</file>

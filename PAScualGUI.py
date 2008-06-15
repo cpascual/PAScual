@@ -246,6 +246,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		QObject.connect(self.actionManual,SIGNAL("triggered()"),self.showManual)
 		QObject.connect(self.actionSave_Output_as,SIGNAL("triggered()"),self.onSaveOutput_as)
 		QObject.connect(self.actionCheck_for_Updates,SIGNAL("triggered()"),lambda: self.check_for_Updates(force=True))
+		QObject.connect(self.actionParamWizard,SIGNAL("triggered()"),self.onParamWizard)
 		
 #		QObject.connect(self.actionSaveResults,SIGNAL("triggered()"),self.onSaveResults)
 		QObject.connect(self.spectraTable,SIGNAL("doubleClicked(QModelIndex)"),self.onSpectraTableDoubleClick)
@@ -292,10 +293,16 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.fitModeCB.setCurrentIndex(self.fitModeCB.findText(defaultFitMode))
 		
 		#Launch low-priority initializations (to speed up load time)
+		QTimer.singleShot(0, self.createParamWizard) #create the parameters Wizard
 		QTimer.singleShot(0, self.createOpenFilesDlg) #create the OpenFiles dialog
 		QTimer.singleShot(0, self.check_for_Updates) #Manage autocheck updates
 		
-		
+	
+	def createParamWizard(self):
+		from ParamWizard import ParamWizard
+		self.paramWizard = ParamWizard(None)
+		self.connect(app,SIGNAL('focusChanged(QWidget *, QWidget *)'),self.paramWizard.ROIPage.ROIsel.onFocusChanged) #manage the focus events (needed for mouse selection in ROI) 	
+			
 	def createOpenFilesDlg(self):
 		#General OpenFile Dialog (it is never closed, just hidden)
 		self.openFilesDlg=QFileDialog(self, "%s - Open spectra"%QApplication.applicationName(), "./","")
@@ -987,15 +994,9 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 			#signal regeneration of sets
 			self.emit(SIGNAL("regenerateSets"),False)
 			self.statusbar.showMessage("Done", 0) 
-			#propose to set the ROI
-			self.setROI()
-			#propose to set the gain
-			psperchannel,okflag=self.LEpsperchannel.text().toFloat()
-			if not okflag:psperchannel=50 #in case no valid number is already in the LEpsperchannel box, default to 50.
-			psperchannel,okflag= QInputDialog.getDouble (self,"Gain", "Set gain [ps/ch] for the just loaded spectra ", psperchannel, 0., 1000., 2)
-			if okflag: 
-				self.LEpsperchannel.setText(QString.number(psperchannel))
-				self.setpsperchannel()
+			#Launch Wizard
+			if self.paramWizard.launchOnLoad:
+				self.onParamWizard()
 			
 		
 	def savespectrum(self,spectrum, filename=None, columns=1, fileformat=None):
@@ -1109,6 +1110,39 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 			self.updaterDlg=ChkUpdt.updater(self,'PAScual-Autocheck Updates',"""Do you want to check for updated versions? """,__version__,__homepage__+"/lastrls.txt")
 			self.updaterDlg.exec_()
 			self.nextupdatechk=self.updaterDlg.nextupdatechk #retrieve the sggested time for next updates check
+			
+	def onParamWizard(self):
+		'''Launches the wizard and applies changes afterwards'''
+		selected,indexes=self.spectraModel.getselectedspectra()
+		if selected == []: return
+		#Reset the selected list and launch the wizard
+		self.paramWizard.restart()
+		self.paramWizard.setSelected(selected)
+		try: self.paramWizard.restorelast()
+		except: pass
+		if not self.paramWizard.exec_(): return  #if rejected, stop here
+		#If the wizard was accepted, retrieve the settings and apply the parameters
+		w=self.paramWizard
+		#ROI
+		for dp,bgroi in zip(selected,w.roilist): dp.roi=bgroi
+		self.spectraTable.resizeColumnToContents(STMV.ROI)
+		#psperchannel
+		self.LEpsperchannel.setText(w.psperchannel.toString())
+		self.setpsperchannel()
+		#FWHM
+		self.fwhmFitparWidget.LEValue.setText(w.FWHM.toString())
+		self.fwhmFitparWidget.BTApply.click()
+		#Bg
+		for dp,val,std10 in zip(selected,w.bg,w.deltabg):
+				dp.bg=fitpar(val=val, name=u'Bg(auto)', minval=max(0,val-std10), maxval=val+std10, free=not(self.bgFitparWidget.CBFix.isChecked()))
+				dp.bg.forcelimits()
+		for idx in indexes:
+			idx=self.spectraModel.index(idx.row(),STMV.BG)
+			self.spectraModel.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),idx, idx)
+		self.onUpdateParamsView(dp)
+		#c0
+		self.autoc0(self.c0FitparWidget)		
+				
 					
 	def loadParameters(self,dp=None):
 		'''uses a dp to fill the parameters. If no spectra si given, it asks to load a file which is expected to contain a pickled discretepals'''

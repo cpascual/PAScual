@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Documents and Settings\pas064\My Documents\src\PAScual-dev\PAScualGUI.ui'
 #
-# Created: Wed Jun 11 22:23:32 2008
+# Created: Mon Jun 16 05:39:25 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -558,6 +558,11 @@ class Ui_PAScual(object):
         self.actionShowSpectraSel.setObjectName("actionShowSpectraSel")
         self.actionCheck_for_Updates = QtGui.QAction(PAScual)
         self.actionCheck_for_Updates.setObjectName("actionCheck_for_Updates")
+        self.actionParamWizard = QtGui.QAction(PAScual)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/Icons/icons/mine/Wizard.png"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        self.actionParamWizard.setIcon(icon)
+        self.actionParamWizard.setObjectName("actionParamWizard")
         self.menuFile.addAction(self.actionLoad_Spectra)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionSave_Output_as)
@@ -576,6 +581,7 @@ class Ui_PAScual(object):
         self.menuTools.addAction(self.actionSimulate_spectrum)
         self.menuTools.addAction(self.actionSum_Spectra)
         self.menuTools.addAction(self.actionTao_Eldrup_Calculator)
+        self.menuTools.addAction(self.actionParamWizard)
         self.menuTools.addSeparator()
         self.menuTools.addAction(self.actionCheck_for_Updates)
         self.menubar.addAction(self.menuFile.menuAction())
@@ -585,6 +591,7 @@ class Ui_PAScual(object):
         self.toolBar.addAction(self.actionLoad_Spectra)
         self.toolBar.addAction(self.actionSum_Spectra)
         self.toolBar.addAction(self.actionTao_Eldrup_Calculator)
+        self.toolBar.addAction(self.actionParamWizard)
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.actionWhat_s_This)
         self.toolBar.addAction(self.actionAbout)
@@ -758,5 +765,6 @@ class Ui_PAScual(object):
         self.actionTao_Eldrup_Calculator.setText(QtGui.QApplication.translate("PAScual", "Tao Eldrup Calculator", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShowSpectraSel.setText(QtGui.QApplication.translate("PAScual", "show/hide spectra selector", None, QtGui.QApplication.UnicodeUTF8))
         self.actionCheck_for_Updates.setText(QtGui.QApplication.translate("PAScual", "Check for Updates", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionParamWizard.setText(QtGui.QApplication.translate("PAScual", "Wizard (parameters)", None, QtGui.QApplication.UnicodeUTF8))
 
 import PAScual_rc

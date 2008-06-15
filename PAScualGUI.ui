@@ -966,6 +966,7 @@ p, li { white-space: pre-wrap; }
     <addaction name="actionSimulate_spectrum" />
     <addaction name="actionSum_Spectra" />
     <addaction name="actionTao_Eldrup_Calculator" />
+    <addaction name="actionParamWizard" />
     <addaction name="separator" />
     <addaction name="actionCheck_for_Updates" />
    </widget>
@@ -1153,8 +1154,6 @@ p, li { white-space: pre-wrap; }
       </layout>
      </item>
     </layout>
-    <zorder>spectraTable</zorder>
-    <zorder>previousOutputTE</zorder>
    </widget>
   </widget>
   <widget class="QDockWidget" name="plotDockWidget" >
@@ -1264,6 +1263,7 @@ p, li { white-space: pre-wrap; }
    <addaction name="actionLoad_Spectra" />
    <addaction name="actionSum_Spectra" />
    <addaction name="actionTao_Eldrup_Calculator" />
+   <addaction name="actionParamWizard" />
    <addaction name="separator" />
    <addaction name="actionWhat_s_This" />
    <addaction name="actionAbout" />
@@ -1395,6 +1395,15 @@ p, li { white-space: pre-wrap; }
   <action name="actionCheck_for_Updates" >
    <property name="text" >
     <string>Check for Updates</string>
+   </property>
+  </action>
+  <action name="actionParamWizard" >
+   <property name="icon" >
+    <iconset resource="PAScual.qrc" >
+     <normaloff>:/Icons/icons/mine/Wizard.png</normaloff>:/Icons/icons/mine/Wizard.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Wizard (parameters)</string>
    </property>
   </action>
  </widget>

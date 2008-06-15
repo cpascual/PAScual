@@ -22,20 +22,21 @@ import scipy as S
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from PlotGraphWidget import PALSplot
-from PAScual import discretepals
 
 class ROISelectorDialog(QDialog):
-	def __init__(self, parent=None, selected=None, title="ROI"):
+	def __init__(self, parent=None, selected=None, title="ROI", widgetmode=False):
 		''' defines a roi for each selected spectra from a dictionary.
-		"spectradict" is a dictionary of discretepals (can be partially initialized discretepals) objects. 
-		"selected" is a list of names/keys of those spectra which are to be assigned a ROI
-		The selected items of the spectradict are expected to have at least the .exp member defined
+		"selected" is a list of spectra which are to be assigned a ROI
+		The selected items are expected to have at least the .exp member defined
 		It stores the chosen ROIs for each spectra in a list (self.roilist) in the same order as selected.
 		self.roidict[i]==None if there was a problem with the spectrum in selected[i]
+		widgetmode can be set to True to use the dialog as a widget
 		'''
 		super(ROISelectorDialog, self).__init__(parent)
-		if selected is None: return
-		self.selected=selected
+# 		if selected is None: return
+		self.selected=None
+		self.widgetmode=widgetmode
+		self.refspectrum=None
 # 		self.selected=sorted(selected)
 		
 		#initialise widgets
@@ -45,7 +46,7 @@ class ROISelectorDialog(QDialog):
 		
 		refspectrumLabel=QLabel("Re&ference Spectrum:")
 		self.refspectrumCB=QComboBox()
-		self.refspectrumCB.addItems([dp.name for dp in self.selected])
+		
 		refspectrumLabel.setBuddy(self.refspectrumCB)
 		self.cmaxLabel=QLabel("")
 		
@@ -85,17 +86,7 @@ class ROISelectorDialog(QDialog):
 		self.setLayout(mainLayout)
 		self.setWindowTitle("%s Selection"%title)
 		
-		#Show spectra
-		for dp in self.selected:
-			y=dp.exp
-			x=S.arange(y.size)
-			self.plotarea.attachCurve(x,y,name=dp.name)
-		
-		self.onrefspectraChange(self.refspectrumCB.currentIndex())
-		
-		self.lowerlimSB.setMaximum(self.refspectrum.exp.size)
-		self.upperlimSB.setMaximum(self.refspectrum.exp.size)
-		self.upperlimSB.setValue(self.refspectrum.exp.size)
+		self.resetSelected(selected)
 		
 		#Connect signals to slots:
 		QObject.connect(self.refspectrumCB,SIGNAL("currentIndexChanged(int)"),self.onrefspectraChange)
@@ -105,8 +96,27 @@ class ROISelectorDialog(QDialog):
 		self.connect(self.upperlimRelCB, SIGNAL("stateChanged(int)"), self.onupperlimRelChange)
 		self.connect(self.plotarea.picker, SIGNAL('selected(const QwtDoublePoint&)'), self.onselection)
 		
-		self.roilist=[]
 		self.selectiondestination=self.upperlimRelCB
+		
+	def resetSelected(self, selected):
+		if selected is self.selected: return
+		self.selected=selected
+		self.refspectrumCB.clear()
+		self.refspectrumCB.addItems([dp.name for dp in self.selected])
+		#Clear prev spectra
+		self.plotarea.reset()
+		#Show spectra
+		for dp in self.selected:
+			y=dp.exp
+			x=S.arange(y.size)
+			self.plotarea.attachCurve(x,y,name=dp.name)
+		self.roilist=[]
+		if selected is not None:
+			self.onrefspectraChange(self.refspectrumCB.currentIndex())		
+			self.lowerlimSB.setMaximum(self.refspectrum.exp.size)
+			self.upperlimSB.setMaximum(self.refspectrum.exp.size)
+			self.upperlimSB.setValue(self.refspectrum.exp.size)
+		
 		
 # 		QObject.connect(self.applyBT,SIGNAL("clicked()"),self.onApply)
 	def onFocusChanged(self,old,new):
@@ -131,7 +141,8 @@ class ROISelectorDialog(QDialog):
 			self.upperlimSB.setMaximum(self.refspectrum.exp.size-self.cmax)
 			
 		
-	def onlowerlimRelChange(self,checked):			
+	def onlowerlimRelChange(self,checked):
+		if self.refspectrum is None: return
 		if checked: 
 			self.lowerlimSB.setMinimum(-self.cmax)
 			self.lowerlimSB.setValue(self.lowerlimSB.value()-self.cmax)  
@@ -142,6 +153,7 @@ class ROISelectorDialog(QDialog):
 			self.lowerlimSB.setMinimum(0)
 			
 	def onupperlimRelChange(self,checked):
+		if self.refspectrum is None: return
 		if checked: 
 			self.upperlimSB.setMinimum(-self.cmax)
 			self.upperlimSB.setValue(self.upperlimSB.value()-self.cmax)  
@@ -152,7 +164,7 @@ class ROISelectorDialog(QDialog):
 			self.upperlimSB.setMinimum(0)
 	
 
-	def checkAndApply(self):
+	def checkAndApply(self, acceptonexit=True):
 		error=ignoreerror=False
 		self.roilist=[]
 		for dp in self.selected:
@@ -169,32 +181,31 @@ class ROISelectorDialog(QDialog):
 					answer=QMessageBox.warning(self, "Input error in %s"%dp.name, 
 												"Input error in %s :\n %s \nContinue? (skipping this)"%(dp.name,error),
 										   		QMessageBox.Yes|QMessageBox.YesToAll|QMessageBox.No)
-					if answer==QMessageBox.No: return #stop processing and return without accepting the dialog
+					if answer==QMessageBox.No: return False #stop processing and return without accepting the dialog (and return False)
 					elif answer==QMessageBox.YesToAll: ignoreerror=True #it won t ask anymore
 				self.roilist.append(None)
 			else:		
 				self.roilist.append(S.arange(self.roimin,self.roimax,dtype='i')) #put the selected roi in the dict
-		self.accept() #if no errors (or all errors were skipped) the dialog is accepted
+		if not self.widgetmode: self.accept() #if no errors (or all errors were skipped) the dialog is accepted
+		return True
 
 
 def make(app=None):
+	from PAScual import discretepals
 	#fake data
 	dp1=discretepals(expdata=S.arange(1024))
 	dp2=discretepals(name="fake2",expdata=S.arange(1024)*2)
 	dp3=discretepals(name="fake3",expdata=S.arange(1024)*3)
-	dp4=discretepals(expdata=S.arange(1024)*4)
+	dp4=discretepals(name="fake4",expdata=S.arange(1024)*4)
 	dp2.exp[22]=22000
 	dp3.exp[33]=33000
-# 	spectradict={'s1':dp1,'s2':dp2,'s3':dp3,'s4':dp4}
-# 	selected=['s2','s3']
+	dp4.exp[44]=44000
 	selected=[dp2,dp3]
 	#initialisation
-# 	demo = ROISelectorDialog(spectradict=spectradict, selected=selected)
-# 	demo.resize(600, 400)
-# 	demo.show()
 	demo = ROISelectorDialog(selected=selected)
 	demo.connect(app,SIGNAL('focusChanged(QWidget *, QWidget *)'),demo.onFocusChanged)
-# 	demo2.show()
+	demo.exec_()
+	demo.resetSelected([dp3,dp4])
 	demo.exec_()
 	print demo.result()
 	return demo
