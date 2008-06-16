@@ -1003,9 +1003,12 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		#TODO: save in different formats
 		if filename is None:
 			filename=unicode(self.openFilesDlg.directory().path())+'/'+spectrum.name+'.dat'
+# 			filename=unicode(QFileDialog.getSaveFileName ( self, "Save spectrum", filename,
+# 														"LT files (*.dat *.txt *.al2 *.chn)\n"+
+# 														"L80 files (*.l80)\n"+
+# 														"ASCII Files with NO HEADER (*.dat *.txt *.al2 *.chn)\n"+
+# 														"All (*)"))
 			filename=unicode(QFileDialog.getSaveFileName ( self, "Save spectrum", filename,
-														"LT files (*.dat *.txt *.al2 *.chn)\n"+
-														"L80 files (*.l80)\n"+
 														"ASCII Files with NO HEADER (*.dat *.txt *.al2 *.chn)\n"+
 														"All (*)"))
 		if filename:
@@ -1069,22 +1072,28 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 	def createFakeSpectrum(self, area=None, roi=S.arange(1024), name=None):
 #		if roi is None: roi=S.arange(1024)
 		#get the parameters
+		try:
+			bg=self.bgFitparWidget.getFitpar()
+			c0=self.c0FitparWidget.getFitpar()
+			fwhm=self.fwhmFitparWidget.getFitpar()
+			psperchannel=float(self.LEpsperchannel.text())
+			taulist=[]
+			itylist=[]
+			ncomps=self.compModel.rowCount()
+			for j in xrange(ncomps):
+				cp=self.compModel.components[j]
+				taulist.append(fitpar(val=cp.tau.val, name='Tau%i'%(j+1), minval=cp.tau.minval, maxval=cp.tau.maxval, free=cp.tau.free))
+				itylist.append(fitpar(val=cp.ity.val, name='Ity%i'%(j+1), minval=cp.ity.minval, maxval=cp.ity.maxval, free=cp.ity.free))
+		except(ValueError):
+			QMessageBox.warning(self, "Input error","Incomplete or bad values for the parameters. Simulation aborted")
+			self.statusbar.showMessage("Simulation aborted", 0) 
+			return
 		if area is None: 
 			area,okflag= QInputDialog.getDouble (self,"Area?", "Number of counts in simulated spectrum:", 1e6, 0, 1e99, 3)
 			if not okflag: 
-				self.statusbar.showMessage("Simulation aborted"%ps.name, 0) 
+				self.statusbar.showMessage("Simulation aborted", 0) 
 				return
-		bg=self.bgFitparWidget.getFitpar()
-		c0=self.c0FitparWidget.getFitpar()
-		fwhm=self.fwhmFitparWidget.getFitpar()
-		psperchannel=float(self.LEpsperchannel.text())
-		taulist=[]
-		itylist=[]
-		ncomps=self.compModel.rowCount()
-		for j in xrange(ncomps):
-			cp=self.compModel.components[j]
-			taulist.append(fitpar(val=cp.tau.val, name='Tau%i'%(j+1), minval=cp.tau.minval, maxval=cp.tau.maxval, free=cp.tau.free))
-			itylist.append(fitpar(val=cp.ity.val, name='Ity%i'%(j+1), minval=cp.ity.minval, maxval=cp.ity.maxval, free=cp.ity.free))
+		
 		#construct the discretepals
 		dp=discretepals(name='fake', expdata=None, roi=roi, taulist=taulist, itylist=itylist, bg=bg, fwhm=fwhm, c0=c0, psperchannel=psperchannel, area=area, fake=True)
 		#save it
@@ -1141,8 +1150,29 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 			self.spectraModel.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),idx, idx)
 		self.onUpdateParamsView(dp)
 		#c0
-		self.autoc0(self.c0FitparWidget)		
-				
+		self.autoc0(self.c0FitparWidget)	
+		#components
+		self.SBoxNcomp.setValue(w.taus.size)
+		for dp in selected: #wipe the taulist and itylist
+			dp.taulist=w.taus.size*[None]
+			dp.itylist=w.taus.size*[None]
+			
+		for j in xrange(w.taus.size):
+			cp=self.compModel.components[j]
+			#We regenerate the components instead of using the existing fitpar because we want to reinitialize them!
+			tau=fitpar(val=w.taus[j], name='Tau%i'%(j+1), minval=w.mintaus[j], maxval=w.maxtaus[j], free=True)
+			ity=fitpar(val=.1, name='Ity%i'%(j+1), minval=0, maxval=1, free=True)
+			for dp in selected:
+				tau=copy.deepcopy(tau) 
+				ity=copy.deepcopy(ity)
+				dp.taulist[j],dp.itylist[j]=tau,ity	
+		#mark that the sets might be dirty now
+		self.dirtysets=True		
+		#notify of the changes
+		for idx in indexes:
+			idx=self.spectraModel.index(idx.row(),STMV.COMP)
+			self.spectraModel.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),idx, idx)	
+		self.compModel.reset()
 					
 	def loadParameters(self,dp=None):
 		'''uses a dp to fill the parameters. If no spectra si given, it asks to load a file which is expected to contain a pickled discretepals'''

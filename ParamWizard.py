@@ -23,7 +23,45 @@ import scipy as S
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 from ROISelectorDlg import ROISelectorDialog
+import ui_AddCompsWidget 
 import PAScual_rc
+
+class AddCompsWidget(QWidget, ui_AddCompsWidget.Ui_AddCompsWidget):
+	def __init__(self, parent=None):
+		super(AddCompsWidget,self).__init__(parent)
+		self.setupUi(self)
+		self.connect(self.addpPsBT,SIGNAL('clicked()'), lambda:self.addComp(125)) 
+		self.connect(self.addDirectBT,SIGNAL('clicked()'), lambda:self.addComp(400)) 
+		self.connect(self.addoPsBT,SIGNAL('clicked()'), lambda:self.addComp(2000)) 
+		self.connect(self.addCustomBT,SIGNAL('clicked()'), lambda:self.addComp(self.customTauSB.value()))
+# 		self.connect(self.addCustomBT,SIGNAL('clicked()'), self.getComps)
+	def addComp(self,tau):
+		self.selectionsTE.append("%i"%tau)
+	def getComps(self):
+		'''parses the text in the selectionsTE and extract an array of lifetimes and of min and max values'''
+		self.comps=unicode(self.selectionsTE.toPlainText()).strip().split('\n')
+		self.taus=[]
+		self.mintaus=[]
+		self.maxtaus=[]
+		try:
+			for c in self.comps:
+				s=c.strip().split(',')
+				if s==['']:pass				
+				elif len(s)==1:
+					self.taus.append(float(s[0]))
+					self.mintaus.append(1.)
+					self.maxtaus.append(142000.)
+				elif len(s)==3:
+					self.taus.append(float(s[0]))
+					self.mintaus.append(float(s[1]))
+					self.maxtaus.append(float(s[2]))
+			self.taus=S.array(self.taus)
+			self.mintaus=S.array(self.mintaus)
+			self.maxtaus=S.array(self.maxtaus)
+			return True
+		except: 
+			raise
+			return False	
 
 class GainAndFWHMPage(QWizardPage):
 	def __init__(self, parent=None, psperchannel=50., FWHM=300.):
@@ -84,7 +122,7 @@ class ROIPage(QWizardPage):
 		self.registerField("lowerlim",self.ROIsel.lowerlimSB, "value","valueChanged()")
 		self.registerField("upperlimRel",self.ROIsel.upperlimRelCB, "checked","toggled()")
 		self.registerField("upperlim",self.ROIsel.upperlimSB, "value","valueChanged()")
-
+		
 		
 	def validatePage(self):
 		w=self.wizard()
@@ -94,13 +132,39 @@ class ROIPage(QWizardPage):
 		w.upperlimRel=self.field("upperlimRel")
 		return self.ROIsel.checkAndApply()
 		
+
+class AddCompsPage(QWizardPage):
+	def __init__(self, parent=None, selected=None):
+		super(QWizardPage, self).__init__(parent)	
 		
+		self.setTitle("Components")
+		self.setSubTitle("""Please add components""")
+		self.AddCompsWidget=AddCompsWidget()
+		
+		layout=QVBoxLayout()
+		layout.addWidget(self.AddCompsWidget)
+		self.setLayout(layout)
+		
+		#register fields
+		self.registerField("comps",self.AddCompsWidget.selectionsTE, "text","	textChanged()")
+	
+	def validatePage(self):
+		okflag=self.AddCompsWidget.getComps()
+		if okflag:
+			w=self.wizard()
+			w.taus=self.AddCompsWidget.taus
+			w.mintaus=self.AddCompsWidget.mintaus
+			w.maxtaus=self.AddCompsWidget.maxtaus
+			w.comps=self.field("comps")
+		return okflag
+		
+				
 class SummaryPage(QWizardPage):
 	def __init__(self, parent=None, selected=None):
 		super(QWizardPage, self).__init__(parent)
 			
 		self.setTitle("Summary")
-		self.setSubTitle("""Review the results from your choices and finish if you agree""")
+		self.setSubTitle("""Review the results from your choices and finish if you agree.\n Note: you can modify everything later from the Parameters Tab""")
 		
 		self.summary=QTextEdit("!!!!")
 		self.summary.setReadOnly(True)
@@ -127,8 +191,11 @@ class SummaryPage(QWizardPage):
 		w=self.wizard()
 		summary="According to your selections, the following parameters will be set:<ul>"
 		for i in xrange(len(w.selected)):
-			summary+="<li><b>%s</b>: %.1f ps/ch  ; FWHM=%.1f; ROI: %i-%i  ; bg=%.0f  </li>"%(w.selected[i].name, w.psperchannel.toDouble()[0], w.FWHM.toDouble()[0], w.roilist[i][0], w.roilist[i][-1], w.bg[i])
+			summary+="<li><b>%s</b>: %.1f ps/ch  ; FWHM=%.1f; ROI: %i-%i  ; bg=%.0f  ; %i comps</li>"%(w.selected[i].name, w.psperchannel.toDouble()[0], w.FWHM.toDouble()[0], w.roilist[i][0], w.roilist[i][-1], w.bg[i], w.taus.size)
 		summary+="</ul>"
+		summary+="<p>The components to be used are (tau [min,max]):<ul>"
+		for i in xrange(w.taus.size): summary+="<li>%.0f  [%.0f-%.0f]</li>"%(w.taus[i],w.mintaus[i],w.maxtaus[i])
+		summary+="</ul></p>"
 		return summary	
 	
 
@@ -157,11 +224,14 @@ class ParamWizard(QWizard):
 		#Insert pages
 		self.GainAndFWHMPage=GainAndFWHMPage(psperchannel=psperchannel,FWHM=FWHM)
 		self.ROIPage=ROIPage(parent=self, selected=self.selected)
+		self.AddCompsPage=AddCompsPage(parent=self)
 		self.SummaryPage=SummaryPage(selected=selected)
 		
 		self.addPage(self.GainAndFWHMPage)
 		self.addPage(self.ROIPage)
+		self.addPage(self.AddCompsPage)
 		self.addPage(self.SummaryPage)
+		
 		
 	def setSelected(self,selected):
 		self.selected=selected
@@ -174,11 +244,13 @@ class ParamWizard(QWizard):
 		self.setField("lowerlim",self.lowerlim)
 		self.setField("upperlimRel",self.upperlim)
 		self.setField("upperlim",self.upperlim)
+		self.setField("comps",self.comps)
 		
 		
 		
 if __name__ == "__main__":
 	from PAScual import discretepals
+	
 	#fake data
 	dp2=discretepals(name="fake2",expdata=S.arange(1024)*2)
 	dp3=discretepals(name="fake3",expdata=S.arange(1024)*3)
@@ -187,6 +259,10 @@ if __name__ == "__main__":
 	selected=[dp2,dp3]
 	
  	app = QApplication(sys.argv)
+ 	
+#  	form2=AddCompsWidget()
+#  	form2.show()
+ 	
 	form = ParamWizard(None,selected)
 	form.connect(app,SIGNAL('focusChanged(QWidget *, QWidget *)'),form.ROIPage.ROIsel.onFocusChanged) #manage the focus events (needed for mouse selection in ROI)
 	form.show()

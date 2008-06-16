@@ -3,7 +3,14 @@ PAScual: a Positron Annihilation Spectroscopy data analysis program.
 email: < cpascual [AT] users.sourceforge.net >
 Home page: http://pascual.sourceforge.net
 
-See the most up-to date information in the documentation
+
+
+IMPORTANT:
+See the most up-to date information in the on-line documentation:
+http://pascual.sourceforge.net
+
+
+
 
 ***************************************
 ****** INSTALLATION INSTRUCTIONS ****** 

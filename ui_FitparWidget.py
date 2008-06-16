@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Documents and Settings\pas064\My Documents\src\PAScual-dev\FitparWidget.ui'
 #
-# Created: Mon Jun 16 05:39:25 2008
+# Created: Mon Jun 16 18:04:41 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!

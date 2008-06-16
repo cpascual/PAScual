@@ -1,0 +1,109 @@
+<ui version="4.0" >
+ <class>AddCompsWidget</class>
+ <widget class="QWidget" name="AddCompsWidget" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>400</width>
+    <height>300</height>
+   </rect>
+  </property>
+  <property name="windowTitle" >
+   <string>Form</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout" >
+   <item row="0" column="0" colspan="2" >
+    <widget class="QPushButton" name="addpPsBT" >
+     <property name="text" >
+      <string>Add pPs (125 ps)</string>
+     </property>
+    </widget>
+   </item>
+   <item rowspan="5" row="0" column="2" >
+    <widget class="QTextEdit" name="selectionsTE" >
+     <property name="toolTip" >
+      <string>Add components using the buttons on the left or enter them manually.
+Format: lifetime [, min, max]</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="0" colspan="2" >
+    <widget class="QPushButton" name="addDirectBT" >
+     <property name="text" >
+      <string>Add Direct (400 ps)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2" >
+    <widget class="QPushButton" name="addoPsBT" >
+     <property name="text" >
+      <string>Add oPs (2000 ps)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" >
+    <widget class="QPushButton" name="addCustomBT" >
+     <property name="text" >
+      <string>Add custom</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="1" >
+    <widget class="QSpinBox" name="customTauSB" >
+     <property name="accelerated" >
+      <bool>false</bool>
+     </property>
+     <property name="minimum" >
+      <number>1</number>
+     </property>
+     <property name="maximum" >
+      <number>143000</number>
+     </property>
+     <property name="value" >
+      <number>1000</number>
+     </property>
+    </widget>
+   </item>
+   <item rowspan="2" row="4" column="0" >
+    <spacer name="verticalSpacer" >
+     <property name="orientation" >
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0" >
+      <size>
+       <width>72</width>
+       <height>163</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="5" column="2" >
+    <widget class="QPushButton" name="resetBT" >
+     <property name="text" >
+      <string>Reset</string>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>resetBT</sender>
+   <signal>clicked()</signal>
+   <receiver>selectionsTE</receiver>
+   <slot>clear()</slot>
+   <hints>
+    <hint type="sourcelabel" >
+     <x>276</x>
+     <y>276</y>
+    </hint>
+    <hint type="destinationlabel" >
+     <x>373</x>
+     <y>215</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
