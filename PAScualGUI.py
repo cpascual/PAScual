@@ -410,10 +410,10 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		
 	def onFitterFinished(self,completed):
 		#I think that it is safe to use the completed variable, since it came via the signal mechanism... But if it causes problems, check this
-		if completed: #If the fitter finished but did not complete (i.e. it was aborted), dont do update things
-			if self.fitter.isRunning(): 
+		if completed: #If the fitter finished its job (i.e. it was not aborted) update things
+			if self.fitter.isRunning(): #extra safety check. Make sure that fitter is not running at this moment
 				if not self.fitter.wait(1000):
-					QMessageBox.critical(self, "Race condition","Something went wrong. \nThis may be a bug. If you can reproduce it, please report it to the author\nThe fit needs to be stopped and re-started manually",QMessageBox.Ok)
+					QMessageBox.critical(self, "Race condition","Something went wrong. \nThis may be a bug. If you can reproduce it, please report it to the author (REF: RACE1)\nThe fit needs to be stopped and re-started manually",QMessageBox.Ok)
 					raise RuntimeError('onFitterFinished: self.fitter is still running!') 
 			#we know fitter is not running, so we safely access its internal palsset and status
 			ps=copy.deepcopy(self.fitter.ps) 
@@ -436,7 +436,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 					self.resultsTable.setItem(row,c,item)				
 				row+=1
 			self.resultsTable.resizeColumnsToContents()
-			
+		#regardless of it being finished or not, pass to the next in the queue	
 		self.advanceFitQueue()
 		return completed
 	
@@ -460,9 +460,11 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 
 
 	def advanceFitQueue(self, key=None):
-# 		if self.fitter.isRunning(): 
-# 			print 'DEBUG: cannot launch another fit while one fit is running' #TODO: handle this properly
-# 			return		
+		if self.fitter.isRunning(): #extra safety check. Make sure that fitter is not running at this moment
+			if not self.fitter.wait(1000): #give it some time to finish
+				QMessageBox.critical(self, "Race condition","Something went wrong. \nThis may be a bug. If you can reproduce it, please report it to the author (REF: RACE2)\nThe fit needs to be stopped and re-started manually",QMessageBox.Ok)
+				raise RuntimeError('onFitterFinished: self.fitter is still running!') 
+			return		
 		if len (self.fitqueuekeys)==0:
 			self.onStopFit()
 			self.totalPBar.setValue(0)
@@ -497,32 +499,69 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.fitqueuekeys=sorted(self.fitqueuedict.keys()) #note: at some point this could be used to implement user defined sorting (by assigning a preffix that affects the sort) 
 		return accepted,rejected #returns both dictionaries. IMPORTANT: they contain references to the palssets in palssetsdict, not copies!
 	
-	def onSkipFit(self):
+	def stopFitter(self, timeout=10000, offerForce=False):
+		'''Tries to stop the fitter nicely. If offerforce==True, it also offers to send a terminate signal to the fitter'''
 		#Ask the fitter thread to stop and wait till it does stop
 		self.fitter.stop()
-		self.statusbar.showMessage("Waiting for the fit to finish nicely...", 0) 
-		self.fitter.wait()
-		self.statusbar.showMessage("Fitting skipped", 0)	
-		#TODO: implement a fitter killer for those occasions when the fitter does not respond put it into the onStopFit
-		
+		self.statusbar.showMessage("Giving the Fit %i seconds to finish nicely..."%(timeout/1000), 0) 
+		if self.fitter.wait(timeout):	
+			self.statusbar.showMessage("Fit stopped", 0)
+			return True
+		if offerForce:
+			answer=QMessageBox.warning(self, "Fit not responding","""The fit is not responding to the stop request."""
+														"""Your options Are: <ul>"""
+														"""<p><li>To force fit termination (<b>the program may crash!</b>)</li>"""
+														"""<li>To wait till the fit responds (You cannot do more fits till it finishes, but you can save results)</li></ul></p>"""
+														"""<p>Play Russian roulette?  (i.e., force fit termination?)</p>"""
+														,QMessageBox.Yes|QMessageBox.No)
+			if answer==QMessageBox.Yes:
+				self.statusbar.showMessage("Risky business: trying to force the fit to stop...", 0)
+				self.fitter.terminate()
+				self.regenerateFitter(abort)
+				self.statusbar.showMessage("Fit killed!", 0)
+				return True
+		#If we reach this point is because we failed to stop the fit (although we requested a stop which may succeed at any moment) 
+		self.statusbar.showMessage("The fit may finish at any moment...", 0)
+		return False
+
+	def regenerateFitter(self,abortobject):
+		'''Restores a the self.fitter object and its connections (use in case of having terminated the fitter thread)
+		abortobject is the handler containing the abortRequested() to which we assign the fitter.isStopped()'''
+		self.fitter=PCP.fitter(self)
+		QObject.connect(self.fitter,SIGNAL("endrun(bool)"), self.onFitterFinished)
+		QObject.connect(self.fitter,SIGNAL("command_done(int)"), self.setPBar,SLOT("setValue(int)"))
+		QObject.connect(emitter,SIGNAL("initCommandPBar(int,int)"), self.commandPBar.setRange)
+		QObject.connect(emitter,SIGNAL("commandPBarValue(int)"), self.commandPBar,SLOT("setValue(int)"))
+		QObject.connect(emitter,SIGNAL("teeOutput"), self.outputTE.insertPlainText)
+		abortobject.abortRequested=form.fitter.isStopped  #reassign the  abortRequested() method from the abort object defined in PAScual			
+					
+	def onSkipFit(self):
+		'''Skips the current fit'''
+		skipped=self.stopFitter(offerForce=False)
+		while not skipped:
+			answer=QMessageBox.warning(self, "Fit not responding","""The fit is not responding to the skip request. Do you want to try to <b>stop</b> the fit?""",QMessageBox.Yes|QMessageBox.No)
+			if answer==QMessageBox.Yes:
+				self.onStopFit()
+				return
+			skipped=self.stopFitter(offerForce=False)
+		print "\nCurrent fit skipped\n"
 	
 	def onStopFit(self):
+		'''Stops the current fit'''
 		#delete the queue
 		self.fitqueuedict={}
 		self.fitqueuekeys=[]
-		#Ask the fitter thread to stop and wait till it does stop
-		self.fitter.stop()
-		self.statusbar.showMessage("Waiting for the fit to finish...", 0) 
-		self.fitter.wait()
-		self.statusbar.showMessage("Fitting finished", 0) 
-		#activate the startbutton
-		self.goFitBT.setEnabled(True)
-		#Copy the current output box to the Previous Fits box and then clear the current one
-		if not self.currentOutputKey is None: 
-			self.previousOutputDict[self.currentOutputKey]=self.outputTE.document().clone() #store the previous output in the dict
-			self.previousOutputCB.insertItem(0,self.currentOutputKey) #put a new entry in the combo box
-			self.outputTE.clear()
-			self.previousOutputCB.setCurrentIndex(0) #switch the view to thelast to the last
+		#try to stop the fit
+		stopped=self.stopFitter(offerForce=True)
+		if stopped:
+			#activate the startbutton
+			self.goFitBT.setEnabled(True)
+			#Copy the current output box to the Previous Fits box and then clear the current one
+			if not self.currentOutputKey is None: 
+				self.previousOutputDict[self.currentOutputKey]=self.outputTE.document().clone() #store the previous output in the dict
+				self.previousOutputCB.insertItem(0,self.currentOutputKey) #put a new entry in the combo box
+				self.outputTE.clear()
+				self.previousOutputCB.setCurrentIndex(0) #switch the view to thelast to the last
 		
 	def onGoFit(self):
 		'''launches the fit'''
@@ -641,7 +680,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		
 		
 	def onTabChanged(self,tabindex):
-		if tabindex==1: self.emit(SIGNAL("regenerateSets"),False)	
+		if tabindex==1: self.emit(SIGNAL("regenerateSets"),False)
 
 	def onRegenerateSets(self, force=False):
 		#only regenerate if there is a chance of change (or if we explicitely force it)
@@ -892,7 +931,6 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 			else:
 				self.statusbar.showMessage("AutoOffset Cancelled", 0) 
 				return  #abort the autoc0
-		#TODO: CHECK THAT fwhm and psperchannel are set for all selected ones. If not, abort
 		nerror=error=ignoreerror=False
 		for dp in selected:
 			if dp.psperchannel is None: error="The channel width for this spectrum must be defined in order to use AutoOffset\n"
@@ -1167,7 +1205,6 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		for dp in selected: #wipe the taulist and itylist
 			dp.taulist=w.taus.size*[None]
 			dp.itylist=w.taus.size*[None]
-			
 		for j in xrange(w.taus.size):
 			cp=self.compModel.components[j]
 			#We regenerate the components instead of using the existing fitpar because we want to reinitialize them!
@@ -1177,15 +1214,17 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 				tau=copy.deepcopy(tau) 
 				ity=copy.deepcopy(ity)
 				dp.taulist[j],dp.itylist[j]=tau,ity	
-		#mark that the sets might be dirty now
-		self.dirtysets=True		
 		#notify of the changes
 		for idx in indexes:
 			idx=self.spectraModel.index(idx.row(),STMV.COMP)
 			self.spectraModel.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),idx, idx)	
 		self.compModel.reset()
 		#select the last of the checked spectra (so that the parameters are shown)
+		self.spectraTable.clearSelection()
 		self.spectraTable.selectRow(indexes[-1].row())
+		#recalculate sets
+		self.dirtysets=True
+		self.emit(SIGNAL("regenerateSets"),False)
 					
 	def loadParameters(self,dp=None):
 		'''uses a dp to fill the parameters. If no spectra si given, it asks to load a file which is expected to contain a pickled discretepals'''
@@ -1193,7 +1232,6 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 	
 	def showManual(self):
 		'''Shows the User Manual in a window'''
-		#TODO: make it nicer... make it follow links. Possibly use a resource file for the manual,...
 		import docs_rc
 		self.manualBrowser=QDialog()
 		self.manualBrowser.setWindowTitle("PAScual User Manual")
