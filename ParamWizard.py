@@ -244,7 +244,7 @@ class ParamWizard(QWizard):
 		self.setField("lowerlim",self.lowerlim)
 		self.setField("upperlimRel",self.upperlim)
 		self.setField("upperlim",self.upperlim)
-		self.setField("comps",self.comps)
+# 		self.setField("comps",self.comps) #for some reason, This does not need to be restored explicitly (?)
 		
 		
 		

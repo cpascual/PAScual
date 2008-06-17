@@ -26,15 +26,15 @@
 #TODO: (General) implement plot from columns in results table 
 #TODO: (General) If a single spectrum is selected and a fit is already done, plot the fit and each component
 #TODO: (General) Allow set parameters from a row of results table
-#TODO: (General) If ROI is not set, issue a warning saying that the whole spectrum is going to be used
-#TODO: (General) offset should be calculated automatically if not set (possible warning). 
-#TODO: (General) same for background (e.g. use last 1% of ROI). Call if ROI is set AND the background is not already assigned)
-#TODO: (General) Implement passing default values to left and right lims in ROISelector. Pass [-5rel,end] for ROI and [ROIright-max(5,0.01*(ROIright-ROIleft)), ROIright] for bgROI
+#TODO: (General) (UPDATE: with the wizard, it is no longer an issue) If ROI is not set, issue a warning saying that the whole spectrum is going to be used 
+#TODO: (General) (UPDATE: with the wizard, it is no longer an issue) offset should be calculated automatically if not set (possible warning).
+#TODO: (General) (UPDATE: Done by Wizard) same for background (e.g. use last 1% of ROI). Call if ROI is set AND the background is not already assigned 
+#TODO: (General) (UPDATE: not urgent since Wizard remembers the lims) Implement passing default values to left and right lims in ROISelector. Pass [-5rel,end] for ROI and [ROIright-max(5,0.01*(ROIright-ROIleft)), ROIright] for bgROI 
 #TODO: (General) add an animation in the status bar indicating "fit in progress" (possibly the pPs.gif)
 #TODO: (General) add estimated time for fit (or at least for BI command)
 #TODO: (General) Incorporate plothistory.py to the GUI. It could also be used to display ellipses taken from the covariance matrix when no history has been stored
 #TODO: (General) make installer?
-
+#TODO: (General) implement saveFitMode()
 
 import sys, os, copy, platform, time
 import cPickle as pickle
@@ -271,7 +271,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		QObject.connect(self.applyFitModeBT,SIGNAL("clicked()"),self.assignFitModes)
 		QObject.connect(self.goFitBT,SIGNAL("clicked()"),self.onGoFit)
 		QObject.connect(self.stopFitBT,SIGNAL("clicked()"),self.onStopFit)
-# 		QObject.connect(self.skipCommandBT,SIGNAL("clicked()"),self.advanceFitQueue)
+		QObject.connect(self.skipCommandBT,SIGNAL("clicked()"),self.onSkipFit)
 		QObject.connect(self.fitter,SIGNAL("endrun(bool)"), self.onFitterFinished)
 		QObject.connect(self.fitter,SIGNAL("command_done(int)"), self.setPBar,SLOT("setValue(int)"))
 		QObject.connect(self.commandsModel,SIGNAL("dataChanged(QModelIndex,QModelIndex)"),self.onFitModeEdit)
@@ -282,6 +282,8 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		QObject.connect(self.resultsFileSelectBT,SIGNAL("clicked()"),self.onResultsFileSelectBT)
 		QObject.connect(self.previousOutputCB,SIGNAL("currentIndexChanged(const QString&)"),self.onPreviousOutputCBChange)
 		QObject.connect(self.saveOutputBT,SIGNAL("clicked()"),self.onSaveOutput_as)
+		QObject.connect(self.saveFitmodeBT,SIGNAL("clicked()"),self.saveFitMode)
+		
 				
 		
 		#Restore last session Window state
@@ -296,6 +298,10 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		QTimer.singleShot(0, self.createParamWizard) #create the parameters Wizard
 		QTimer.singleShot(0, self.createOpenFilesDlg) #create the OpenFiles dialog
 		QTimer.singleShot(0, self.check_for_Updates) #Manage autocheck updates
+	
+	def notImplementedWarning(self, featurename=''):
+		if featurename is None: featurename='this function'
+		return QMessageBox.warning(self, "Not implemented","Sorry, %s is not yet implemented"%featurename)
 		
 	
 	def createParamWizard(self):
@@ -396,22 +402,25 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.fitmodesdict[fmname]=tuple(["%s %s"%(c.cmd,c.args) for c in self.commandsModel.dumpData()])
 		self.fitModeCB.setCurrentIndex(self.fitModeCB.findText(fmname))
 		#TODO: add to the combobox and enable the save button
-		self.saveFitmodeBT.setEnabled(True)
+		self.saveFitmodeBT.setEnabled(True) 
 		self.assignFitModes()
 		
+	def saveFitMode(self): #TODO: 
+		self.notImplementedWarning('saving fitmodes')
+		
 	def onFitterFinished(self,completed):
-		if self.fitter.isRunning(): 
-#			QMessageBox.warning(self, "Race condition","A possible race condition occurred. \nThis may be a bug. If you can reproduce it, please report it to the author\nThe fit will be resumed automatically",QMessageBox.Ok)
-			if not self.fitter.wait(1000):
-				QMessageBox.critical(self, "Race condition","Something went wrong. \nThis may be a bug. If you can reproduce it, please report it to the author\nThe fit needs to be stopped and re-started manually",QMessageBox.Ok)
-				raise RuntimeError('onFitterFinished: self.fitter is still running!') 
-		#we know fitter is not running, so we safely access its internal palsset and status
-		ps=copy.deepcopy(self.fitter.ps) 
-		completed=copy.deepcopy(self.fitter.completed) #deepcopy makes little sense here but... who cares?
-		#We add the ps to a list for later use
-		self.resultslist.append(ps)
-		#now we can use our copies to insert data into the summary
-		if completed:
+		#I think that it is safe to use the completed variable, since it came via the signal mechanism... But if it causes problems, check this
+		if completed: #If the fitter finished but did not complete (i.e. it was aborted), dont do update things
+			if self.fitter.isRunning(): 
+				if not self.fitter.wait(1000):
+					QMessageBox.critical(self, "Race condition","Something went wrong. \nThis may be a bug. If you can reproduce it, please report it to the author\nThe fit needs to be stopped and re-started manually",QMessageBox.Ok)
+					raise RuntimeError('onFitterFinished: self.fitter is still running!') 
+			#we know fitter is not running, so we safely access its internal palsset and status
+			ps=copy.deepcopy(self.fitter.ps) 
+# 			completed=copy.deepcopy(self.fitter.completed) #deepcopy makes little sense here but... who cares?
+			#We add the ps to a list for later use
+			self.resultslist.append(ps)
+			#now we can use our copies to insert data into the summary
 			self.dirtyresults=True
 			row=self.resultsTable.rowCount()
 			for dp in ps.spectralist:
@@ -427,7 +436,8 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 					self.resultsTable.setItem(row,c,item)				
 				row+=1
 			self.resultsTable.resizeColumnsToContents()
-			self.advanceFitQueue()
+			
+		self.advanceFitQueue()
 		return completed
 	
 	def onFitModeCBChange(self,fitmodename):
@@ -450,9 +460,9 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 
 
 	def advanceFitQueue(self, key=None):
-		if self.fitter.isRunning(): 
-			print 'DEBUG: cannot launch another fit while one fit is running' #TODO: handle this properly
-			return
+# 		if self.fitter.isRunning(): 
+# 			print 'DEBUG: cannot launch another fit while one fit is running' #TODO: handle this properly
+# 			return		
 		if len (self.fitqueuekeys)==0:
 			self.onStopFit()
 			self.totalPBar.setValue(0)
@@ -486,6 +496,15 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.fitqueuedict=copy.deepcopy(accepted) #The queue is a copy!
 		self.fitqueuekeys=sorted(self.fitqueuedict.keys()) #note: at some point this could be used to implement user defined sorting (by assigning a preffix that affects the sort) 
 		return accepted,rejected #returns both dictionaries. IMPORTANT: they contain references to the palssets in palssetsdict, not copies!
+	
+	def onSkipFit(self):
+		#Ask the fitter thread to stop and wait till it does stop
+		self.fitter.stop()
+		self.statusbar.showMessage("Waiting for the fit to finish nicely...", 0) 
+		self.fitter.wait()
+		self.statusbar.showMessage("Fitting skipped", 0)	
+		#TODO: implement a fitter killer for those occasions when the fitter does not respond put it into the onStopFit
+		
 	
 	def onStopFit(self):
 		#delete the queue
@@ -545,15 +564,6 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.currentOutputKey=unicode(time.strftime('%Y/%m/%d %H:%M:%S')) 
 		#show the current output
 		self.previousOutputCB.setCurrentIndex(self.previousOutputCB.findText("Current", Qt.MatchExactly | Qt.MatchCaseSensitive))
-		
-# 		'DEBUG: >>>>>>>>>',unicode(self.outputTE.toPlainText()),'<<<<<<<<<<<<<<'
-# 		self.previousOutputDict[self.currentOutputKey]=self.outputTE.document().clone()
-# 		self.currentOutputKey=time.strftime('%Y/%m/%d %H:%M:%S') #This is the key where  this 
-# 		self.previousOutputDict[key]
-# 		#reset the output box if the overwrite mode is on
-# 		if self.outputWriteMode=="w": self.outputTE.clear()
-#		QObject.connect(emitter,SIGNAL("teeOutput"), self.kk)
-#		mytee.addQTextEdit(self.outputTE)
 		sys.stdout=mytee
 		#reset the saved results
 		self.resultslist=[]
@@ -848,7 +858,6 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.dirtysets=True				
 #		dp.taulist=[c.tau for c in self.compModel.components]
 #		dp.itylist=[c.ity for c in self.compModel.components]
-
 #		for dp in selected: print "DEBUG: onApplyComps", dp.name,dp.taulist
 		#notify of the changes
 		for idx in indexes:

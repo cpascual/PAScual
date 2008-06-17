@@ -61,9 +61,11 @@ class fitter(QThread):
  		self.launchFit(self.ps)
 		self.stop()
 		self.emit(SIGNAL("endrun(bool)"), self.completed)
+		
 	
 	def launchFit(self,ps):
 		'''This launches the fit (called via the run method). For the given palsset, it interpretes the commands and calls the appropriate functions''' 
+		self.completed = False
 		for ob,icmd in zip(ps.commands,range(len(ps.commands))):
 			if self.isStopped(): return  #This makes possible to respond to a request of stopping the fit
 			cmd=ob.cmd
@@ -113,50 +115,7 @@ class fitter(QThread):
 				if args: 
 					pickle.dump(self.saveslot_user,open(args,'wb'),-1) #if a filename is provided, save a copy there
 					print "\nCurrent status saved in '%s'\n"%args
-# 			#LOG command
-# 			elif cmd=='LOG':
-# 				header=False
-# 				if args:
-# 					if args in self.logfilesdict: logfile=self.logfilesdict[args]
-# 					else:
-# 						logfile=open(args,'a') #the file is opened in append mode
-# 						self.logfilesdict[args]=logfile
-# 						header=True
-# 				else: logfile=None
-# 				ps.showreport_1row(file=logfile, min_ncomp=max([ob.ncomp for ob in spectra]), header=header)
-# 			#REPORT command
-# 			elif cmd=='REPORT':
-# 				print '\n********* Reporting **************\n'
-# 				ps.showreport(verbosity=1)
-# 				if args:
-# 					if args.upper().strip()=='G': ps.graph_report() 
-# 			#FAKE command.
-# 			elif cmd=='FAKE':
-# 				print '\n********* Generating fake spectra **************\n'
-# 				filename=None
-# 				if args:
-# 					args=args.split(None,1)
-# 					area=float(args[0])
-# 					if len(args)==2: filename=args[1]					
-# 				else: area=1e6
-# 				temp=copy.deepcopy(ps)
-# 				for sp in temp.spectralist:
-# 					sp.exp[sp.roi]=sp.fake(area=area)
-# 					sp.exparea=sp.exp[sp.roi].sum()
-# 					sp.deltaexp=S.where(sp.exp<4,2.,S.sqrt(sp.exp))
-# 					sp.recalculate_chi2(forcecalc=True)
-# 				temp.showreport(verbosity=1) 
-# 				temp.graph_report() 
-# 				if filename:
-# 					suffix=''
-# 					for sp in temp.spectralist: 
-# 						if len(temp.spectralist)>1: suffix=sp.name
-# 						print "\nFake spectrum written in '%s'\n"%(filename+suffix)
-# 						pylab.save(filename+suffix,sp.exp)
-# 						#ADDCOMPONENT command				
-# 			#ADDCOMPONENT command				
-# 			elif cmd=='ADDCOMPONENT':
-# 				ps=ps.addcomponent() #TODO
+
 			#END command
 			elif cmd=='END':
 				pass
@@ -169,5 +128,6 @@ class fitter(QThread):
 			if self.outputfile: self.outputfile.flush()
 			#emit a signal of command done
 			self.emit(SIGNAL("command_done(int)"),icmd+1)
+		if self.isStopped(): return  #This makes possible to respond to a request of stopping the fit
 		self.completed = True
 

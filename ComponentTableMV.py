@@ -90,7 +90,7 @@ class PAScomponentsTableModel(QAbstractTableModel):
 		#Alignment 
 		elif role == Qt.TextAlignmentRole:
 			return QVariant(int(Qt.AlignHCenter|Qt.AlignVCenter))
-		#Bacground Color
+		#Background Color
 		elif role == Qt.TextColorRole:
 			if column == MINVAL or column==MAXVAL:
 				if not fp.free:	return QVariant(QColor(Qt.gray))
