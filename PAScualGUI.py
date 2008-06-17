@@ -751,7 +751,9 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		if dp.psperchannel is None: self.LEpsperchannel.setText(QString())
 		else: self.LEpsperchannel.setText(QString.number(dp.psperchannel))
 		
-		if dp.taulist is None: return  #TODO !!!!  maybe: self.SBoxNcomp.setValue(0)
+		if dp.taulist is None: 
+			self.SBoxNcomp.setValue(0)
+			return  
 		self.SBoxNcomp.setValue(len(dp.taulist)) #this puts the right number of comps
 		for i in xrange(len(dp.taulist)):
 			self.compModel.components[i].tau=copy.deepcopy(dp.taulist[i])
@@ -1173,6 +1175,8 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 			idx=self.spectraModel.index(idx.row(),STMV.COMP)
 			self.spectraModel.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),idx, idx)	
 		self.compModel.reset()
+		#select the last of the checked spectra (so that the parameters are shown)
+		self.spectraTable.selectRow(indexes[-1].row())
 					
 	def loadParameters(self,dp=None):
 		'''uses a dp to fill the parameters. If no spectra si given, it asks to load a file which is expected to contain a pickled discretepals'''
