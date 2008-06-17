@@ -407,6 +407,13 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		
 	def saveFitMode(self): #TODO: 
 		self.notImplementedWarning('saving fitmodes')
+		return
+		#TODO: finish and check (missing insert in self.fitModeCB)
+		(fmname,ok)= QInputDialog.getText (self,"Name?", "Name of custom Fit Mode:", QLineEdit.Normal, u"",  Qt.Dialog)
+		#copy the <user> entry under a different name and restore the original value of the <user> fit mode
+		self.fitmodesdict[fmname]=copy.deepcopy(self.fitmodesdict['<user>'])
+		self.fitmodesdict['<user>']=defaultFitModesDict['<user>']
+		pickle.dump(self.fitmodesdict,open(self.fitModeFileName,'wb'),-1)
 		
 	def onFitterFinished(self,completed):
 		#I think that it is safe to use the completed variable, since it came via the signal mechanism... But if it causes problems, check this
@@ -670,7 +677,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.settings.setValue("MainWindow/Size", QVariant(self.size()))
 		self.settings.setValue("MainWindow/Position",QVariant(self.pos()))
 		self.settings.setValue("MainWindow/State",QVariant(self.saveState()))
-		self.settings.setValue("MainWindow/Position",QVariant(QString(self.fitModeFileName)))
+		self.settings.setValue("fitModeFileName",QVariant(QString(self.fitModeFileName)))
 		self.settings.setValue("outputWriteMode",QVariant(QString(self.outputWriteMode)))
 		self.settings.setValue("WorkDirectory",QVariant(self.openFilesDlg.directory().path()))
 		self.settings.setValue("warning_chi2_low",QVariant(self.warning_chi2_low)) 
@@ -1230,9 +1237,18 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		'''uses a dp to fill the parameters. If no spectra si given, it asks to load a file which is expected to contain a pickled discretepals'''
 		pass #TODO
 	
-	def showManual(self):
+	
+	def showManual(self, offline=False):
 		'''Shows the User Manual in a window'''
-		import docs_rc
+		if offline:url="file:%s/manual/User Manual.html"%os.getcwd()
+		else:url="http://pascual.wiki.sourceforge.net/User+Manual"
+		url=QUrl(url)
+		if not QDesktopServices.openUrl(QUrl(url)):
+			self.showManual_OLD()
+		
+	def showManual_OLD(self):
+		'''Shows the User Manual in a window'''
+# 		import docs_rc
 		self.manualBrowser=QDialog()
 		self.manualBrowser.setWindowTitle("PAScual User Manual")
 		manualTB=QTextBrowser()
@@ -1243,7 +1259,8 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		layout.addWidget(manualTB)
 		layout.addWidget(extLinkLabel)
 		self.manualBrowser.setLayout(layout)
-		url="qrc:/Manual/ExtraStuff/Manual/pascual/User_Manual.html"			 
+# 		url="qrc:/Manual/ExtraStuff/Manual/pascual/User_Manual.html"			 
+		url="file:%s/manual/User Manual.html"%os.getcwd()
 		manualTB.setSource(QUrl(url))
 		self.manualBrowser.resize(1000, 400)
 		self.manualBrowser.show()

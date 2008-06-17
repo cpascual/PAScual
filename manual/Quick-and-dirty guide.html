@@ -1,0 +1,49 @@
+<html>
+  <head>
+    <title>pascual &raquo; Quick-and-dirty guide</title>
+    <link rel="stylesheet" href="static/style.css" type="text/css" />
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+  </head>
+  <body>
+    <div class="wiki" id="content_view" style="display: block;">
+<br />
+<strong>IMPORTANT: These instructions are quite outdated. From version 1.2, a wizard (assistant) makes the setting of parameters much easier. Also most (if not all) the information in this mini-guide is already covered in the Manual.</strong><br />
+<br />
+<strong>So...</strong> <strong>READ THE <a class="wiki_link" href="USER%20MANUAL.html">USER MANUAL</a> INSTEAD!!</strong><br />
+<br />
+Here are some instructions I wrote in an email. I will polish this, but for the moment it may help:<br />
+To use PAScual in graphic mode (recommended), launch PAScualGUI.py<br />
+Regarding to the use. I will put this in the manual ASAP, but here are a few tips:<br />
+First of all: use the &quot;?&quot; button: by clicking it and then on some elements of the window, you may get useful tips.<br />
+Here is a step-by-step guide to analyse a spectrum (or a set of them) with the GUI interface:<br />
+1.-Launch PAScualGUI.py. You should get the main window of the program.<br />
+2.-Load the spectra (File--&gt;Load spectra). You will see them appearing in the &quot;spectra selection&quot; pane on the left. You can select or unselect them using the green square to the left of the name. The parameters will only be set for the spectra that are selected.<br />
+3.-Set the Region of interest for the fit (you will be prompted when loading). You can type the min and max channels manually or click on the box and then on the graph. If you are using the example data, you can leave it from 0 to 1024.<br />
+4.-fill the initial guesses for the parameters. Each parameter has a green check icon on its right. Click on it after changing the number to apply this value to every <strong>selected</strong> spectra.<br />
+The CPI_A_xxx.dat series is a series of artificially generated spectra. The values used for generating them are:<br />
+For the CPI_A_xxx.dat spectra you can use the following:<br />
+channel width: 50ps<br />
+FWHM: 270<br />
+Background: 100 (you can either type it manually or use the calculator button on its left to estimate the initial guess from the spectrum)<br />
+offset: 20 (you can either type it manually or use the calculator button on its left to calculate the initial guess from the spectrum)<br />
+3 components: (I am not totally sure about some values righ now, but you can put anything )<br />
+lifetimes 125, 400, ~2000 ps<br />
+intensities: 15, 20, 65 % (but you don't really need to give any initial guess for intensities, just leave the defaults)<br />
+5.- Make sure you have applied all the parameters. You can see this by looking at the table in the &quot;spectra selection&quot; pane. Everything should be green for the selected spectra (including the name). Note that there is an &quot;Apply all&quot; button on the right bottom corner. If you click on it, the current parameters will be applied to every selected spectrum (it is like clicking all the &quot;apply parameters&quot; together).<br />
+6.- Now you can go to the &quot;Fitting&quot; tab. On the right you see two panes, one containing &quot;Commands&quot; and the other containing &quot;Sets&quot;. In the &quot;sets&quot; You should see one set for each spectrum you loaded (each set containing one spectrum only). This is the case unless you chose a common parameter...<br />
+The command table shows the commands that will be executed for each set. You can change the commands manually or simply by choosing a predefined fitting mode from a dropdown list just above (by default, you will see &quot;LOCAL-connected&quot;. LOCAL-Connected emulates the behaviour of LTv9. It means that the fit will use the faster LOCAL algorithm and that the results from the previous fit will be used for initialising the next fit.<br />
+7.-Just for the first test, you can leave things as they are and click on the &quot;play&quot; button at the bottom right of this tab. This should launch the fit. And you should see the progress bars running.<br />
+8.-If everything went ok, you should see the results in the &quot;Results&quot; tab. If the chi2 is in too bad values (maybe infinite), the row should be red.<br />
+9.-Doubleclicking on any cell of the table should show (at the bottom) the residuals of the fit for the spectrum represented in that row.<br />
+10.-The &quot;Output tab&quot; logs (in text mode) all the results. It is useful for troubleshooting. If you want to report problems, you may want to copy and paste the contents of this window.<br />
+Finally, about the different Fitting modes available: there are some predefined fitting modes. You can modify them or include your own. They are simply a set of commands to be run for each set of spectra.<br />
+The commands are:<br />
+SAVE: saves current value of the parameters (to be later read by LOAD)<br />
+LOAD: loads previous results saved with SAVE. If SAVE was not run, it does nothing.<br />
+LOCAL: Performs a local fit.<br />
+SA: Performs a simulated annealing fit (slower than local).<br />
+BI: Performs a Bayesian Inference run (even Slower)<br />
+Note: the behaviour of some of this algorithms can be altered editing the &quot;AdvOpt.py&quot; file, but you can mess things up if you don't know what you are doing.
+    </div>
+  </body>
+</html>
