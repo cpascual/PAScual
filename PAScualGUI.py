@@ -229,6 +229,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.warning_chi2_low=self.settings.value("warning_chi2_low", QVariant(0.6)).toDouble()[0] #TODO: include this in options menu
 		self.warning_chi2_high=self.settings.value("warning_chi2_high", QVariant(1.4)).toDouble()[0] #TODO: include this in options menu
 		self.nextupdatechk=self.settings.value("nextupdatechk", QVariant(0)).toInt()[0] #TODO: include this in options menu
+		self.usermanualdir=None #TODO: include this in options menu
 		self.outputFileName=None
 		
 		#Add connections here
@@ -798,15 +799,12 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 			
 	def onUpdateParamsView(self,dp=None):
 		if dp is None: 
-#			self.parametersTab.setEnabled(False)
 			return
-#		else:self.parametersTab.setEnabled(True) 
 		self.bgFitparWidget.showFitpar(dp.bg)
 		self.c0FitparWidget.showFitpar(dp.c0)
 		self.fwhmFitparWidget.showFitpar(dp.fwhm)
 		if dp.psperchannel is None: self.LEpsperchannel.setText(QString())
 		else: self.LEpsperchannel.setText(QString.number(dp.psperchannel))
-		
 		if dp.taulist is None: 
 			self.SBoxNcomp.setValue(0)
 			return  
@@ -1235,33 +1233,48 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 					
 	def loadParameters(self,dp=None):
 		'''uses a dp to fill the parameters. If no spectra si given, it asks to load a file which is expected to contain a pickled discretepals'''
-		pass #TODO
+		pass #TODO	
 	
-	
-	def showManual(self, offline=False):
-		'''Shows the User Manual in a window'''
-		if offline:url="file:%s/manual/User Manual.html"%os.getcwd()
-		else:url="http://pascual.wiki.sourceforge.net/User+Manual"
-		url=QUrl(url)
-		if not QDesktopServices.openUrl(QUrl(url)):
-			self.showManual_OLD()
+# 	def showManual_in_external_browser(self, offline=False):
+# 		'''Shows the User Manual in a window'''
+# 		localcopy="file:%s/manual/User Manual.html"%os.getcwd()
+# 		onlinecopy="http://pascual.wiki.sourceforge.net/User+Manual"
+# 		if offline:url=localcopy
+# 		else:url=onlinecopy
+# 		if not QDesktopServices.openUrl(QUrl(url)):
+# 			self.showManual()
 		
-	def showManual_OLD(self):
+	def showManual(self):
 		'''Shows the User Manual in a window'''
-# 		import docs_rc
+		onlinecopy="http://pascual.wiki.sourceforge.net/User+Manual"
+		mandir=unicode(self.settings.value("usermanualdir", QVariant(QString("%s/manual"%os.getcwd()))).toString())
+		manfile="User Manual.html"
+		localcopy=unicode("%s/%s"%(mandir,manfile))
+		while not os.path.exists(localcopy):
+			answer=QMessageBox.warning(self, "Manual file not found","""<p>The User Manual could not be found in </p>"""
+														"""<p>%s</p>"""
+														"""<p><b>Change User Manual directory?</b></p>"""
+														"""<p>Note: You can also access manual online at:</p>"""
+														"""<p><a href="%s">%s</p>"""%(os.path.join(mandir),onlinecopy,onlinecopy)
+														,QMessageBox.Yes|QMessageBox.No)
+			if answer==QMessageBox.Yes:
+				mandir=unicode(QFileDialog.getExistingDirectory(self,"Directory of PAScual User Manual?",mandir,QFileDialog.ShowDirsOnly))
+				localcopy=unicode("%s/%s"%(mandir,manfile))
+			else: return
+		self.usermanualdir=mandir
+		self.settings.setValue("usermanualdir",QVariant(QString(self.usermanualdir)))
+		localcopy="file:"+localcopy
 		self.manualBrowser=QDialog()
 		self.manualBrowser.setWindowTitle("PAScual User Manual")
 		manualTB=QTextBrowser()
 		manualTB.setOpenExternalLinks(True)
-		extLinkLabel=QLabel("""For the most up-to-date version of the manual, check the <a href="http://pascual.wiki.sourceforge.net/User+Manual">Online User Manual</a>""")
+		extLinkLabel=QLabel("""For the most up-to-date version of the manual, check the <a href="%s">Online User Manual</a>. You can also <a href="%s">open the local copy in your browser.</a>"""%(onlinecopy,localcopy))
 		extLinkLabel.setOpenExternalLinks(True)
 		layout=QVBoxLayout()
 		layout.addWidget(manualTB)
 		layout.addWidget(extLinkLabel)
-		self.manualBrowser.setLayout(layout)
-# 		url="qrc:/Manual/ExtraStuff/Manual/pascual/User_Manual.html"			 
-		url="file:%s/manual/User Manual.html"%os.getcwd()
-		manualTB.setSource(QUrl(url))
+		self.manualBrowser.setLayout(layout)			 
+		manualTB.setSource(QUrl(localcopy))
 		self.manualBrowser.resize(1000, 400)
 		self.manualBrowser.show()
 		
