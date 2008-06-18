@@ -45,16 +45,18 @@ else:
 ##print '**Required for PAScualGUI.py'
 
 print '\nPyQt...',
-try: import PyQt4 as t4
+try: 
+	import PyQt4.QtCore as t4
+	import PyQt4.QtGui as t4b
 except:	print "Failed"
 else: 
-	print 'ok, version:','??'
+	print 'ok, version:',t4.PYQT_VERSION_STR
 
 print '\nPyQwt...',
 try: import PyQt4.Qwt5 as t5
 except:	print "Failed"
 else: 
-	print 'ok, version:','??'
+	print 'ok, version:',t5.QWT_VERSION_STR
 
 print '\n\nTesting PAScual.py',
 try: import PAScual as t6

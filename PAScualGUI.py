@@ -52,7 +52,7 @@ import SpecFiles
 
 # import AdvOpt as advopt
 
-__version__="1.2.0"
+__version__="1.3.0"
 __homepage__="http://pascual.sourceforge.net"
 __citation__="C. Pascual-Izarra et al., <i>Characterisation of Amphiphile Self-Assembly Materials using Positron Annihilation Lifetime Spectroscopy (PALS)-Part1: Advanced Fitting Algorithms for Data Analysis</i>, Journal of Physical Chemistry B,  [in review], 2008. <p>see %s for up-to-date information about citing</p>"%__homepage__
 
@@ -739,6 +739,18 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 	
 	def sumspectra(self):
 		'''Sums the checked spectra and offers to save them. It inserts the sum in the list'''
+		#TODO: needs more work on interface
+		#Todo: implement Duplatre's suggestion on fitting with non-poisson noise from splitted spectra:
+		#	Introduce take into account non-poisson noise
+		#	This solves issues with the short lifetime artifacts
+		#	split acq in 500k counts spectra.
+		#	find stdev of each channel among the chunks
+		#	find the ratio of real stdev to poisson error of the average spectrum
+		#	apply the ratio to the deltaexp vector when analysing each spectrum.
+		#alternatively... (think about this):
+		#   take s1,s2,...sn: construct a spectrum with exp=mean(s1.exp, s2.exp,...) and deltaexp=stdev(s1.exp,s2.exp,...) (channel by channel) 
+		#another possibility:
+		#   Fit s1,s2,sn,...them all simultaneously with ALL parameters common putting deltaexp=nonpoissonratio*poisson for each of them
 		selected,indexes=self.spectraModel.getselectedspectra()
 		if len(selected)<2:return
 		dpsum=copy.deepcopy(selected[0])
