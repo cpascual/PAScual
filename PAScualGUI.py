@@ -1189,7 +1189,9 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 	def onParamWizard(self):
 		'''Launches the wizard and applies changes afterwards'''
 		selected,indexes=self.spectraModel.getselectedspectra()
-		if selected == []: return
+		if selected == []:
+			QMessageBox.warning(self, "No spectrum selected","""No spectrum is selected. The Wizard applies to selected spectra only""")
+			return
 		#Reset the selected list and launch the wizard
 		self.paramWizard.restart()
 		self.paramWizard.setSelected(selected)
