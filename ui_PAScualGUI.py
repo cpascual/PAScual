@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Documents and Settings\pas064\My Documents\src\PAScual-dev\PAScualGUI.ui'
 #
-# Created: Wed Jun 18 03:48:06 2008
+# Created: Mon Jun 23 15:53:43 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -602,6 +602,12 @@ class Ui_PAScual(object):
 
     def retranslateUi(self, PAScual):
         PAScual.setWindowTitle(QtGui.QApplication.translate("PAScual", "PAScual", None, QtGui.QApplication.UnicodeUTF8))
+        self.tabWidget.setToolTip(QtGui.QApplication.translate("PAScual", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">If checked, the output for the next fit will be saved automatically.</span></p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\">The output is appended, so the previous information is not overwritten.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setWhatsThis(QtGui.QApplication.translate("PAScual", "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal; text-decoration:none;\">\n"
@@ -639,8 +645,17 @@ class Ui_PAScual(object):
         self.applyAllParametersPB.setText(QtGui.QApplication.translate("PAScual", "Apply All", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.parametersTab), QtGui.QApplication.translate("PAScual", "Parameters", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox.setTitle(QtGui.QApplication.translate("PAScual", "Commands", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_8.setToolTip(QtGui.QApplication.translate("PAScual", "Number of spectra that are not assigned to any set (i.e., not yet ready for fitting)", None, QtGui.QApplication.UnicodeUTF8))
         self.label_8.setText(QtGui.QApplication.translate("PAScual", "Unasigned:", None, QtGui.QApplication.UnicodeUTF8))
+        self.unasignedLE.setToolTip(QtGui.QApplication.translate("PAScual", "Number of spectra that are not assigned to any set (i.e., not yet ready for fitting)", None, QtGui.QApplication.UnicodeUTF8))
+        self.applyFitModeBT.setToolTip(QtGui.QApplication.translate("PAScual", "Apply currently selected Fit Mode", None, QtGui.QApplication.UnicodeUTF8))
         self.applyFitModeBT.setText(QtGui.QApplication.translate("PAScual", "Apply Fit Mode", None, QtGui.QApplication.UnicodeUTF8))
+        self.selectedSetsOnlyCB.setToolTip(QtGui.QApplication.translate("PAScual", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\">Apply fit mode <span style=\" font-weight:600;\">only</span> to selected sets.</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\">If not checked, the changes are applied to all sets.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.selectedSetsOnlyCB.setText(QtGui.QApplication.translate("PAScual", "To Selected Only", None, QtGui.QApplication.UnicodeUTF8))
         self.setsTree.setToolTip(QtGui.QApplication.translate("PAScual", "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
@@ -663,8 +678,11 @@ class Ui_PAScual(object):
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">Save the Fit Mode</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.saveFitmodeBT.setText(QtGui.QApplication.translate("PAScual", "...", None, QtGui.QApplication.UnicodeUTF8))
         self.groupBox_2.setTitle(QtGui.QApplication.translate("PAScual", "Execution", None, QtGui.QApplication.UnicodeUTF8))
+        self.goFitBT.setToolTip(QtGui.QApplication.translate("PAScual", "Launch the fit", None, QtGui.QApplication.UnicodeUTF8))
         self.goFitBT.setText(QtGui.QApplication.translate("PAScual", "...", None, QtGui.QApplication.UnicodeUTF8))
+        self.skipCommandBT.setToolTip(QtGui.QApplication.translate("PAScual", "Skip current fit", None, QtGui.QApplication.UnicodeUTF8))
         self.skipCommandBT.setText(QtGui.QApplication.translate("PAScual", "...", None, QtGui.QApplication.UnicodeUTF8))
+        self.stopFitBT.setToolTip(QtGui.QApplication.translate("PAScual", "Stop all fits", None, QtGui.QApplication.UnicodeUTF8))
         self.stopFitBT.setText(QtGui.QApplication.translate("PAScual", "...", None, QtGui.QApplication.UnicodeUTF8))
         self.label_7.setText(QtGui.QApplication.translate("PAScual", "Total", None, QtGui.QApplication.UnicodeUTF8))
         self.label_6.setText(QtGui.QApplication.translate("PAScual", "Set", None, QtGui.QApplication.UnicodeUTF8))
@@ -683,6 +701,7 @@ class Ui_PAScual(object):
         self.resultsTable.setRowCount(0)
         self.label_9.setText(QtGui.QApplication.translate("PAScual", "Results File", None, QtGui.QApplication.UnicodeUTF8))
         self.resultsFileLE.setText(QtGui.QApplication.translate("PAScual", "PASlog.txt", None, QtGui.QApplication.UnicodeUTF8))
+        self.resultsFileSelectBT.setToolTip(QtGui.QApplication.translate("PAScual", "Select a different file name", None, QtGui.QApplication.UnicodeUTF8))
         self.resultsFileSelectBT.setText(QtGui.QApplication.translate("PAScual", "...", None, QtGui.QApplication.UnicodeUTF8))
         self.saveResultsBT.setToolTip(QtGui.QApplication.translate("PAScual", "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"

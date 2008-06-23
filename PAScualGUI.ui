@@ -46,6 +46,14 @@
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
+      <property name="toolTip" >
+       <string>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" font-size:8pt;">If checked, the output for the next fit will be saved automatically.&lt;/span>&lt;/p>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;">The output is appended, so the previous information is not overwritten.&lt;/p>&lt;/body>&lt;/html></string>
+      </property>
       <property name="whatsThis" >
        <string>&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
 p, li { white-space: pre-wrap; }
@@ -377,6 +385,9 @@ p, li { white-space: pre-wrap; }
              </property>
              <item>
               <widget class="QLabel" name="label_8" >
+               <property name="toolTip" >
+                <string>Number of spectra that are not assigned to any set (i.e., not yet ready for fitting)</string>
+               </property>
                <property name="text" >
                 <string>Unasigned:</string>
                </property>
@@ -395,6 +406,9 @@ p, li { white-space: pre-wrap; }
                  <width>30</width>
                  <height>0</height>
                 </size>
+               </property>
+               <property name="toolTip" >
+                <string>Number of spectra that are not assigned to any set (i.e., not yet ready for fitting)</string>
                </property>
                <property name="readOnly" >
                 <bool>true</bool>
@@ -426,6 +440,9 @@ p, li { white-space: pre-wrap; }
              </property>
              <item>
               <widget class="QToolButton" name="applyFitModeBT" >
+               <property name="toolTip" >
+                <string>Apply currently selected Fit Mode</string>
+               </property>
                <property name="text" >
                 <string>Apply Fit Mode</string>
                </property>
@@ -440,6 +457,14 @@ p, li { white-space: pre-wrap; }
              </item>
              <item>
               <widget class="QCheckBox" name="selectedSetsOnlyCB" >
+               <property name="toolTip" >
+                <string>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;">Apply fit mode &lt;span style=" font-weight:600;">only&lt;/span> to selected sets.&lt;/p>
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;">If not checked, the changes are applied to all sets.&lt;/p>&lt;/body>&lt;/html></string>
+               </property>
                <property name="text" >
                 <string>To Selected Only</string>
                </property>
@@ -550,6 +575,9 @@ p, li { white-space: pre-wrap; }
              </property>
              <item>
               <widget class="QToolButton" name="goFitBT" >
+               <property name="toolTip" >
+                <string>Launch the fit</string>
+               </property>
                <property name="text" >
                 <string>...</string>
                </property>
@@ -561,6 +589,9 @@ p, li { white-space: pre-wrap; }
              </item>
              <item>
               <widget class="QToolButton" name="skipCommandBT" >
+               <property name="toolTip" >
+                <string>Skip current fit</string>
+               </property>
                <property name="text" >
                 <string>...</string>
                </property>
@@ -572,6 +603,9 @@ p, li { white-space: pre-wrap; }
              </item>
              <item>
               <widget class="QToolButton" name="stopFitBT" >
+               <property name="toolTip" >
+                <string>Stop all fits</string>
+               </property>
                <property name="text" >
                 <string>...</string>
                </property>
@@ -740,6 +774,9 @@ p, li { white-space: pre-wrap; }
           </item>
           <item>
            <widget class="QToolButton" name="resultsFileSelectBT" >
+            <property name="toolTip" >
+             <string>Select a different file name</string>
+            </property>
             <property name="text" >
              <string>...</string>
             </property>

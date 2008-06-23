@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Documents and Settings\pas064\My Documents\src\PAScual-dev\AdvOptions.ui'
 #
-# Created: Wed Jun 18 03:48:06 2008
+# Created: Mon Jun 23 15:53:42 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
