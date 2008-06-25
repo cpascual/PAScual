@@ -209,8 +209,8 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.residualsFrame.setLayout(reslayout)
 		
 		#fitmodes
-		self.fitmodesdict=defaultFitModesDict #global dict storing hardcoded default FitModes
-		self.fitModeFileName=unicode(self.settings.value("fitModeFileName", QVariant(QString("fitmode.pck"))).toString())
+		self.fitmodesdict=copy.deepcopy(defaultFitModesDict) #global dict storing hardcoded default FitModes
+		self.fitModeFileName=unicode(self.settings.value("fitModeFileName", QVariant(QString("CustomFitmodes.pck"))).toString())
 		self.fitmodesdict.update(self.loadCustomFitModes(self.fitModeFileName))
 		self.fitModeCB.insertItems(0,sorted(self.fitmodesdict.keys()))
 		self.commandsModel=CMDTMV.CommandTableModel()
@@ -435,18 +435,15 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		fmname='<user>'
 		self.fitmodesdict[fmname]=tuple(["%s %s"%(c.cmd,c.args) for c in self.commandsModel.dumpData()])
 		self.fitModeCB.setCurrentIndex(self.fitModeCB.findText(fmname))
-		#TODO: add to the combobox and enable the save button
 		self.saveFitmodeBT.setEnabled(True) 
 		self.assignFitModes()
 		
-	def saveFitMode(self): #TODO: 
-		self.notImplementedWarning('saving fitmodes')
-		return
-		#TODO: finish and check (missing insert in self.fitModeCB)
-		(fmname,ok)= QInputDialog.getText (self,"Name?", "Name of custom Fit Mode:", QLineEdit.Normal, u"",  Qt.Dialog)
+	def saveFitMode(self):
+		fmname=unicode(QInputDialog.getText (self,"Name?", "Name of custom Fit Mode:", QLineEdit.Normal, u"",  Qt.Dialog)[0])
+		self.fitModeCB.addItem(fmname)
 		#copy the <user> entry under a different name and restore the original value of the <user> fit mode
 		self.fitmodesdict[fmname]=copy.deepcopy(self.fitmodesdict['<user>'])
-		self.fitmodesdict['<user>']=defaultFitModesDict['<user>']
+		self.fitmodesdict['<user>']=copy.deepcopy(defaultFitModesDict['<user>'])
 		pickle.dump(self.fitmodesdict,open(self.fitModeFileName,'wb'),-1)
 		
 	def onFitterFinished(self,completed):
