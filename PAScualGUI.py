@@ -20,7 +20,7 @@
 #TODO: Add a reverse selection button to the Spectra selection list
 #TODO: (General) implement load/save of discretepals and of palssets
 #TODO: (General) save queue to file before starting and delete file when finished. Check for existence of old files indicating unfinished calcs and offer resume.
-#TODO: (General) implement summary view of sets. A list containing which sets with which spectra each, which fitmode and nuber of free parameters and names of common parameters
+#TODO: (General) implement summary view of sets. A list containing which sets with which spectra each, which fitmode and number of free parameters and names of common parameters
 #TODO: (General) (UPDATE: after v9.9 this seems no longer an issue) . Make more robust localmin (this is to PAScual.py) possibly use pre-fit with leastsq and poor convergence criterion, if that fails, go to pre-fit with bruteforce.
 #TODO: (General) make more robust SA (this is to PAScual.py) possibly using resets to best fits
 #TODO: (General) implement plot from columns in results table 
@@ -49,6 +49,7 @@ import SpectraTableMV as STMV
 import CommandsTableMV as CMDTMV
 import PASCommandProcess as PCP
 import SpecFiles
+import PASoptions
 
 # import AdvOpt as advopt
 
@@ -222,15 +223,15 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.previousOutputDict={}
 		self.previousOutputTE.hide()
 		
+		
 		#Other, misc
+		self.optionsDlg=None
 		self.LEpsperchannel.setValidator(QDoubleValidator(0,S.inf,3,self)) #add validator to the psperchannel edit	
 		self.resultsTable.addActions([self.actionCopy_Results_Selection,self.actionSave_results_as]) #context menu
 		self.outputWriteMode=unicode(self.settings.value("outputWriteMode", QVariant(QString("a"))).toString()) #get user prefs regarding the output file management #TODO: include this in options menu
-		self.warning_chi2_low=self.settings.value("warning_chi2_low", QVariant(0.6)).toDouble()[0] #TODO: include this in options menu
-		self.warning_chi2_high=self.settings.value("warning_chi2_high", QVariant(1.4)).toDouble()[0] #TODO: include this in options menu
 		self.nextupdatechk=self.settings.value("nextupdatechk", QVariant(0)).toInt()[0] #TODO: include this in options menu
-		self.usermanualdir=None #TODO: include this in options menu
 		self.outputFileName=None
+		
 		
 		#Add connections here
 		QObject.connect(self.actionLoad_Spectra,SIGNAL("triggered()"),self.loadSpectra)
@@ -248,6 +249,9 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		QObject.connect(self.actionSave_Output_as,SIGNAL("triggered()"),self.onSaveOutput_as)
 		QObject.connect(self.actionCheck_for_Updates,SIGNAL("triggered()"),lambda: self.check_for_Updates(force=True))
 		QObject.connect(self.actionParamWizard,SIGNAL("triggered()"),self.onParamWizard)
+		QObject.connect(self.actionOptions,SIGNAL("triggered()"),self.onOptions)
+		QObject.connect(self.actionLoad_Parameters,SIGNAL("triggered()"),self.notImplementedWarning)
+		QObject.connect(self.actionSave_Parameters,SIGNAL("triggered()"),self.notImplementedWarning)
 		
 #		QObject.connect(self.actionSaveResults,SIGNAL("triggered()"),self.onSaveResults)
 		QObject.connect(self.spectraTable,SIGNAL("doubleClicked(QModelIndex)"),self.onSpectraTableDoubleClick)
@@ -297,14 +301,31 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		
 		#Launch low-priority initializations (to speed up load time)
 		QTimer.singleShot(0, self.createParamWizard) #create the parameters Wizard
+		QTimer.singleShot(0, self.loadOptions) #create the Options dialog
 		QTimer.singleShot(0, self.createOpenFilesDlg) #create the OpenFiles dialog
 		QTimer.singleShot(0, self.check_for_Updates) #Manage autocheck updates
 	
-	def notImplementedWarning(self, featurename=''):
+	def notImplementedWarning(self, featurename=None):
 		if featurename is None: featurename='this function'
 		return QMessageBox.warning(self, "Not implemented","Sorry, %s is not yet implemented"%featurename)
 		
-	
+	def loadOptions(self):
+		'''create the self.options object from values stored in the settings'''
+		self.options=PASoptions.Options()
+		for opt,dflt in zip(self.options.optlist,self.options.dfltlist):
+			if isinstance(dflt,(str,unicode)): 
+				setattr(self.options,opt,unicode(self.settings.value('Options/'+opt,QVariant(QString(dflt))).toString()))
+			elif isinstance(dflt,float):
+				setattr(self.options,opt,self.settings.value('Options/'+opt,QVariant(dflt)).toDouble()[0])
+			elif isinstance(dflt,bool):
+				setattr(self.options,opt,self.settings.value('Options/'+opt,QVariant(dflt)).toBool())
+			elif isinstance(dflt,int):
+				setattr(self.options,opt,self.settings.value('Options/'+opt,QVariant(dflt)).toInt()[0])
+			else:
+				raise ValueError('unsupported type in option "%s"'%dflt)
+# 			print 'DEBUG:',opt,dflt,getattr(self.options,opt),type(dflt),type(getattr(self.options,opt))					
+		S.random.seed(self.options.seed) #Seeding the random generators. 
+		
 	def createParamWizard(self):
 		from ParamWizard import ParamWizard
 		self.paramWizard = ParamWizard(None)
@@ -320,15 +341,28 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 												'MAESTRO':SpecFiles.MAESTROfileLoader('MAESTRO') } #instantiate file loaders and put them in a dict belonging to the OpenFile dialog
 		self.openFilesDlg.specFileLoaderDict['ASCII-custom'].needExtraInput=True #makes
 		filefilters=["%s (%s)"%(self.openFilesDlg.specFileLoaderDict[k].name,self.openFilesDlg.specFileLoaderDict[k].filenamefilter) for k in sorted(self.openFilesDlg.specFileLoaderDict.keys())]
-		WorkDirectory= self.settings.value("WorkDirectory", QVariant(QDir.homePath())).toString()
 		self.openFilesDlg.setFileMode(QFileDialog.ExistingFiles)
 		self.openFilesDlg.setViewMode(QFileDialog.Detail )
 		self.openFilesDlg.setFilters(filefilters)
-		self.openFilesDlg.setDirectory(WorkDirectory)	
+		self.openFilesDlg.setDirectory(self.options.workDirectory)	
 		self.outputWriteMode=unicode(self.settings.value("outputWriteMode", QVariant(QString("a"))).toString())
 		selectedfilter=self.settings.value("openfilefilter", QVariant(QString(self.openFilesDlg.specFileLoaderDict['ASCII'].name))).toString()
 		self.openFilesDlg.selectFilter(selectedfilter)
-				
+	
+	def onOptions(self):
+		'''Shows the options dialog and saves any changes if accepted'''
+		if self.optionsDlg is None: self.optionsDlg=PASoptions.OptionsDlg(self) #create the dialog if not already done
+		#make sure that the Dlg is in sync with the options
+		self.optionsDlg.setOptions(self.options)
+		#launch the options dialog
+		if self.optionsDlg.exec_():
+			self.options=self.optionsDlg.getOptions()#get the options from the dialog
+			for opt in self.options.optlist:  #store the option as settings
+				val=getattr(self.options,opt)
+				if isinstance(val,(str,unicode)):val=QString(val) #convert python strings to QStrings
+				self.settings.setValue("Options/"+opt,QVariant(val))
+		else: self.optionsDlg.setOptions(self.options) #reset previous options							
+		
 	def copy_Results_Selection(self):
 		'''copies the selected results to the clipboard'''
 		string=''
@@ -341,10 +375,9 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 					else:string+='\t%s'%self.resultsTable.item(i,j).text()
 					emptyrow=False
 		QApplication.clipboard().setText(string.strip())
-#		print string.strip()	
 
 	def onResultsFileSelectBT(self):
-		filename=QFileDialog.getSaveFileName ( self, "Results File Selection", self.openFilesDlg.directory().path()+'/PASresults.txt',
+		filename=QFileDialog.getSaveFileName ( self, "Results File Selection", self.options.workDirectory+'/PASresults.txt',
 											"ASCII (*.txt)"+
 											"All (*)",'',QFileDialog.DontConfirmOverwrite)
 		if filename: self.resultsFileLE.setText(filename)
@@ -355,7 +388,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 			QMessageBox.warning(self, "Cannot save unfinished fit","You can only save the output from finished fits. Output won't be written\n Select a different output from the list.")
 			return
 		if ofile is None: #if a file is not given, prompt the user for a file name
-			if self.outputFileName is None: self.outputFileName=self.openFilesDlg.directory().path()+'/PASoutput.txt' #set default file name
+			if self.outputFileName is None: self.outputFileName=self.options.workDirectory+'/PASoutput.txt' #set default file name
 			ofile=QFileDialog.getSaveFileName (self, "Output File Selection", self.outputFileName,"ASCII (*.txt)\nAll (*)",'',QFileDialog.DontConfirmOverwrite)
 			if not ofile: return #failed to get a valid filename
 		
@@ -435,8 +468,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 				self.resultsdplist.append(dp) 
 				self.resultsTable.insertRow(row)
 				rowitems=(dp.showreport_1row(file=None, min_ncomp=self.results_min_ncomp,silent=True)).split()
-#				print "DEBUG:", self.warning_chi2_low,dp.chi2,self.warning_chi2_high
-				if (self.warning_chi2_low<dp.chi2/dp.dof<self.warning_chi2_high): bgbrush=QBrush(Qt.white) #is chi2 value ok?
+				if (self.options.warning_chi2_low<dp.chi2/dp.dof<self.options.warning_chi2_high): bgbrush=QBrush(Qt.white) #is chi2 value ok?
 				else: bgbrush=QBrush(Qt.red) #highlight if chi2 is out of normal values
 				for c,s in zip(range(len(rowitems)),rowitems):
 					item=QTableWidgetItem(s)
@@ -487,7 +519,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 			self.setPBar.setMaximum(len(ps.commands))
 			self.totalPBar.setValue(-len(self.fitqueuekeys)-1)
 			#start a new fit
-			self.fitter.initialize(ps,self.outputfile)
+			self.fitter.initialize(ps,self.outputfile,self.options)
 			self.fitter.start()
 			#Show message in status Bar
 			self.statusbar.showMessage("Fitting %s..."%ps.name, 0) 
@@ -680,9 +712,6 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.settings.setValue("MainWindow/State",QVariant(self.saveState()))
 		self.settings.setValue("fitModeFileName",QVariant(QString(self.fitModeFileName)))
 		self.settings.setValue("outputWriteMode",QVariant(QString(self.outputWriteMode)))
-		self.settings.setValue("WorkDirectory",QVariant(self.openFilesDlg.directory().path()))
-		self.settings.setValue("warning_chi2_low",QVariant(self.warning_chi2_low)) 
-		self.settings.setValue("warning_chi2_high",QVariant(self.warning_chi2_high))
 		self.settings.setValue("nextupdatechk", QVariant(self.nextupdatechk))
 		self.settings.setValue("openfilefilter",QVariant(self.openFilesDlg.selectedFilter()))
 		
@@ -1012,7 +1041,10 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 	def loadSpectra(self):
 		#Todo: do an inteligent identification of files (LT header present?) possibly also get data from the LT header (psperchannel and fwhm)
 		fileNames=[]
-		if not self.openFilesDlg.exec_(): return		
+		self.openFilesDlg.setDirectory (self.options.workDirectory)
+		if not self.openFilesDlg.exec_(): return
+		self.options.workDirectory=self.openFilesDlg.directory().path() #update the working directory
+		self.settings.setValue("Options/workDirectory",QVariant(self.options.workDirectory)) #save the new working directory
 		fileNames = [unicode(item) for item in self.openFilesDlg.selectedFiles()]
 		dps=[]
 		answer=None
@@ -1068,7 +1100,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 	def savespectrum(self,spectrum, filename=None, columns=1, fileformat=None):
 		#TODO: save in different formats
 		if filename is None:
-			filename=unicode(self.openFilesDlg.directory().path())+'/'+spectrum.name+'.dat'
+			filename=unicode(self.options.workDirectory)+'/'+spectrum.name+'.dat'
 # 			filename=unicode(QFileDialog.getSaveFileName ( self, "Save spectrum", filename,
 # 														"LT files (*.dat *.txt *.al2 *.chn)\n"+
 # 														"L80 files (*.l80)\n"+
@@ -1151,7 +1183,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 				taulist.append(fitpar(val=cp.tau.val, name='Tau%i'%(j+1), minval=cp.tau.minval, maxval=cp.tau.maxval, free=cp.tau.free))
 				itylist.append(fitpar(val=cp.ity.val, name='Ity%i'%(j+1), minval=cp.ity.minval, maxval=cp.ity.maxval, free=cp.ity.free))
 		except(ValueError):
-			QMessageBox.warning(self, "Input error","Incomplete or bad values for the parameters. Simulation aborted")
+			QMessageBox.warning(self, "Input error","Incomplete or bad values for the parameters.\nFill the parameters fields with the desired values\nSimulation aborted")
 			self.statusbar.showMessage("Simulation aborted", 0) 
 			return
 		if area is None: 
@@ -1249,35 +1281,10 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		'''uses a dp to fill the parameters. If no spectra si given, it asks to load a file which is expected to contain a pickled discretepals'''
 		pass #TODO	
 	
-# 	def showManual_in_external_browser(self, offline=False):
-# 		'''Shows the User Manual in a window'''
-# 		localcopy="file:%s/manual/User Manual.html"%os.getcwd()
-# 		onlinecopy="http://pascual.wiki.sourceforge.net/User+Manual"
-# 		if offline:url=localcopy
-# 		else:url=onlinecopy
-# 		if not QDesktopServices.openUrl(QUrl(url)):
-# 			self.showManual()
-		
 	def showManual(self):
 		'''Shows the User Manual in a window'''
 		onlinecopy="http://pascual.wiki.sourceforge.net/User+Manual"
-		mandir=unicode(self.settings.value("usermanualdir", QVariant(QString("%s/manual"%os.getcwd()))).toString())
-		manfile="User Manual.html"
-		localcopy=unicode("%s/%s"%(mandir,manfile))
-		while not os.path.exists(localcopy):
-			answer=QMessageBox.warning(self, "Manual file not found","""<p>The User Manual could not be found in </p>"""
-														"""<p>%s</p>"""
-														"""<p><b>Change User Manual directory?</b></p>"""
-														"""<p>Note: You can also access manual online at:</p>"""
-														"""<p><a href="%s">%s</p>"""%(os.path.join(mandir),onlinecopy,onlinecopy)
-														,QMessageBox.Yes|QMessageBox.No)
-			if answer==QMessageBox.Yes:
-				mandir=unicode(QFileDialog.getExistingDirectory(self,"Directory of PAScual User Manual?",mandir,QFileDialog.ShowDirsOnly))
-				localcopy=unicode("%s/%s"%(mandir,manfile))
-			else: return
-		self.usermanualdir=mandir
-		self.settings.setValue("usermanualdir",QVariant(QString(self.usermanualdir)))
-		localcopy="file:"+localcopy
+		localcopy="file:"+self.options.manualFile
 		self.manualBrowser=QDialog()
 		self.manualBrowser.setWindowTitle("PAScual User Manual")
 		manualTB=QTextBrowser()
@@ -1288,9 +1295,19 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		layout.addWidget(manualTB)
 		layout.addWidget(extLinkLabel)
 		self.manualBrowser.setLayout(layout)			 
-		manualTB.setSource(QUrl(localcopy))
 		self.manualBrowser.resize(1000, 400)
-		self.manualBrowser.show()
+		self.manualBrowser.show()	
+		if os.path.exists(self.options.manualFile):
+			manualTB.setSource(QUrl(localcopy))
+		else:
+			errormessage="""<h1> ERROR: User Manual File not found</h1>
+							<p> Check the setting at:</p>
+							<p>Tools--&gt;options--&gt;Path--&gt;Manual</p>"""
+			manualTB.setText(errormessage)	
+
+			
+
+
 		
 	def helpAbout(self):
 		QMessageBox.about(self, "About PAScual",
@@ -1318,22 +1335,16 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 						
 						    <p>This program is free software: you can redistribute it and/or modify
 						    it under the terms of the GNU General Public License as published by
-						    the Free Software Foundation, either 
-						    <a href='http://www.gnu.org/licenses/old-licenses/gpl-2.0.html'> version 2</a> 
-						    of the License, or (at your option) any <a href='http://www.gnu.org/licenses/gpl.html'>later version</a>.
-						
+						    the Free Software Foundation, either version 3 of the License, or
+						    (at your option) any later version.
+
 						    <p>This program is distributed in the hope that it will be useful,
 						    but WITHOUT ANY WARRANTY; without even the implied warranty of
 						    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 						    GNU General Public License for more details.
-						
+
 						    <p>You should have received a copy of the GNU General Public License
-						    along with this program.  If not, see <a href='http://www.gnu.org/licenses/'> http://www.gnu.org/licenses/</a>
-						    
-						    <p><b>Note:</b> Regardless of what version of the license you choose for PAScual, 
-						    you may still be subject to the conditions of the licenses of the libraries
-						    from PAScual. For example, note that if you use the GPLv2-only version of TrollTech QT,
-						    you may not have other option than to accept the GPLv2 for PAScual as well.	
+						    along with this program.  If not, see  <a href='http://www.gnu.org/licenses/'> http://www.gnu.org/licenses/</a>.
 						    
 						    <p><b>Important:</b> If you use PAScual for your research, please cite:
 						    <p>%s

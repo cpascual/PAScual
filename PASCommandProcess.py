@@ -23,7 +23,6 @@
 import copy
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import AdvOpt as advopt
 from PAScual import printwarning
 import cPickle as pickle
 
@@ -38,10 +37,11 @@ class fitter(QThread):
 		self.completed = False
 		self.saveslot=self.saveslot_auto=self.saveslot_user=None
 	
-	def initialize(self, ps, outputfile, warningslog=[]):
+	def initialize(self, ps, outputfile, options, warningslog=[]):
 		self.stopped = False
 		self.ps = ps
 		self.outputfile=outputfile
+		self.options=options
 		self.completed = False
 		self.warningslog=warningslog
 		
@@ -73,7 +73,7 @@ class fitter(QThread):
 			#SA command	
 			if cmd=='SA':
 				print '\n********* Performing Simulated Annealing **************\n'
-				ps.simann(minaccratio=0.1, direct=advopt.SA_direct, stopT=advopt.SA_stopT, maxiter=advopt.SA_maxiter, tolerance=advopt.SA_tol, meltratio=advopt.SA_meltratio)
+				ps.simann(minaccratio=self.options.SA_minaccratio, direct=self.options.SA_direct, stopT=self.options.SA_stopT, maxiter=self.options.SA_maxiter, tolerance=self.options.SA_tol, meltratio=self.options.SA_meltratio)
 			elif cmd=='LOCAL':
 				print '\n********* Performing Local search **************\n'
 				if args:
@@ -81,14 +81,14 @@ class fitter(QThread):
 					forcelimits=(args!='NOLIMITS')
 				else: forcelimits=True
 				temp=copy.deepcopy(ps)
-				try: ps.localmin(maxunbound=advopt.LOCAL_maxunbound, ireport=True, forcelimits=forcelimits)
+				try: ps.localmin(maxunbound=self.options.LOCAL_maxUnbound, ireport=True, forcelimits=forcelimits)
 				except ValueError: 
 					self.warningslog+=printwarning("LOCAL minimisation of %s failed. Skipping!"%ps.name)
 					ps=temp #recovering original from backup
 			#BI command	
 			elif cmd=='BI'	:
 				print '\n********* Performing Bayesian Inference **************\n'
-				ps.BI(LM=advopt.BI_length, stabilisation=advopt.BI_stab, ireport=advopt.BI_report,iemit=1, savehist=advopt.BI_savehist)
+				ps.BI(LM=self.options.BI_length, stabilisation=self.options.BI_stab, ireport=self.options.BI_report,iemit=1, savehist=self.options.BI_savehist)
 			#LOAD command
 			elif cmd=='LOAD':
 				print '\n********* Loading previous results **************\n'

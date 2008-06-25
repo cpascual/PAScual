@@ -1,5 +1,10 @@
 <RCC>
   <qresource prefix="/Icons" >
+    <file>icons/mine/agt_update_recommended.png</file>
+    <file>icons/mine/package_editors.png</file>
+    <file>icons/mine/kspread.png</file>
+    <file>icons/mine/khelpcenter.png</file>
+    <file>icons/mine/advancedsettings.png</file>
     <file>icons/mine/TaoEldrup32x32.png</file>
     <file>icons/mine/Wizard.png</file>
     <file>Icons/mine/CRbutton_ok.png</file>
@@ -22,5 +27,4 @@
     <file>Icons/mine/yellowbullet.png</file>
     <file>icons/mine/TaoEldrup64x64.png</file>
   </qresource>
-  <qresource prefix="/new/prefix1" />
 </RCC>

@@ -1006,6 +1006,8 @@ p, li { white-space: pre-wrap; }
     <addaction name="actionParamWizard" />
     <addaction name="separator" />
     <addaction name="actionCheck_for_Updates" />
+    <addaction name="separator" />
+    <addaction name="actionOptions" />
    </widget>
    <addaction name="menuFile" />
    <addaction name="menuView" />
@@ -1298,11 +1300,16 @@ p, li { white-space: pre-wrap; }
     <bool>false</bool>
    </attribute>
    <addaction name="actionLoad_Spectra" />
+   <addaction name="separator" />
+   <addaction name="actionSimulate_spectrum" />
    <addaction name="actionSum_Spectra" />
    <addaction name="actionTao_Eldrup_Calculator" />
    <addaction name="actionParamWizard" />
    <addaction name="separator" />
+   <addaction name="actionOptions" />
+   <addaction name="separator" />
    <addaction name="actionWhat_s_This" />
+   <addaction name="actionManual" />
    <addaction name="actionAbout" />
   </widget>
   <action name="actionLoad_Spectra" >
@@ -1371,11 +1378,19 @@ p, li { white-space: pre-wrap; }
    </property>
   </action>
   <action name="actionManual" >
+   <property name="icon" >
+    <iconset resource="PAScual.qrc" >
+     <normaloff>:/Icons/icons/mine/khelpcenter.png</normaloff>:/Icons/icons/mine/khelpcenter.png</iconset>
+   </property>
    <property name="text" >
     <string>Manual</string>
    </property>
   </action>
   <action name="actionLicense" >
+   <property name="icon" >
+    <iconset resource="PAScual.qrc" >
+     <normaloff>:/Icons/icons/mine/package_editors.png</normaloff>:/Icons/icons/mine/package_editors.png</iconset>
+   </property>
    <property name="text" >
     <string>License</string>
    </property>
@@ -1395,6 +1410,10 @@ p, li { white-space: pre-wrap; }
    </property>
   </action>
   <action name="actionSimulate_spectrum" >
+   <property name="icon" >
+    <iconset resource="PAScual.qrc" >
+     <normaloff>:/Icons/icons/mine/kspread.png</normaloff>:/Icons/icons/mine/kspread.png</iconset>
+   </property>
    <property name="text" >
     <string>Simulate spectrum</string>
    </property>
@@ -1430,6 +1449,10 @@ p, li { white-space: pre-wrap; }
    </property>
   </action>
   <action name="actionCheck_for_Updates" >
+   <property name="icon" >
+    <iconset resource="PAScual.qrc" >
+     <normaloff>:/Icons/icons/mine/agt_update_recommended.png</normaloff>:/Icons/icons/mine/agt_update_recommended.png</iconset>
+   </property>
    <property name="text" >
     <string>Check for Updates</string>
    </property>
@@ -1441,6 +1464,15 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="text" >
     <string>Wizard (parameters)</string>
+   </property>
+  </action>
+  <action name="actionOptions" >
+   <property name="icon" >
+    <iconset resource="PAScual.qrc" >
+     <normaloff>:/Icons/icons/mine/advancedsettings.png</normaloff>:/Icons/icons/mine/advancedsettings.png</iconset>
+   </property>
+   <property name="text" >
+    <string>Options...</string>
    </property>
   </action>
  </widget>

@@ -43,7 +43,7 @@ except:
 class aborthelper(object):
 	'''A class that provides a method for requesting the calculation to finish'''
 	def abortRequested(self): 
-		'''This is a dummy function that can be overwriten by an external module that wants to stop a calculation in the middle.
+		'''This is a dummy function that can be overwritten by an external module that wants to stop a calculation in the middle.
 		Note: do not reimplement the method definition in the class. Do it in a specific instance instead.'''
 		return False
 
@@ -107,7 +107,7 @@ def objectindex(object,listtosearch):
 	return i
 
 def unique(s):
-	'''returns a list of unique elements, where the uniqueness is stablished via its repr() string'''
+	'''returns a list of unique elements, where the uniqueness is established via its repr() string'''
 	try:
 		return list(set(s))
 	except TypeError:
@@ -237,11 +237,11 @@ class fitpar_original(fitable):
 		self.forcelimits()
 		return [self]
 	def randsum(self):
-		'''symetric additive random change. Does not actually change, but only generates a proposed self.new. See confirmnew()'''
+		'''symmetric additive random change. Does not actually change, but only generates a proposed self.new. See confirmnew()'''
 		self.val=random.gauss(self.val,self.sstep)
 		return [self]
 	def randmult(self):
-		'''symetric multiplicative random change. Does not actually change, but only generates a proposed self.new. See confirmnew()'''	
+		'''symmetric multiplicative random change. Does not actually change, but only generates a proposed self.new. See confirmnew()'''	
 		gauss_rnd=random.gauss(0,self.mstep) 
 		if gauss_rnd >0.:
 			self.val=self.val*(1. + gauss_rnd) 
@@ -275,7 +275,7 @@ class fitpar(fitpar_original):
 		
 	def perturbate(self,npert=1,direct=True):
 		'''produces a NNRLA perturbation. 
-		Note that it is always direct, so self.NNRLA_delta must be 0 in case a symetric perturbation is desired
+		Note that it is always direct, so self.NNRLA_delta must be 0 in case a symmetric perturbation is desired
 		NOTE: direct and npert are ignored here (only one perturbation and always "direct" since the non-direct is a particular case of direct with self.NNRLA_delta=0!!'''
 		self.val=random.gauss(self.val+self.NNRLA_delta, self.NNRLA_sigma*self.NNRLA_sigmamult)
 		self.forcelimits()
@@ -343,7 +343,7 @@ class discretepals(fitable):
 			Arguments:
 				name: the name for this spectrum (a string)
 				expdata: a list/array containing the exp spectrum
-				roi: a list/array cointaining the Region Of Interest (channels that will be fitted)
+				roi: a list/array containing the Region Of Interest (channels that will be fitted)
 				taulist: a list of fitpars for lifetimes
 				itylist: a list of fitpars for intensities. Must be same len than taulist
 				background: a fitpar for background
@@ -406,7 +406,7 @@ class discretepals(fitable):
 		self.clearstats_ity()
 		
 	def changed(self):
-		'''TODO: make sure that this criterium is enough'''
+		'''TODO: make sure that this criterion is enough'''
 		return self.chi2!=self.chi2_old
 	def confirm(self, savehist=False):
 		'''confirm the various elements that may change and then proceed to the standard _confirm_()'''
@@ -432,7 +432,7 @@ class discretepals(fitable):
 		self.ity_n=1
 	
 	def fake(self, area=None, noise=True, filename=None):
-		'''Generates a fake spectrum by simulation and adition of Poisson noise'''
+		'''Generates a fake spectrum by simulation and addition of Poisson noise'''
 		if area is None: area=self.bg.val*self.channeltimes.size*20 #if no area is given, it is calculated so that the total background is ~5% of the counts
 		sim=self.calculate_sim(self.bg.val, area, self.channeltimes, self.M_dot_a)
 		if noise: sim=S.random.poisson(sim)
@@ -510,8 +510,8 @@ class discretepals(fitable):
 #		return (roi+(0.5-c0))*psperchannel	#this would return the times in the middle of the channels
 			
 	def calculate_convoluted_decay(self,t,tau=1.,intsty=1.,sigma=1.):
-		'''Calculate one component of a PALS spectrum. Exponential decay (starting at time 0) convolved with a gaussian.
-		result(t)=convolution(G,E) , where G is a gaussian and E is a exponential decay starting at 0.
+		'''Calculate one component of a PALS spectrum. Exponential decay (starting at time 0) convolved with a Gaussian.
+		result(t)=convolution(G,E) , where G is a Gaussian and E is a exponential decay starting at 0.
 		t: times for which the decay is calculated (a scipy one-dimensional array) or other sequence
 		tau: decay time
 		intsty: intensity of that component (the area below the curve for the given component)
@@ -537,12 +537,12 @@ class discretepals(fitable):
 
 			
 	def calculate_convoluted_decay_with_tails(self, t, tau=1., tauL=0., tauR=0., intsty=1., sigma=1.):
-		'''Calculate one component of a PALS spectrum. Exponential decay (starting at time 0) convolved with a gaussian+exponential tails.
-		result(t)=convolution(GT,E) , where GT is a gaussian+tails and E is a exponential decay starting at 0.
+		'''Calculate one component of a PALS spectrum. Exponential decay (starting at time 0) convolved with a Gaussian+exponential tails.
+		result(t)=convolution(GT,E) , where GT is a Gaussian+tails and E is a exponential decay starting at 0.
 		t: times for which the decay is calculated (a scipy one-dimensional array) or other sequence
 		tau: decay time
 		intsty: intensity of that component (the area below the curve for the given component)
-		sigma: gaussian width (standard deviation)
+		sigma: Gaussian width (standard deviation)
 		The formula used is eq. 6 from [J.Kansy, Nucl. Instr. and Meth. A 374 (1996), 235-244]
 		'''
 		alpha=tau*tau/((tau+tauL)(tau-tauR))
@@ -741,6 +741,7 @@ class palsset(fitable):
 		else: return False #If none of the previous conditions was met, it means that there are both common and independent itys (BAD)		
 	
 	def register_spectrum(self,spectrum):
+		'''Registers a spectrum in the set'''
 		self.spectralist.append(spectrum)
 		self._register_perturbable_(spectrum)
 		spectrum.updatelist.append(self)
@@ -768,7 +769,7 @@ class palsset(fitable):
 		return self._undo_()		
 	
 	def calculate_chi2(self, recalc=True):
-		"""IMportant: this returns the chi2 normalised by the degrees of freedom!!!"""
+		"""Important: this returns the chi2 normalised by the degrees of freedom!!!"""
 		chi2=0
 		if recalc: 
 			for ob in self.spectralist: chi2+=ob.recalculate_chi2()
@@ -1046,7 +1047,7 @@ class palsset(fitable):
 		
 		#Save the history of the parameters (with a header)
 		if savehist:
-			if isinstance(savehist,str): histfile=open(savehist,'w')
+			if isinstance(savehist,(str,unicode)): histfile=open(savehist,'w')
 			else: histfile=savehist
 			if ireport>0: print "\n Saving history of parameters in '%s'..."%savehist,
 			print >>histfile, "# ",time.asctime()
@@ -1140,7 +1141,7 @@ class palsset(fitable):
 		minmaxarray[:,1]=S.where(minmaxarray[:,1]>None, minmaxarray[:,1],S.inf)
 		#check if all the itys are negative (not only the free ones)!, in which case they can simply be all multiplied by -1
 		if nonfreeitys==0 and (myx[itys]<0).all(): 
-			print "!!!!!!!!!!"
+# 			print "!!!!!!!!!!"
 			myx[itys]*=-1.  #the covariance matrix does not need to be converted because it is invariant under this change of sign
 			for i in itys: myargs[i].val=myargs[i].mean=myx[i]
 		withinlimits=((myx>minmaxarray[:,0]) * (myx<minmaxarray[:,1])).all()
@@ -1212,7 +1213,7 @@ class palsset(fitable):
 		'''Tests compatibility of two palssets.
 		Compatible means: 
 			same number of spectra (key "nesp")
-			same number of components in each spectra (asumes same ordering of spectra !)
+			same number of components in each spectra (assumes same ordering of spectra !)
 		'''
 		res={}
 		res["nesp"]=(len(self.spectralist)==len(other.spectralist))
@@ -1364,7 +1365,7 @@ def findconnectedspectra(spectrum):
 	return L1
 	
 def distributeinsets(dplist):
-	'''gets a list of discretepals instances and analises the interdependences in their free parameters to group them in palssets
+	'''gets a list of discretepals instances and analyses the interdependences in their free parameters to group them in palssets
 	It returns a list of pals sets
 	Note: simple algorithm but very innefficient (although I dont care because it is done only once)'''
 	connections=[findconnectedspectra(dp) for dp in dplist] #find the connection groups for each spectrum in the list
@@ -1404,7 +1405,7 @@ def printwarning(message, wait=False):
 		return [w]
 	
 def mainprogram(warningslog=[]):
-	'''Initialises, and then runsthe command interpreter'''
+	'''Initialises, and then runs the command interpreter'''
 	#import the input info 
 	import PAScual_input as userinput
 	time.clock() #Set start of time measuring (we ignore the import time for scipy and pylab)   )

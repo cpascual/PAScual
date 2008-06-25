@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Documents and Settings\pas064\My Documents\src\PAScual-dev\PAScualGUI.ui'
 #
-# Created: Mon Jun 23 15:53:43 2008
+# Created: Wed Jun 25 22:51:46 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -531,8 +531,14 @@ class Ui_PAScual(object):
         self.actionWhat_s_This.setIcon(icon)
         self.actionWhat_s_This.setObjectName("actionWhat_s_This")
         self.actionManual = QtGui.QAction(PAScual)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/Icons/icons/mine/khelpcenter.png"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        self.actionManual.setIcon(icon)
         self.actionManual.setObjectName("actionManual")
         self.actionLicense = QtGui.QAction(PAScual)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/Icons/icons/mine/package_editors.png"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        self.actionLicense.setIcon(icon)
         self.actionLicense.setObjectName("actionLicense")
         self.actionSum_Spectra = QtGui.QAction(PAScual)
         icon = QtGui.QIcon()
@@ -542,6 +548,9 @@ class Ui_PAScual(object):
         self.actionLoad_Parameters = QtGui.QAction(PAScual)
         self.actionLoad_Parameters.setObjectName("actionLoad_Parameters")
         self.actionSimulate_spectrum = QtGui.QAction(PAScual)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/Icons/icons/mine/kspread.png"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        self.actionSimulate_spectrum.setIcon(icon)
         self.actionSimulate_spectrum.setObjectName("actionSimulate_spectrum")
         self.actionSave_Parameters = QtGui.QAction(PAScual)
         self.actionSave_Parameters.setObjectName("actionSave_Parameters")
@@ -557,12 +566,20 @@ class Ui_PAScual(object):
         self.actionShowSpectraSel.setChecked(False)
         self.actionShowSpectraSel.setObjectName("actionShowSpectraSel")
         self.actionCheck_for_Updates = QtGui.QAction(PAScual)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/Icons/icons/mine/agt_update_recommended.png"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        self.actionCheck_for_Updates.setIcon(icon)
         self.actionCheck_for_Updates.setObjectName("actionCheck_for_Updates")
         self.actionParamWizard = QtGui.QAction(PAScual)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/Icons/icons/mine/Wizard.png"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
         self.actionParamWizard.setIcon(icon)
         self.actionParamWizard.setObjectName("actionParamWizard")
+        self.actionOptions = QtGui.QAction(PAScual)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/Icons/icons/mine/advancedsettings.png"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        self.actionOptions.setIcon(icon)
+        self.actionOptions.setObjectName("actionOptions")
         self.menuFile.addAction(self.actionLoad_Spectra)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionSave_Output_as)
@@ -584,16 +601,23 @@ class Ui_PAScual(object):
         self.menuTools.addAction(self.actionParamWizard)
         self.menuTools.addSeparator()
         self.menuTools.addAction(self.actionCheck_for_Updates)
+        self.menuTools.addSeparator()
+        self.menuTools.addAction(self.actionOptions)
         self.menubar.addAction(self.menuFile.menuAction())
         self.menubar.addAction(self.menuView.menuAction())
         self.menubar.addAction(self.menuTools.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
         self.toolBar.addAction(self.actionLoad_Spectra)
+        self.toolBar.addSeparator()
+        self.toolBar.addAction(self.actionSimulate_spectrum)
         self.toolBar.addAction(self.actionSum_Spectra)
         self.toolBar.addAction(self.actionTao_Eldrup_Calculator)
         self.toolBar.addAction(self.actionParamWizard)
         self.toolBar.addSeparator()
+        self.toolBar.addAction(self.actionOptions)
+        self.toolBar.addSeparator()
         self.toolBar.addAction(self.actionWhat_s_This)
+        self.toolBar.addAction(self.actionManual)
         self.toolBar.addAction(self.actionAbout)
 
         self.retranslateUi(PAScual)
@@ -785,5 +809,6 @@ class Ui_PAScual(object):
         self.actionShowSpectraSel.setText(QtGui.QApplication.translate("PAScual", "show/hide spectra selector", None, QtGui.QApplication.UnicodeUTF8))
         self.actionCheck_for_Updates.setText(QtGui.QApplication.translate("PAScual", "Check for Updates", None, QtGui.QApplication.UnicodeUTF8))
         self.actionParamWizard.setText(QtGui.QApplication.translate("PAScual", "Wizard (parameters)", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionOptions.setText(QtGui.QApplication.translate("PAScual", "Options...", None, QtGui.QApplication.UnicodeUTF8))
 
 import PAScual_rc
