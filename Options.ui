@@ -289,6 +289,9 @@ p, li { white-space: pre-wrap; }
          <property name="accelerated" >
           <bool>true</bool>
          </property>
+         <property name="maximum" >
+          <number>999999999</number>
+         </property>
         </widget>
        </item>
        <item row="1" column="1" >
@@ -794,6 +797,16 @@ p, li { white-space: pre-wrap; }
           </size>
          </property>
         </spacer>
+       </item>
+       <item row="2" column="0" >
+        <widget class="QCheckBox" name="autoWizardOnLoadCB" >
+         <property name="text" >
+          <string>Automatically open the Wizard when loading spectra</string>
+         </property>
+         <property name="checked" >
+          <bool>true</bool>
+         </property>
+        </widget>
        </item>
       </layout>
      </widget>

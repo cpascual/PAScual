@@ -53,7 +53,7 @@ import PASoptions
 
 # import AdvOpt as advopt
 
-__version__="1.3.0"
+__version__="1.2.99"
 __homepage__="http://pascual.sourceforge.net"
 __citation__="C. Pascual-Izarra et al., <i>Characterisation of Amphiphile Self-Assembly Materials using Positron Annihilation Lifetime Spectroscopy (PALS)-Part1: Advanced Fitting Algorithms for Data Analysis</i>, Journal of Physical Chemistry B,  [in review], 2008. <p>see %s for up-to-date information about citing</p>"%__homepage__
 
@@ -168,6 +168,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.dirtyresults=False
 		self.palssetsdict={}
 		self.settings = QSettings()  #This  gets the settings from wherever they are stored (the storage point is plattform dependent)
+# 		self.settings.clear()
 		
 		###add hand-coded widgets and modifications to ui_ widgets here
 		
@@ -226,6 +227,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		
 		#Other, misc
 		self.optionsDlg=None
+		self.saveFilesDlg=None
 		self.LEpsperchannel.setValidator(QDoubleValidator(0,S.inf,3,self)) #add validator to the psperchannel edit	
 		self.resultsTable.addActions([self.actionCopy_Results_Selection,self.actionSave_results_as]) #context menu
 		self.outputWriteMode=unicode(self.settings.value("outputWriteMode", QVariant(QString("a"))).toString()) #get user prefs regarding the output file management #TODO: include this in options menu
@@ -252,6 +254,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		QObject.connect(self.actionOptions,SIGNAL("triggered()"),self.onOptions)
 		QObject.connect(self.actionLoad_Parameters,SIGNAL("triggered()"),self.notImplementedWarning)
 		QObject.connect(self.actionSave_Parameters,SIGNAL("triggered()"),self.notImplementedWarning)
+		QObject.connect(self.actionSave_Spectra_as,SIGNAL("triggered()"),self.onSaveSpectra)
 		
 #		QObject.connect(self.actionSaveResults,SIGNAL("triggered()"),self.onSaveResults)
 		QObject.connect(self.spectraTable,SIGNAL("doubleClicked(QModelIndex)"),self.onSpectraTableDoubleClick)
@@ -338,7 +341,8 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 												'ASCII-custom':SpecFiles.ASCIIfileloader('ASCII-custom','*',None,'ASCII with user-selected header','qt',self.openFilesDlg),
 												'LT':SpecFiles.ASCIIfileloader('LT','*.dat *.txt *.al2 *.chn',4,'ASCII with a 4 rows header'),
 												'L80':SpecFiles.ASCIIfileloader('L80','*.80',0,'multicolumn ASCII with no header'),
-												'MAESTRO':SpecFiles.MAESTROfileLoader('MAESTRO') } #instantiate file loaders and put them in a dict belonging to the OpenFile dialog
+												'MAESTRO':SpecFiles.MAESTROfileLoader('MAESTRO'),
+												'PAScual':SpecFiles.PAScualfileLoader('PAScual') } #instantiate file loaders and put them in a dict belonging to the OpenFile dialog
 		self.openFilesDlg.specFileLoaderDict['ASCII-custom'].needExtraInput=True #makes
 		filefilters=["%s (%s)"%(self.openFilesDlg.specFileLoaderDict[k].name,self.openFilesDlg.specFileLoaderDict[k].filenamefilter) for k in sorted(self.openFilesDlg.specFileLoaderDict.keys())]
 		self.openFilesDlg.setFileMode(QFileDialog.ExistingFiles)
@@ -778,7 +782,9 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		#another possibility:
 		#   Fit s1,s2,sn,...them all simultaneously with ALL parameters common putting deltaexp=nonpoissonratio*poisson for each of them
 		selected,indexes=self.spectraModel.getselectedspectra()
-		if len(selected)<2:return
+		if len(selected)<2:
+			QMessageBox.warning(self, "At least 2 spectra needed","""You must select at least 2 spectra for summing""")
+			return
 		dpsum=copy.deepcopy(selected[0])
 		dpsum.name= dpsum.name.rsplit('.',1)[0]+"_%isum"%len(selected)
 		try:
@@ -1057,11 +1063,14 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 			if progress.wasCanceled(): break
 			#read data
 			selectedfilter=unicode(self.openFilesDlg.selectedFilter()).split('(')[0].strip()
+			fileloader=self.openFilesDlg.specFileLoaderDict[selectedfilter]
 			try:
-				expdata=self.openFilesDlg.specFileLoaderDict[selectedfilter].expdata(fname)
+				tempdp=fileloader.getDiscretePals(fname)
+				if tempdp is None: expdata=fileloader.expdata(fname)
 			except:
-				expected=self.openFilesDlg.specFileLoaderDict[selectedfilter].name
+				expected=fileloader.name
 				QMessageBox.warning(self, "Wrong file format", "Unexpected format in: %s\n (expected %s format)"%(os.path.basename(fname),expected))
+# 				raise #uncomment for debug, but comment out for release to avoid the progress dialog to remain after failure in loading
 				break		
 			#find a unique key for this file
 			usednames=[dp.name for dp in self.spectraModel.spectra]
@@ -1069,9 +1078,11 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 			i=1
 			while basename in usednames: 
 				i+=1
-				basename="%s(%i)"%(basename_,i)	
-			#create a discretepals with this basename 
-			dps.append(discretepals(name=basename, expdata=expdata))
+				basename="%s(%i)"%(basename_,i)
+			#append the spectrum to the list	
+			if tempdp is None: tempdp=discretepals(expdata=expdata)
+			tempdp.name=basename
+			dps.append(copy.deepcopy(tempdp))
 			
 		#Make sure the progress dialog is closed (In case the load didn't finish normally)
 		progress.done(0)
@@ -1090,14 +1101,52 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 			self.emit(SIGNAL("regenerateSets"),False)
 			self.statusbar.showMessage("Done", 0) 
 			#Launch Wizard
-			if self.paramWizard.launchOnLoad:
+			if self.options.autoWizardOnLoad:
 				self.onParamWizard()
 			
 		
-	def savespectrum(self,spectrum, filename=None, columns=1, fileformat=None):
+	def savespectrum(self,spectrum, filename=None, columns=1, selectedfilter=None):
+		if filename is None:
+			if self.saveFilesDlg is None:
+				self.saveFilesDlg=QFileDialog(self, "%s - Save spectrum '%s'"%(QApplication.applicationName(),spectrum.name), "./","")
+				fileloadersdict=self.openFilesDlg.specFileLoaderDict
+				filefilters=["%s (%s)"%(fileloadersdict[k].name,fileloadersdict[k].filenamefilter) for k in ['PAScual','ASCII','LT']]
+				self.saveFilesDlg.setFilters(filefilters)
+				self.saveFilesDlg.selectFilter(fileloadersdict['PAScual'].name)
+			self.saveFilesDlg.setWindowTitle ("%s - Save spectrum '%s'"%(QApplication.applicationName(),spectrum.name))
+			self.saveFilesDlg.selectFile(spectrum.name.split('.',1)[0]+'.ps1')
+			self.saveFilesDlg.selectFilter(self.saveFilesDlg.selectedFilter()) #re-select filter to make sure that the extensions is the approrpiate
+			self.saveFilesDlg.setAcceptMode(QFileDialog.AcceptSave)
+			self.saveFilesDlg.setViewMode(QFileDialog.Detail )
+			self.saveFilesDlg.setDirectory(self.options.workDirectory)	
+			if not self.saveFilesDlg.exec_(): 
+				return None
+			filename= unicode(self.saveFilesDlg.selectedFiles()[0])
+			selectedfilter=unicode(self.saveFilesDlg.selectedFilter()).split('(')[0].strip()
+		if selectedfilter is None:
+			if filename.endswith(".ps1"):selectedfilter=u"PAScual"
+			else: selectedfilter=u"ASCII"	
+		try:
+			if selectedfilter.startswith("ASCII"):	spectrum.saveAs_ASCII(filename)
+			elif selectedfilter.startswith("LT"): spectrum.saveAs_LT(filename)
+			elif selectedfilter.startswith("PAScual"):	pickle.dump(spectrum,open(filename,'wb'),-1) #The PAScual format is just a pickled discretepals object!			
+			else: raise ValueError('Filter not supported')
+		except IOError:
+			QMessageBox.warning(self, "Error saving file","Error saving file. Spectrum won't be written")
+			return None	
+		return filename
+	
+	def onSaveSpectra(self):
+		'''saves all selected spectra'''
+		selected,indexes=self.spectraModel.getselectedspectra()
+		if selected == []: return
+		for dp in selected:
+			self.savespectrum(dp)
+		
+		
+	def savespectrum_OLD(self,spectrum, filename=None, columns=1, fileformat=None):
 		#TODO: save in different formats
 		if filename is None:
-			filename=unicode(self.options.workDirectory)+'/'+spectrum.name+'.dat'
 # 			filename=unicode(QFileDialog.getSaveFileName ( self, "Save spectrum", filename,
 # 														"LT files (*.dat *.txt *.al2 *.chn)\n"+
 # 														"L80 files (*.l80)\n"+

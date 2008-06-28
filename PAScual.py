@@ -981,6 +981,7 @@ class palsset(fitable):
 		'''It performs a simulated annealing minimisation'''
 		#TODO: Implement restarts?
 		if LM is None: LM=len(self.unfold_perturbablelist())*LMmult 
+		if maxiter<1:maxiter=S.inf
 		hardminaccratio=minaccratio*.1
 		endflag=False
 		iter=0

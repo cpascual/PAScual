@@ -22,6 +22,7 @@
 import scipy as S
 import pylab 
 #TODO: include zipped file support
+#TODO: make a GUI (and integrate it as a PAScual tool)
 
 ####################################################
 ## OPTIONS:

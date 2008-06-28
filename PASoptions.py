@@ -28,11 +28,11 @@ class Options(object):
 		self.optlist=['LOCAL_maxUnbound',
 					'SA_minaccratio','SA_tol','SA_stopT','SA_maxiter','SA_meltratio','SA_direct',
 					'BI_stab','BI_length','BI_report','BI_savehist',
-					'workDirectory', 'manualFile', 'seed','warning_chi2_low','warning_chi2_high']
+					'workDirectory', 'manualFile', 'seed','warning_chi2_low','warning_chi2_high','autoWizardOnLoad']
 		self.dfltlist=[0,
 					0.0, 0.0, 0.1, 0, 0.97, True, 
 					5e3,5e4,5e2,'', 
-					unicode(QDir.currentPath()),unicode(QDir.currentPath())+'/manual/User Manual.html',12345, 0.6, 1.4 ]
+					unicode(QDir.currentPath()),unicode(QDir.currentPath())+'/manual/User Manual.html',12345, 0.6, 1.4 , True]
 		self.reset()
 	def reset(self):
 		for opt,dflt in zip(self.optlist,self.dfltlist):setattr(self,opt,dflt)
@@ -52,9 +52,10 @@ class OptionsDlg(QDialog, ui_Options.Ui_Options):
 		self.connect(self.buttonBox, SIGNAL("clicked(QAbstractButton *)"), self.onclicked )
 		self.connect(self.manualFilePB, SIGNAL("clicked()"), self.onChangeManualFile )
 		self.connect(self.workDirectoryPB, SIGNAL("clicked()"), self.onChangeWorkDirectory )
+		
 		#set options
 		self.reset()
-	
+		
 	def onChangeWorkDirectory(self):
 		filename=QFileDialog.getExistingDirectory (self,"Select work directory (it must be user-writable)",self.workDirectoryLE.text())
 		if filename:self.workDirectoryLE.setText(filename)
@@ -97,6 +98,7 @@ class OptionsDlg(QDialog, ui_Options.Ui_Options):
 		options.seed,ok=self.seedLE.text().toInt() 		#Seed for pseudorandom generator 
 		options.warning_chi2_low=self.warning_chi2_lowSB.value()
 		options.warning_chi2_high=self.warning_chi2_highSB.value()
+		options.autoWizardOnLoad=self.autoWizardOnLoadCB.isChecked()
 		return options
 			
 	def setOptions(self, options):
@@ -127,6 +129,8 @@ class OptionsDlg(QDialog, ui_Options.Ui_Options):
 		self.seedLE.setText(unicode(options.seed)) 
 		self.warning_chi2_lowSB.setValue(options.warning_chi2_low)
 		self.warning_chi2_highSB.setValue(options.warning_chi2_high)
+		self.autoWizardOnLoadCB.setChecked(options.autoWizardOnLoad)		
+
 
 		
 		

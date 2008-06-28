@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Documents and Settings\pas064\My Documents\src\PAScual-dev\PAScualGUI.ui'
 #
-# Created: Wed Jun 25 22:51:46 2008
+# Created: Sat Jun 28 23:04:56 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -580,13 +580,16 @@ class Ui_PAScual(object):
         icon.addPixmap(QtGui.QPixmap(":/Icons/icons/mine/advancedsettings.png"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
         self.actionOptions.setIcon(icon)
         self.actionOptions.setObjectName("actionOptions")
+        self.actionSave_Spectra_as = QtGui.QAction(PAScual)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/Icons/Icons/mine/CRfilesave.png"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        self.actionSave_Spectra_as.setIcon(icon)
+        self.actionSave_Spectra_as.setObjectName("actionSave_Spectra_as")
         self.menuFile.addAction(self.actionLoad_Spectra)
-        self.menuFile.addSeparator()
-        self.menuFile.addAction(self.actionSave_Output_as)
-        self.menuFile.addAction(self.actionSave_results_as)
         self.menuFile.addSeparator()
         self.menuFile.addAction(self.actionLoad_Parameters)
         self.menuFile.addAction(self.actionSave_Parameters)
+        self.menuFile.addSeparator()
         self.menuView.addAction(self.actionShowSpectraSel)
         self.menuView.addAction(self.actionShow_hide_Plot)
         self.menuHelp.addAction(self.actionWhat_s_This)
@@ -608,6 +611,7 @@ class Ui_PAScual(object):
         self.menubar.addAction(self.menuTools.menuAction())
         self.menubar.addAction(self.menuHelp.menuAction())
         self.toolBar.addAction(self.actionLoad_Spectra)
+        self.toolBar.addAction(self.actionSave_Spectra_as)
         self.toolBar.addSeparator()
         self.toolBar.addAction(self.actionSimulate_spectrum)
         self.toolBar.addAction(self.actionSum_Spectra)
@@ -810,5 +814,6 @@ class Ui_PAScual(object):
         self.actionCheck_for_Updates.setText(QtGui.QApplication.translate("PAScual", "Check for Updates", None, QtGui.QApplication.UnicodeUTF8))
         self.actionParamWizard.setText(QtGui.QApplication.translate("PAScual", "Wizard (parameters)", None, QtGui.QApplication.UnicodeUTF8))
         self.actionOptions.setText(QtGui.QApplication.translate("PAScual", "Options...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionSave_Spectra_as.setText(QtGui.QApplication.translate("PAScual", "Save Spectra as...", None, QtGui.QApplication.UnicodeUTF8))
 
 import PAScual_rc

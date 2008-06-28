@@ -217,9 +217,6 @@ class ParamWizard(QWizard):
 		self.roilist=None
 		self.bg=None
 		self.deltabg=None
-		
- 		
- 		self.launchOnLoad=True
  		
 		#Insert pages
 		self.GainAndFWHMPage=GainAndFWHMPage(psperchannel=psperchannel,FWHM=FWHM)

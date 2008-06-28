@@ -17,6 +17,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
+'''
+Some convenience classes are defined to work with loading spectra in various formats.
+'''
 
 import scipy as S
 
@@ -30,7 +33,12 @@ class spectrumFileLoader(object):
 	def expdata(self,fname):
 		'''This function has to be implemented in the derived classes. 
 		It gets the file name of the file to read
-		It must ruturn an array of doubles containing the spectrum yields (or None if it couldn t load)'''
+		It must return an array of doubles containing the spectrum yields (or None if it couldn t load)'''
+		return None
+	def getDiscretePals(self,fname):
+		'''This function has to be implemented in the derived classes. 
+		It gets the file name of the file to read
+		It must return discretepals object (or None if it couldn t load)'''
 		return None
 	def askExtraInput(self):
 		pass
@@ -74,4 +82,18 @@ class ASCIIfileloader(spectrumFileLoader):
 			self.hdrlns,okflag=QInputDialog.getInteger (self.Qtparent,"Header lines?", "Number of lines to skip in the header:", dflt, 0, 999, 1)
 		return okflag
 	
-		
+class PAScualfileLoader(spectrumFileLoader):
+	def __init__(self,name='PAScual'):
+		spectrumFileLoader.__init__(self,name)
+		self.formatDescription='Pickled Spectrum from PAScual'
+		self.filenamefilter='*.ps1'
+	def getDiscretePals(self, fname):
+		from PAScual import discretepals
+		import pickle
+		dp=pickle.load(open(fname,'rb'))
+		return dp
+	def expdata(self, fname):
+		dp=self.getDiscretePals(fname)
+		return S.array(dp.exp, dtype='d')
+	
+			

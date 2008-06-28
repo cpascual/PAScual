@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Documents and Settings\pas064\My Documents\src\PAScual-dev\Options.ui'
 #
-# Created: Wed Jun 25 22:51:45 2008
+# Created: Sat Jun 28 23:32:31 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -97,6 +97,7 @@ class Ui_Options(object):
         self.gridlayout.addWidget(self.label_4,2,0,1,1)
         self.SA_maxiterSB = QtGui.QSpinBox(self.SATab)
         self.SA_maxiterSB.setAccelerated(True)
+        self.SA_maxiterSB.setMaximum(999999999)
         self.SA_maxiterSB.setObjectName("SA_maxiterSB")
         self.gridlayout.addWidget(self.SA_maxiterSB,2,1,1,1)
         self.SA_stopTSB = QtGui.QDoubleSpinBox(self.SATab)
@@ -227,6 +228,10 @@ class Ui_Options(object):
         self.gridLayout_5.addLayout(self.gridLayout_4,1,0,1,2)
         spacerItem12 = QtGui.QSpacerItem(135,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Minimum)
         self.gridLayout_5.addItem(spacerItem12,1,2,1,1)
+        self.autoWizardOnLoadCB = QtGui.QCheckBox(self.miscTab)
+        self.autoWizardOnLoadCB.setChecked(True)
+        self.autoWizardOnLoadCB.setObjectName("autoWizardOnLoadCB")
+        self.gridLayout_5.addWidget(self.autoWizardOnLoadCB,2,0,1,1)
         self.tabWidget.addTab(self.miscTab,"")
         self.verticalLayout.addWidget(self.tabWidget)
         self.buttonBox = QtGui.QDialogButtonBox(Options)
@@ -406,6 +411,7 @@ class Ui_Options(object):
         self.label_16.setText(QtGui.QApplication.translate("Options", "or more than", None, QtGui.QApplication.UnicodeUTF8))
         self.warning_chi2_highSB.setToolTip(QtGui.QApplication.translate("Options", "The results table will warn that the fit is suspicious (by turning the row red) if the chi2 is outside the range set here.", None, QtGui.QApplication.UnicodeUTF8))
         self.warning_chi2_highSB.setSpecialValueText(QtGui.QApplication.translate("Options", "No limit", None, QtGui.QApplication.UnicodeUTF8))
+        self.autoWizardOnLoadCB.setText(QtGui.QApplication.translate("Options", "Automatically open the Wizard when loading spectra", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.miscTab), QtGui.QApplication.translate("Options", "Misc.", None, QtGui.QApplication.UnicodeUTF8))
 
 import PAScual_rc
