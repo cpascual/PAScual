@@ -311,6 +311,9 @@ p, li { white-space: pre-wrap; }
           </property>
           <item>
            <widget class="QPushButton" name="loadParametersPB" >
+            <property name="toolTip" >
+             <string>Loads parameters from a previously saved ".par" file or from a spectrum in PAScual format.</string>
+            </property>
             <property name="text" >
              <string>Load</string>
             </property>
@@ -318,6 +321,9 @@ p, li { white-space: pre-wrap; }
           </item>
           <item>
            <widget class="QPushButton" name="saveParametersPB" >
+            <property name="toolTip" >
+             <string>Saves current  parameters in a ".par" file that can be used as a template in the future.</string>
+            </property>
             <property name="text" >
              <string>Save</string>
             </property>
@@ -325,6 +331,9 @@ p, li { white-space: pre-wrap; }
           </item>
           <item>
            <widget class="QPushButton" name="resetParametersPB" >
+            <property name="toolTip" >
+             <string>Clears all the parameters</string>
+            </property>
             <property name="text" >
              <string>Reset</string>
             </property>
@@ -985,9 +994,8 @@ p, li { white-space: pre-wrap; }
      <string>File</string>
     </property>
     <addaction name="actionLoad_Spectra" />
+    <addaction name="actionSave_Spectra_as" />
     <addaction name="separator" />
-    <addaction name="actionLoad_Parameters" />
-    <addaction name="actionSave_Parameters" />
     <addaction name="separator" />
    </widget>
    <widget class="QMenu" name="menuView" >
@@ -1417,11 +1425,6 @@ p, li { white-space: pre-wrap; }
     <string>Sum Spectra</string>
    </property>
   </action>
-  <action name="actionLoad_Parameters" >
-   <property name="text" >
-    <string>Load Parameters</string>
-   </property>
-  </action>
   <action name="actionSimulate_spectrum" >
    <property name="icon" >
     <iconset resource="PAScual.qrc" >
@@ -1429,11 +1432,6 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="text" >
     <string>Simulate spectrum</string>
-   </property>
-  </action>
-  <action name="actionSave_Parameters" >
-   <property name="text" >
-    <string>Save Parameters</string>
    </property>
   </action>
   <action name="actionCopy_Results_Selection" >

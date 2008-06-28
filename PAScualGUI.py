@@ -18,7 +18,6 @@
 '''
 
 #TODO: Add a reverse selection button to the Spectra selection list
-#TODO: (General) implement load/save of discretepals and of palssets
 #TODO: (General) save queue to file before starting and delete file when finished. Check for existence of old files indicating unfinished calcs and offer resume.
 #TODO: (General) implement summary view of sets. A list containing which sets with which spectra each, which fitmode and number of free parameters and names of common parameters
 #TODO: (General) (UPDATE: after v9.9 this seems no longer an issue) . Make more robust localmin (this is to PAScual.py) possibly use pre-fit with leastsq and poor convergence criterion, if that fails, go to pre-fit with bruteforce.
@@ -26,7 +25,6 @@
 #TODO: (General) implement plot from columns in results table 
 #TODO: (General) If a single spectrum is selected and a fit is already done, plot the fit and each component
 #TODO: (General) Allow set parameters from a row of results table
-#TODO: (General) (UPDATE: with the wizard, it is no longer an issue) If ROI is not set, issue a warning saying that the whole spectrum is going to be used 
 #TODO: (General) (UPDATE: with the wizard, it is no longer an issue) offset should be calculated automatically if not set (possible warning).
 #TODO: (General) (UPDATE: Done by Wizard) same for background (e.g. use last 1% of ROI). Call if ROI is set AND the background is not already assigned 
 #TODO: (General) (UPDATE: not urgent since Wizard remembers the lims) Implement passing default values to left and right lims in ROISelector. Pass [-5rel,end] for ROI and [ROIright-max(5,0.01*(ROIright-ROIleft)), ROIright] for bgROI 
@@ -34,7 +32,6 @@
 #TODO: (General) add estimated time for fit (or at least for BI command)
 #TODO: (General) Incorporate plothistory.py to the GUI. It could also be used to display ellipses taken from the covariance matrix when no history has been stored
 #TODO: (General) make installer?
-#TODO: (General) implement saveFitMode()
 
 import sys, os, copy, platform, time
 import cPickle as pickle
@@ -230,7 +227,6 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.saveFilesDlg=None
 		self.LEpsperchannel.setValidator(QDoubleValidator(0,S.inf,3,self)) #add validator to the psperchannel edit	
 		self.resultsTable.addActions([self.actionCopy_Results_Selection,self.actionSave_results_as]) #context menu
-		self.outputWriteMode=unicode(self.settings.value("outputWriteMode", QVariant(QString("a"))).toString()) #get user prefs regarding the output file management #TODO: include this in options menu
 		self.nextupdatechk=self.settings.value("nextupdatechk", QVariant(0)).toInt()[0] #TODO: include this in options menu
 		self.outputFileName=None
 		
@@ -252,8 +248,6 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		QObject.connect(self.actionCheck_for_Updates,SIGNAL("triggered()"),lambda: self.check_for_Updates(force=True))
 		QObject.connect(self.actionParamWizard,SIGNAL("triggered()"),self.onParamWizard)
 		QObject.connect(self.actionOptions,SIGNAL("triggered()"),self.onOptions)
-		QObject.connect(self.actionLoad_Parameters,SIGNAL("triggered()"),self.notImplementedWarning)
-		QObject.connect(self.actionSave_Parameters,SIGNAL("triggered()"),self.notImplementedWarning)
 		QObject.connect(self.actionSave_Spectra_as,SIGNAL("triggered()"),self.onSaveSpectra)
 		
 #		QObject.connect(self.actionSaveResults,SIGNAL("triggered()"),self.onSaveResults)
@@ -291,6 +285,8 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		QObject.connect(self.previousOutputCB,SIGNAL("currentIndexChanged(const QString&)"),self.onPreviousOutputCBChange)
 		QObject.connect(self.saveOutputBT,SIGNAL("clicked()"),self.onSaveOutput_as)
 		QObject.connect(self.saveFitmodeBT,SIGNAL("clicked()"),self.saveFitMode)
+		QObject.connect(self.loadParametersPB,SIGNAL("clicked()"),self.loadParameters)
+		QObject.connect(self.saveParametersPB,SIGNAL("clicked()"),self.saveParameters)
 		
 				
 		
@@ -348,8 +344,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.openFilesDlg.setFileMode(QFileDialog.ExistingFiles)
 		self.openFilesDlg.setViewMode(QFileDialog.Detail )
 		self.openFilesDlg.setFilters(filefilters)
-		self.openFilesDlg.setDirectory(self.options.workDirectory)	
-		self.outputWriteMode=unicode(self.settings.value("outputWriteMode", QVariant(QString("a"))).toString())
+		self.openFilesDlg.setDirectory(self.options.workDirectory)
 		selectedfilter=self.settings.value("openfilefilter", QVariant(QString(self.openFilesDlg.specFileLoaderDict['ASCII'].name))).toString()
 		self.openFilesDlg.selectFilter(selectedfilter)
 	
@@ -636,7 +631,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.goFitBT.setEnabled(False)
 		#initialise a tee for output 
 		if self.autosaveOutputCB.isChecked():
-			self.outputfile=open(unicode(self.outputFileLE.text()),self.outputWriteMode)#self.outputWriteMode is one of  'w' or 'a'
+			self.outputfile=open(unicode(self.outputFileLE.text()),'a')
 		else: self.outputfile=None
 		mytee=tee(sys.__stdout__, self.outputfile)
 		mytee.setEmitEnabled(True)
@@ -712,7 +707,6 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.settings.setValue("MainWindow/Position",QVariant(self.pos()))
 		self.settings.setValue("MainWindow/State",QVariant(self.saveState()))
 		self.settings.setValue("fitModeFileName",QVariant(QString(self.fitModeFileName)))
-		self.settings.setValue("outputWriteMode",QVariant(QString(self.outputWriteMode)))
 		self.settings.setValue("nextupdatechk", QVariant(self.nextupdatechk))
 		self.settings.setValue("openfilefilter",QVariant(self.openFilesDlg.selectedFilter()))
 		
@@ -1143,29 +1137,6 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		for dp in selected:
 			self.savespectrum(dp)
 		
-		
-	def savespectrum_OLD(self,spectrum, filename=None, columns=1, fileformat=None):
-		#TODO: save in different formats
-		if filename is None:
-# 			filename=unicode(QFileDialog.getSaveFileName ( self, "Save spectrum", filename,
-# 														"LT files (*.dat *.txt *.al2 *.chn)\n"+
-# 														"L80 files (*.l80)\n"+
-# 														"ASCII Files with NO HEADER (*.dat *.txt *.al2 *.chn)\n"+
-# 														"All (*)"))
-			filename=unicode(QFileDialog.getSaveFileName ( self, "Save spectrum", filename,
-														"ASCII Files with NO HEADER (*.dat *.txt *.al2 *.chn)\n"+
-														"All (*)"))
-		if filename:
-			try:
-				spectrum.name=os.path.basename(filename)
-				S.savetxt(filename,spectrum.exp,fmt='%i')
-				spectrum
-			except IOError:
-				QMessageBox.warning(self, "Error saving file","Error saving file. Spectrum won't be written")
-				return None
-			return filename
-		return None
-		
 	def onSaveResults(self,ofile=None):
 		#Manage the file
 		if ofile is None: ofile=unicode(self.resultsFileLE.text())
@@ -1323,10 +1294,40 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.dirtysets=True
 		self.emit(SIGNAL("regenerateSets"),False)
 					
-	def loadParameters(self,dp=None):
+	def loadParameters(self):
 		'''uses a dp to fill the parameters. If no spectra si given, it asks to load a file which is expected to contain a pickled discretepals'''
-		pass #TODO	
+		filename=QFileDialog.getOpenFileName ( self, "Load parameters from...", self.options.workDirectory,	"(*.par *.ps1)")
+		if filename: 
+			loader=SpecFiles.PAScualfileLoader()
+			dp=loader.getDiscretePals(filename)
+			self.spectraTable.clearSelection()
+			self.onUpdateParamsView(dp)			
+			return dp
+		return None
 	
+	def saveParameters(self,filename=None):
+		if filename is None:
+			filename=unicode(QFileDialog.getSaveFileName ( self, "Save parameters in...", self.options.workDirectory+'/PASparams.par', "Parameters File (*.par)"))
+		if filename: 
+			bg=self.bgFitparWidget.getFitpar()
+			c0=self.c0FitparWidget.getFitpar()
+			fwhm=self.fwhmFitparWidget.getFitpar()
+			psperchannel=float(self.LEpsperchannel.text())
+			taulist=[]
+			itylist=[]
+			ncomps=self.compModel.rowCount()
+			for j in xrange(ncomps):
+				cp=self.compModel.components[j]
+				taulist.append(fitpar(val=cp.tau.val, name='Tau%i'%(j+1), minval=cp.tau.minval, maxval=cp.tau.maxval, free=cp.tau.free))
+				itylist.append(fitpar(val=cp.ity.val, name='Ity%i'%(j+1), minval=cp.ity.minval, maxval=cp.ity.maxval, free=cp.ity.free))		
+			#construct the discretepals
+			dp=discretepals(name='PARAMETERS', expdata=None, roi=None, taulist=taulist, itylist=itylist, bg=bg, fwhm=fwhm, c0=c0, psperchannel=psperchannel)
+			#Save the parameters as a pickled discretepals object
+			print 'DEBUG:',filename
+			pickle.dump(dp,open(filename,'wb'),-1)
+			return dp
+		return None
+		
 	def showManual(self):
 		'''Shows the User Manual in a window'''
 		onlinecopy="http://pascual.wiki.sourceforge.net/User+Manual"

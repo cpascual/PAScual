@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Documents and Settings\pas064\My Documents\src\PAScual-dev\PAScualGUI.ui'
 #
-# Created: Sat Jun 28 23:04:56 2008
+# Created: Sun Jun 29 01:00:08 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -127,11 +127,17 @@ class Ui_PAScual(object):
         self.hboxlayout3.setSpacing(6)
         self.hboxlayout3.setMargin(0)
         self.hboxlayout3.setObjectName("hboxlayout3")
-        spacerItem2 = QtGui.QSpacerItem(40,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Minimum)
-        self.hboxlayout3.addItem(spacerItem2)
+        self.loadParametersPB = QtGui.QPushButton(self.parametersTab)
+        self.loadParametersPB.setObjectName("loadParametersPB")
+        self.hboxlayout3.addWidget(self.loadParametersPB)
+        self.saveParametersPB = QtGui.QPushButton(self.parametersTab)
+        self.saveParametersPB.setObjectName("saveParametersPB")
+        self.hboxlayout3.addWidget(self.saveParametersPB)
         self.resetParametersPB = QtGui.QPushButton(self.parametersTab)
         self.resetParametersPB.setObjectName("resetParametersPB")
         self.hboxlayout3.addWidget(self.resetParametersPB)
+        spacerItem2 = QtGui.QSpacerItem(40,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Minimum)
+        self.hboxlayout3.addItem(spacerItem2)
         self.applyAllParametersPB = QtGui.QPushButton(self.parametersTab)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/Icons/Icons/mine/CRbutton_ok.png"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
@@ -669,6 +675,11 @@ class Ui_PAScual(object):
         self.showtauRB.setText(QtGui.QApplication.translate("PAScual", "Lifetimes", None, QtGui.QApplication.UnicodeUTF8))
         self.showityRB.setText(QtGui.QApplication.translate("PAScual", "Intensities", None, QtGui.QApplication.UnicodeUTF8))
         self.applycompsBT.setText(QtGui.QApplication.translate("PAScual", "A", None, QtGui.QApplication.UnicodeUTF8))
+        self.loadParametersPB.setToolTip(QtGui.QApplication.translate("PAScual", "Loads parameters from a previously saved \".par\" file or from a spectrum in PAScual format.", None, QtGui.QApplication.UnicodeUTF8))
+        self.loadParametersPB.setText(QtGui.QApplication.translate("PAScual", "Load", None, QtGui.QApplication.UnicodeUTF8))
+        self.saveParametersPB.setToolTip(QtGui.QApplication.translate("PAScual", "Saves current  parameters in a \".par\" file that can be used as a template in the future.", None, QtGui.QApplication.UnicodeUTF8))
+        self.saveParametersPB.setText(QtGui.QApplication.translate("PAScual", "Save", None, QtGui.QApplication.UnicodeUTF8))
+        self.resetParametersPB.setToolTip(QtGui.QApplication.translate("PAScual", "Clears all the parameters", None, QtGui.QApplication.UnicodeUTF8))
         self.resetParametersPB.setText(QtGui.QApplication.translate("PAScual", "Reset", None, QtGui.QApplication.UnicodeUTF8))
         self.applyAllParametersPB.setText(QtGui.QApplication.translate("PAScual", "Apply All", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.parametersTab), QtGui.QApplication.translate("PAScual", "Parameters", None, QtGui.QApplication.UnicodeUTF8))
