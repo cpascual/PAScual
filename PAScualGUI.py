@@ -199,12 +199,12 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		plotlayout.addWidget(self.pplot)
 		self.plotFrame.setLayout(plotlayout)
 		
-		#Residuals
-		reslayout=QHBoxLayout()
-		self.resplot=ResPlot()
-		self.resplot.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-		reslayout.addWidget(self.resplot)
-		self.residualsFrame.setLayout(reslayout)
+# 		#Residuals
+# 		reslayout=QHBoxLayout()
+# 		self.resplot=ResPlot()
+# 		self.resplot.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
+# 		reslayout.addWidget(self.resplot)
+# 		self.residualsFrame.setLayout(reslayout)
 		
 		#fitmodes
 		self.fitmodesdict=copy.deepcopy(defaultFitModesDict) #global dict storing hardcoded default FitModes
@@ -225,8 +225,10 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		#Other, misc
 		self.optionsDlg=None
 		self.saveFilesDlg=None
+		self.plotfitDlg=None
 		self.LEpsperchannel.setValidator(QDoubleValidator(0,S.inf,3,self)) #add validator to the psperchannel edit	
-		self.resultsTable.addActions([self.actionCopy_Results_Selection,self.actionSave_results_as]) #context menu
+# 		self.resultsTable.addActions([self.actionCopy_Results_Selection,self.actionSave_results_as]) #context menu
+		self.resultsTable.addActions([self.actionCopy_Results_Selection,self.actionPlotFit])
 		self.nextupdatechk=self.settings.value("nextupdatechk", QVariant(0)).toInt()[0] #TODO: include this in options menu
 		self.outputFileName=None
 		
@@ -238,7 +240,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		QObject.connect(self.actionSum_Spectra,SIGNAL("triggered()"),self.sumspectra)
 		QObject.connect(self.actionTao_Eldrup_Calculator,SIGNAL("triggered()"),self.launchTEcalc)
 		QObject.connect(self.actionWhat_s_This,SIGNAL("triggered()"),lambda:QWhatsThis.enterWhatsThisMode())
-		QObject.connect(self.actionLoad_Parameters,SIGNAL("triggered()"), self.loadParameters)
+		QObject.connect(self.actionPlotFit,SIGNAL("triggered()"), self.plotfit)
 		QObject.connect(self.actionSimulate_spectrum,SIGNAL("triggered()"), self.createFakeSpectrum)
 		QObject.connect(self.actionCopy_Results_Selection,SIGNAL("triggered()"), self.copy_Results_Selection)	
 		QObject.connect(self.actionShow_hide_Plot,SIGNAL("triggered()"), self.show_hidePlot)
@@ -374,6 +376,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 					else:string+='\t%s'%self.resultsTable.item(i,j).text()
 					emptyrow=False
 		QApplication.clipboard().setText(string.strip())
+		
 
 	def onResultsFileSelectBT(self):
 		filename=QFileDialog.getSaveFileName ( self, "Results File Selection", self.options.workDirectory+'/PASresults.txt',
@@ -411,12 +414,40 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		ofile.close()
 	
 	def onResultsTableDoubleClick(self,index):
-		self.plotresiduals(self.resultsdplist[index.row()])
-	
-	def plotresiduals(self,dp):
-		self.resplot.reset()
+		self.plotfit(self.resultsdplist[index.row()])
+		
+	def plotfit(self,dp=None):
+		'''Shows a dialog containing the spectrum, the fit and the residuals for a given spectrum)'''
+		if dp is None:
+			try:dp=self.resultsdplist[self.resultsTable.currentRow()]
+			except:	return
+		if self.plotfitDlg is None: 
+			self.plotfitDlg=QDialog(self)
+			self.plotfitDlg.resize(600, 400)
+			self.plotfitDlg.fitplot=PALSplot()
+			self.plotfitDlg.resplot=ResPlot()
+			self.plotfitDlg.layout=QVBoxLayout()			
+			self.plotfitDlg.layout.addWidget(self.plotfitDlg.fitplot)
+			self.plotfitDlg.layout.addWidget(self.plotfitDlg.resplot)
+			self.plotfitDlg.setLayout(self.plotfitDlg.layout)
+		else:
+			self.plotfitDlg.fitplot.reset()
+			self.plotfitDlg.resplot.reset()
+		#Fit of the exp, sim, bg and components
+		self.plotfitDlg.fitplot.attachCurve(S.arange(dp.exp.size),dp.exp,name=dp.name, pen=QPen(self.plotfitDlg.fitplot.autocolor.next(),4),style="Dots")
+		self.plotfitDlg.fitplot.attachCurve(dp.roi,dp.sim,name='fit',pen=QPen(self.plotfitDlg.fitplot.autocolor.next(),2))
+		self.plotfitDlg.fitplot.attachCurve(dp.roi,S.ones(dp.sim.size)*dp.bg.val,name='bkgnd')
+		ity=dp.normalizeity()
+		for i in xrange(dp.ncomp):
+			area=dp.M_dot_a.sum()
+			comp=((dp.exparea-dp.bg.val*S.size(dp.sim))/area)*dp.M[:,i]*ity[i]
+			self.plotfitDlg.fitplot.attachCurve(dp.roi,comp,name='Comp%i'%i)
+		#plot of the residuals
 		residuals=(dp.sim-dp.exp[dp.roi])/dp.deltaexp[dp.roi]
-		self.resplot.attachCurve(dp.roi,residuals,name=dp.name, pen=QPen(Qt.red,2))
+		self.plotfitDlg.resplot.attachCurve(dp.roi,residuals,name=dp.name, pen=QPen(Qt.red,2))		
+		self.plotfitDlg.setWindowTitle ("%s - Fitted Spectrum '%s'"%(QApplication.applicationName(),dp.name))
+		self.plotfitDlg.show()
+		
 	def onHideResults(self):
 		indexes=self.resultsColumnsListWidget.selectedIndexes()
 		for idx in indexes: 
@@ -1133,7 +1164,9 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 	def onSaveSpectra(self):
 		'''saves all selected spectra'''
 		selected,indexes=self.spectraModel.getselectedspectra()
-		if selected == []: return
+		if selected == []: 
+			QMessageBox.warning(self, "No spectrum selected","""You must select (check) the spectra that you want to save""")
+			return
 		for dp in selected:
 			self.savespectrum(dp)
 		
@@ -1414,7 +1447,6 @@ if __name__ == "__main__":
 	app.setOrganizationName("CSIRO")
 	app.setOrganizationDomain("csiro.au")
 	app.setApplicationName("PAScual")
-#	app.setWindowIcon(QIcon(":/icon.png"))
 
 	form = PAScualGUI()
 	form.show()

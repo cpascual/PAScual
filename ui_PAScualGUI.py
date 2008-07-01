@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Documents and Settings\pas064\My Documents\src\PAScual-dev\PAScualGUI.ui'
 #
-# Created: Sun Jun 29 01:00:08 2008
+# Created: Tue Jul 01 23:44:00 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -326,18 +326,6 @@ class Ui_PAScual(object):
         self.saveResultsBT.setObjectName("saveResultsBT")
         self.hboxlayout9.addWidget(self.saveResultsBT)
         self.gridlayout2.addLayout(self.hboxlayout9,1,1,1,1)
-        self.residualsFrame = QtGui.QFrame(self.ResultsTab)
-        sizePolicy = QtGui.QSizePolicy(QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Preferred)
-        sizePolicy.setHorizontalStretch(0)
-        sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.residualsFrame.sizePolicy().hasHeightForWidth())
-        self.residualsFrame.setSizePolicy(sizePolicy)
-        self.residualsFrame.setMinimumSize(QtCore.QSize(400,150))
-        self.residualsFrame.setMaximumSize(QtCore.QSize(16777215,200))
-        self.residualsFrame.setFrameShape(QtGui.QFrame.StyledPanel)
-        self.residualsFrame.setFrameShadow(QtGui.QFrame.Raised)
-        self.residualsFrame.setObjectName("residualsFrame")
-        self.gridlayout2.addWidget(self.residualsFrame,2,0,1,2)
         self.tabWidget.addTab(self.ResultsTab,"")
         self.OutputTab = QtGui.QWidget()
         self.OutputTab.setGeometry(QtCore.QRect(0,0,476,519))
@@ -551,15 +539,11 @@ class Ui_PAScual(object):
         icon.addPixmap(QtGui.QPixmap(":/Icons/Icons/mine/sigma.png"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
         self.actionSum_Spectra.setIcon(icon)
         self.actionSum_Spectra.setObjectName("actionSum_Spectra")
-        self.actionLoad_Parameters = QtGui.QAction(PAScual)
-        self.actionLoad_Parameters.setObjectName("actionLoad_Parameters")
         self.actionSimulate_spectrum = QtGui.QAction(PAScual)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(":/Icons/icons/mine/kspread.png"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
         self.actionSimulate_spectrum.setIcon(icon)
         self.actionSimulate_spectrum.setObjectName("actionSimulate_spectrum")
-        self.actionSave_Parameters = QtGui.QAction(PAScual)
-        self.actionSave_Parameters.setObjectName("actionSave_Parameters")
         self.actionCopy_Results_Selection = QtGui.QAction(PAScual)
         self.actionCopy_Results_Selection.setObjectName("actionCopy_Results_Selection")
         self.actionTao_Eldrup_Calculator = QtGui.QAction(PAScual)
@@ -591,10 +575,14 @@ class Ui_PAScual(object):
         icon.addPixmap(QtGui.QPixmap(":/Icons/Icons/mine/CRfilesave.png"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
         self.actionSave_Spectra_as.setIcon(icon)
         self.actionSave_Spectra_as.setObjectName("actionSave_Spectra_as")
+        self.actionPlotFit = QtGui.QAction(PAScual)
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap(":/Icons/icons/mine/qwtplot.png"),QtGui.QIcon.Normal,QtGui.QIcon.Off)
+        self.actionPlotFit.setIcon(icon)
+        self.actionPlotFit.setObjectName("actionPlotFit")
         self.menuFile.addAction(self.actionLoad_Spectra)
+        self.menuFile.addAction(self.actionSave_Spectra_as)
         self.menuFile.addSeparator()
-        self.menuFile.addAction(self.actionLoad_Parameters)
-        self.menuFile.addAction(self.actionSave_Parameters)
         self.menuFile.addSeparator()
         self.menuView.addAction(self.actionShowSpectraSel)
         self.menuView.addAction(self.actionShow_hide_Plot)
@@ -636,12 +624,6 @@ class Ui_PAScual(object):
 
     def retranslateUi(self, PAScual):
         PAScual.setWindowTitle(QtGui.QApplication.translate("PAScual", "PAScual", None, QtGui.QApplication.UnicodeUTF8))
-        self.tabWidget.setToolTip(QtGui.QApplication.translate("PAScual", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">If checked, the output for the next fit will be saved automatically.</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\">The output is appended, so the previous information is not overwritten.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setWhatsThis(QtGui.QApplication.translate("PAScual", "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal; text-decoration:none;\">\n"
@@ -754,7 +736,12 @@ class Ui_PAScual(object):
         self.previousOutputCB.addItem(QtGui.QApplication.translate("PAScual", "All", None, QtGui.QApplication.UnicodeUTF8))
         self.saveOutputBT.setToolTip(QtGui.QApplication.translate("PAScual", "Save previous output As...", None, QtGui.QApplication.UnicodeUTF8))
         self.saveOutputBT.setText(QtGui.QApplication.translate("PAScual", "...", None, QtGui.QApplication.UnicodeUTF8))
-        self.autosaveOutputCB.setToolTip(QtGui.QApplication.translate("PAScual", "If checked, the output for the next fit will be saved automatically.", None, QtGui.QApplication.UnicodeUTF8))
+        self.autosaveOutputCB.setToolTip(QtGui.QApplication.translate("PAScual", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">If checked, the output for the next fit will be saved automatically.</p>\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;\">The output is appended, so the previous information is not overwritten.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.autosaveOutputCB.setText(QtGui.QApplication.translate("PAScual", "Autosave current output in:", None, QtGui.QApplication.UnicodeUTF8))
         self.outputFileLE.setText(QtGui.QApplication.translate("PAScual", "PASoutput.txt", None, QtGui.QApplication.UnicodeUTF8))
         self.outputFileSelectBT.setToolTip(QtGui.QApplication.translate("PAScual", "Browse for a different autosave destination file", None, QtGui.QApplication.UnicodeUTF8))
@@ -816,9 +803,7 @@ class Ui_PAScual(object):
         self.actionManual.setText(QtGui.QApplication.translate("PAScual", "Manual", None, QtGui.QApplication.UnicodeUTF8))
         self.actionLicense.setText(QtGui.QApplication.translate("PAScual", "License", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSum_Spectra.setText(QtGui.QApplication.translate("PAScual", "Sum Spectra", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionLoad_Parameters.setText(QtGui.QApplication.translate("PAScual", "Load Parameters", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSimulate_spectrum.setText(QtGui.QApplication.translate("PAScual", "Simulate spectrum", None, QtGui.QApplication.UnicodeUTF8))
-        self.actionSave_Parameters.setText(QtGui.QApplication.translate("PAScual", "Save Parameters", None, QtGui.QApplication.UnicodeUTF8))
         self.actionCopy_Results_Selection.setText(QtGui.QApplication.translate("PAScual", "Copy Results (Selection)", None, QtGui.QApplication.UnicodeUTF8))
         self.actionTao_Eldrup_Calculator.setText(QtGui.QApplication.translate("PAScual", "Tao Eldrup Calculator", None, QtGui.QApplication.UnicodeUTF8))
         self.actionShowSpectraSel.setText(QtGui.QApplication.translate("PAScual", "show/hide spectra selector", None, QtGui.QApplication.UnicodeUTF8))
@@ -826,5 +811,6 @@ class Ui_PAScual(object):
         self.actionParamWizard.setText(QtGui.QApplication.translate("PAScual", "Wizard (parameters)", None, QtGui.QApplication.UnicodeUTF8))
         self.actionOptions.setText(QtGui.QApplication.translate("PAScual", "Options...", None, QtGui.QApplication.UnicodeUTF8))
         self.actionSave_Spectra_as.setText(QtGui.QApplication.translate("PAScual", "Save Spectra as...", None, QtGui.QApplication.UnicodeUTF8))
+        self.actionPlotFit.setText(QtGui.QApplication.translate("PAScual", "Plot fit results", None, QtGui.QApplication.UnicodeUTF8))
 
 import PAScual_rc

@@ -106,13 +106,14 @@ class PALSplot(Qwt.QwtPlot):
 		self._plotdict={}
 		self.__clear=self.clear
 # 		self.connect(self.picker, Qt.SIGNAL('selected(const QwtDoublePoint&)'), pointselected)
-	def attachCurve(self, x, y, name='', pen=None):
+	def attachCurve(self, x, y, name='', pen=None, style="Lines"):
 		if pen is None: pen=Qt.QPen(self.autocolor.next())
 		self.YscaleMax=max(self.YscaleMax,1.2*max(y))
 		self.YscaleMin=min(self.YscaleMin, max(1,0.5*min(y)))
 		curve = Qwt.QwtPlotCurve(name)
 		curve.attach(self)
 		curve.setPen(pen)
+		curve.setStyle(getattr(Qwt.QwtPlotCurve,style))
 		curve.setData(x,where(y==0,1e-99,y))
 		self._plotdict[name]=curve
 		self.clearZoomStack()
@@ -122,6 +123,7 @@ class PALSplot(Qwt.QwtPlot):
 	def reset(self,*args):
 		self._plotdict={}
 		self.__clear()
+		self.autocolor.setItemIndex(-1)
 	def toggleVisibility(self, plotItem):
 		"""Toggle the visibility of a plot item
 		"""
@@ -199,6 +201,7 @@ class ResPlot(Qwt.QwtPlot):
 	def reset(self,*args):
 		self._plotdict={}
 		self.__clear()
+		self.autocolor.setItemIndex(-1)
 # 	def toggleVisibility(self, plotItem):
 # 		"""Toggle the visibility of a plot item
 # 		"""
@@ -222,7 +225,7 @@ def make():
 	y = 10+pi*sin(x)
 	y[-1]=0 #to check the log
 	z = 10+4*pi*cos(x)*cos(x)*sin(x)
-	demo.attachCurve(x,z,name='y = 10+4*pi*sin(x)*cos(x)**2', pen=Qt.QPen(Qt.Qt.black,2))
+	demo.attachCurve(x,z,name='y = 10+4*pi*sin(x)*cos(x)**2', pen=Qt.QPen(Qt.Qt.black,2),style='Dots')
 	demo.attachCurve(x,y,name='y = 10+pi*sin(x)')
 	demo.attachCurve(x,2*z,name='y = 20+8*pi*sin(x)*cos(x)**2')
 	demo.show()

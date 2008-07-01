@@ -76,7 +76,7 @@ class TEcalcDialog(QDialog,ui_TEcalcGUI.Ui_TEcalcGUI):
 		if self.celsiusRB.isChecked(): T+=273.
 		
 		#check for unphysical inputs
-		if tau.min()<1 or T.min()<0 or tau.max()>142: 
+		if tau.min()<.5 or T.min()<0 or tau.max()>142: 
 			QMessageBox.critical(self, "Bad input"," One or more inputs are unphysical \n(check for negative absolute temperatures or lifetimes outside the 1-142 ns range) ")
 			return
 		

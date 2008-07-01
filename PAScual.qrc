@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="/Icons" >
+    <file>icons/mine/qwtplot.png</file>
     <file>icons/mine/agt_update_recommended.png</file>
     <file>icons/mine/package_editors.png</file>
     <file>icons/mine/kspread.png</file>
