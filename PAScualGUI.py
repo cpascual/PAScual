@@ -23,7 +23,6 @@
 #TODO: (General) (UPDATE: after v9.9 this seems no longer an issue) . Make more robust localmin (this is to PAScual.py) possibly use pre-fit with leastsq and poor convergence criterion, if that fails, go to pre-fit with bruteforce.
 #TODO: (General) make more robust SA (this is to PAScual.py) possibly using resets to best fits
 #TODO: (General) implement plot from columns in results table 
-#TODO: (General) If a single spectrum is selected and a fit is already done, plot the fit and each component
 #TODO: (General) Allow set parameters from a row of results table
 #TODO: (General) (UPDATE: with the wizard, it is no longer an issue) offset should be calculated automatically if not set (possible warning).
 #TODO: (General) (UPDATE: Done by Wizard) same for background (e.g. use last 1% of ROI). Call if ROI is set AND the background is not already assigned 
@@ -50,7 +49,7 @@ import PASoptions
 
 # import AdvOpt as advopt
 
-__version__="1.2.99"
+__version__="1.3.0"
 __homepage__="http://pascual.sourceforge.net"
 __citation__="C. Pascual-Izarra et al., <i>Characterisation of Amphiphile Self-Assembly Materials using Positron Annihilation Lifetime Spectroscopy (PALS)-Part1: Advanced Fitting Algorithms for Data Analysis</i>, Journal of Physical Chemistry B,  [in review], 2008. <p>see %s for up-to-date information about citing</p>"%__homepage__
 
@@ -199,13 +198,6 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		plotlayout.addWidget(self.pplot)
 		self.plotFrame.setLayout(plotlayout)
 		
-# 		#Residuals
-# 		reslayout=QHBoxLayout()
-# 		self.resplot=ResPlot()
-# 		self.resplot.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Preferred)
-# 		reslayout.addWidget(self.resplot)
-# 		self.residualsFrame.setLayout(reslayout)
-		
 		#fitmodes
 		self.fitmodesdict=copy.deepcopy(defaultFitModesDict) #global dict storing hardcoded default FitModes
 		self.fitModeFileName=unicode(self.settings.value("fitModeFileName", QVariant(QString("CustomFitmodes.pck"))).toString())
@@ -221,7 +213,6 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.previousOutputDict={}
 		self.previousOutputTE.hide()
 		
-		
 		#Other, misc
 		self.optionsDlg=None
 		self.saveFilesDlg=None
@@ -231,7 +222,8 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.resultsTable.addActions([self.actionCopy_Results_Selection,self.actionPlotFit])
 		self.nextupdatechk=self.settings.value("nextupdatechk", QVariant(0)).toInt()[0] #TODO: include this in options menu
 		self.outputFileName=None
-		
+		self.resultslist=[]
+		self.resultsdplist=[]		
 		
 		#Add connections here
 		QObject.connect(self.actionLoad_Spectra,SIGNAL("triggered()"),self.loadSpectra)
@@ -240,7 +232,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		QObject.connect(self.actionSum_Spectra,SIGNAL("triggered()"),self.sumspectra)
 		QObject.connect(self.actionTao_Eldrup_Calculator,SIGNAL("triggered()"),self.launchTEcalc)
 		QObject.connect(self.actionWhat_s_This,SIGNAL("triggered()"),lambda:QWhatsThis.enterWhatsThisMode())
-		QObject.connect(self.actionPlotFit,SIGNAL("triggered()"), self.plotfit)
+		QObject.connect(self.actionPlotFit,SIGNAL("triggered()"), self.onPlotFit)
 		QObject.connect(self.actionSimulate_spectrum,SIGNAL("triggered()"), self.createFakeSpectrum)
 		QObject.connect(self.actionCopy_Results_Selection,SIGNAL("triggered()"), self.copy_Results_Selection)	
 		QObject.connect(self.actionShow_hide_Plot,SIGNAL("triggered()"), self.show_hidePlot)
@@ -282,15 +274,14 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		QObject.connect(self.hideResultsBT,SIGNAL("clicked()"),self.onHideResults)
 		QObject.connect(self.showResultsBT,SIGNAL("clicked()"),self.onShowResults)
 		QObject.connect(self.saveResultsBT,SIGNAL("clicked()"),self.onSaveResults)
-		QObject.connect(self.resultsTable,SIGNAL("doubleClicked(QModelIndex)"),self.onResultsTableDoubleClick)
+		QObject.connect(self.resultsTable,SIGNAL("doubleClicked(QModelIndex)"),self.onPlotFit)
 		QObject.connect(self.resultsFileSelectBT,SIGNAL("clicked()"),self.onResultsFileSelectBT)
 		QObject.connect(self.previousOutputCB,SIGNAL("currentIndexChanged(const QString&)"),self.onPreviousOutputCBChange)
 		QObject.connect(self.saveOutputBT,SIGNAL("clicked()"),self.onSaveOutput_as)
 		QObject.connect(self.saveFitmodeBT,SIGNAL("clicked()"),self.saveFitMode)
 		QObject.connect(self.loadParametersPB,SIGNAL("clicked()"),self.loadParameters)
 		QObject.connect(self.saveParametersPB,SIGNAL("clicked()"),self.saveParameters)
-		
-				
+		QObject.connect(self.plotFitBT,SIGNAL("clicked()"),self.onPlotFit)
 		
 		#Restore last session Window state
 		size = self.settings.value("MainWindow/Size", QVariant(QSize(800, 600))).toSize()
@@ -413,26 +404,53 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		print >>ofile, "\n"+unicode(self.previousOutputTE.toPlainText())+"\n"
 		ofile.close()
 	
-	def onResultsTableDoubleClick(self,index):
-		self.plotfit(self.resultsdplist[index.row()])
+	def onPlotFit(self, index=None):
+		if index is None: row=self.resultsTable.currentRow() #this is -1 if there is no table
+		else: row=index.row()
+		self.plotfit(row)
 		
-	def plotfit(self,dp=None):
-		'''Shows a dialog containing the spectrum, the fit and the residuals for a given spectrum)'''
-		if dp is None:
-			try:dp=self.resultsdplist[self.resultsTable.currentRow()]
-			except:	return
+	def plotfit(self,dprow=0, dplist=None):
+		'''Shows a dialog containing: the spectrum, the fit (with separated components), the residuals and the text report.
+		It does this for a list of discretepals objects that can be browsed in order.
+		dplist is the list of discretepals objects. dprow is the index of that list that is to be reported.'''
+		#TODO: This function has grown too much. It should be encapsulated  in a class (suggested name: reportDlg).
+		if dplist is None: dplist=self.resultsdplist
+		self.dprow=dprow
+		if len(dplist)<1: 
+			QMessageBox.warning(self, "Nothing to report","""There are no results to report. Do the fits first!""")
+			return #mcheck that the list is not empty
+		self.dprow=max(0,min(self.dprow,len(dplist)-1)) #make sure that the row is within limits
+		dp=dplist[self.dprow]
+		
 		if self.plotfitDlg is None: 
 			self.plotfitDlg=QDialog(self)
-			self.plotfitDlg.resize(600, 400)
+			self.plotfitDlg.resize(600, 600)
 			self.plotfitDlg.fitplot=PALSplot()
 			self.plotfitDlg.resplot=ResPlot()
+			self.plotfitDlg.textTE=QTextEdit()
+			self.plotfitDlg.textTE.setReadOnly(True)
+			self.plotfitDlg.nextPB=QPushButton(">")
+			self.plotfitDlg.nextPB.setToolTip("Next result")
+			self.plotfitDlg.prevPB=QPushButton("<")
+			self.plotfitDlg.prevPB.setToolTip("Previous result")
+			layout2=QHBoxLayout()
+			layout2.addWidget(self.plotfitDlg.prevPB)
+			layout2.addWidget(self.plotfitDlg.nextPB)
 			self.plotfitDlg.layout=QVBoxLayout()			
 			self.plotfitDlg.layout.addWidget(self.plotfitDlg.fitplot)
 			self.plotfitDlg.layout.addWidget(self.plotfitDlg.resplot)
+			self.plotfitDlg.layout.addWidget(self.plotfitDlg.textTE)
+			self.plotfitDlg.layout.addLayout(layout2)
 			self.plotfitDlg.setLayout(self.plotfitDlg.layout)
+			QObject.connect(self.plotfitDlg.prevPB,SIGNAL("clicked()"),lambda: self.plotfit(self.dprow-1))
+			QObject.connect(self.plotfitDlg.nextPB,SIGNAL("clicked()"),lambda: self.plotfit(self.dprow+1))
 		else:
 			self.plotfitDlg.fitplot.reset()
 			self.plotfitDlg.resplot.reset()
+			self.plotfitDlg.textTE.clear()
+		#Enable/disable the buttons
+		self.plotfitDlg.prevPB.setEnabled(self.dprow>0)
+		self.plotfitDlg.nextPB.setEnabled(self.dprow<len(dplist)-1)
 		#Fit of the exp, sim, bg and components
 		self.plotfitDlg.fitplot.attachCurve(S.arange(dp.exp.size),dp.exp,name=dp.name, pen=QPen(self.plotfitDlg.fitplot.autocolor.next(),4),style="Dots")
 		self.plotfitDlg.fitplot.attachCurve(dp.roi,dp.sim,name='fit',pen=QPen(self.plotfitDlg.fitplot.autocolor.next(),2))
@@ -441,12 +459,14 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		for i in xrange(dp.ncomp):
 			area=dp.M_dot_a.sum()
 			comp=((dp.exparea-dp.bg.val*S.size(dp.sim))/area)*dp.M[:,i]*ity[i]
-			self.plotfitDlg.fitplot.attachCurve(dp.roi,comp,name='Comp%i'%i)
+			self.plotfitDlg.fitplot.attachCurve(dp.roi,comp,name='Comp%i'%(i+1))
 		#plot of the residuals
 		residuals=(dp.sim-dp.exp[dp.roi])/dp.deltaexp[dp.roi]
 		self.plotfitDlg.resplot.attachCurve(dp.roi,residuals,name=dp.name, pen=QPen(Qt.red,2))		
 		self.plotfitDlg.setWindowTitle ("%s - Fitted Spectrum '%s'"%(QApplication.applicationName(),dp.name))
 		self.plotfitDlg.show()
+		#show the spectrum report
+		self.plotfitDlg.textTE.setPlainText(dp.showreport(silent=True))
 		
 	def onHideResults(self):
 		indexes=self.resultsColumnsListWidget.selectedIndexes()
@@ -1139,11 +1159,11 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 				self.saveFilesDlg.setFilters(filefilters)
 				self.saveFilesDlg.selectFilter(fileloadersdict['PAScual'].name)
 			self.saveFilesDlg.setWindowTitle ("%s - Save spectrum '%s'"%(QApplication.applicationName(),spectrum.name))
-			self.saveFilesDlg.selectFile(spectrum.name.split('.',1)[0]+'.ps1')
-			self.saveFilesDlg.selectFilter(self.saveFilesDlg.selectedFilter()) #re-select filter to make sure that the extensions is the approrpiate
+			self.saveFilesDlg.setDirectory(self.options.workDirectory+' ') #TODO: horrible hack to deselect previously selected files. Any alternative?
+			self.saveFilesDlg.selectFile(spectrum.name.split('.',1)[0]+'.ps1')			
+			self.saveFilesDlg.selectFilter(self.saveFilesDlg.selectedFilter()) #re-select filter to make sure that the extensions is the appropriate
 			self.saveFilesDlg.setAcceptMode(QFileDialog.AcceptSave)
 			self.saveFilesDlg.setViewMode(QFileDialog.Detail )
-			self.saveFilesDlg.setDirectory(self.options.workDirectory)	
 			if not self.saveFilesDlg.exec_(): 
 				return None
 			filename= unicode(self.saveFilesDlg.selectedFiles()[0])
@@ -1444,9 +1464,9 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 
 if __name__ == "__main__":
 	app = QApplication(sys.argv)
-	app.setOrganizationName("CSIRO")
-	app.setOrganizationDomain("csiro.au")
+	app.setOrganizationName("CPI")
 	app.setApplicationName("PAScual")
+	app.setApplicationVersion(__version__)
 
 	form = PAScualGUI()
 	form.show()

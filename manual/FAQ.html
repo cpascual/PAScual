@@ -12,58 +12,87 @@
 <div style="margin-left: 2em;"><a href="#toc1">General</a></div>
 <div style="margin-left: 3em;"><a href="#toc2">What is PAScual?</a></div>
 <div style="margin-left: 3em;"><a href="#toc3">How much does PAScual cost?</a></div>
-<div style="margin-left: 3em;"><a href="#toc4">If everybody can see the code, What prevents competing programs to steal the ideas in PAScual?</a></div>
+<div style="margin-left: 3em;"><a href="#toc4">If everybody can see the code, what prevents competing programs to steal the ideas in PAScual?</a></div>
 <div style="margin-left: 3em;"><a href="#toc5">What does the name 'PAScual' stand for?</a></div>
-<div style="margin-left: 2em;"><a href="#toc6">Installation and use</a></div>
-<div style="margin-left: 3em;"><a href="#toc7">What do I need to use PAScual?</a></div>
-<div style="margin-left: 3em;"><a href="#toc8">Where can I download PAScual?</a></div>
-<div style="margin-left: 3em;"><a href="#toc9">Where can I get some information about installing/using PAScual?</a></div>
-<div style="margin-left: 2em;"><a href="#toc10">Bugs/errors</a></div>
-<div style="margin-left: 3em;"><a href="#toc11">PAScual crashes/does not work... what should I do?</a></div>
-<div style="margin-left: 3em;"><a href="#toc12">I found a problem/bug in PAScual. How do I report it?</a></div>
-<div style="margin-left: 3em;"><a href="#toc13">I solved a bug (or added a feature) in PAScual. Are you interested in my solution?</a></div>
+<div style="margin-left: 3em;"><a href="#toc6">What is the intended schedule for new versions?</a></div>
+<div style="margin-left: 2em;"><a href="#toc7">Installation</a></div>
+<div style="margin-left: 3em;"><a href="#toc8">What do I need to use PAScual?</a></div>
+<div style="margin-left: 3em;"><a href="#toc9">Where can I download PAScual?</a></div>
+<div style="margin-left: 3em;"><a href="#toc10">Where can I get some information about installing/using PAScual?</a></div>
+<div style="margin-left: 2em;"><a href="#toc11">Using PAScual</a></div>
+<div style="margin-left: 3em;"><a href="#toc12">Does PAScual support source corrections?</a></div>
+<div style="margin-left: 3em;"><a href="#toc13">Does PAScual support complex components?</a></div>
+<div style="margin-left: 3em;"><a href="#toc14">Does Pascual support non-Gaussian resolution functions?</a></div>
+<div style="margin-left: 2em;"><a href="#toc15">Bugs/errors</a></div>
+<div style="margin-left: 3em;"><a href="#toc16">PAScual crashes/does not work... what should I do?</a></div>
+<div style="margin-left: 3em;"><a href="#toc17">I found a problem/bug in PAScual. How do I report it?</a></div>
+<div style="margin-left: 3em;"><a href="#toc18">I solved a bug (or added a feature) in PAScual. Are you interested in my solution?</a></div>
 </div>
 <br />
 <h2 id="toc1">General</h2>
 
 <ol>
     <li><h3 id="toc2">What is PAScual?</h3>
- PAScual is a program (or more precisely, a suite of programs) for analysing Positron Annihilation Lifetime Spectroscopy (PALS) spectra.<a name="faqn2"></a></li>
+ PAScual is a program (or more precisely, a suite of programs) for analysing Positron Annihilation Lifetime Spectroscopy (PALS) spectra.</li>
     <li><h3 id="toc3">How much does PAScual cost?</h3>
- Nothing. It is free. Furthermore, it is <a class="wiki_link_ext" href="http://www.gnu.org/philosophy/free-sw.html" rel="nofollow">free as in 'freedom'</a>. Its source code is available under the <a class="wiki_link" href="License.html">General Public License</a> for everybody to study it, modify it, etc.<a name="faqn3"></a></li>
-    <li><h3 id="toc4">If everybody can see the code, What prevents competing programs to steal the ideas in PAScual?</h3>
- The answer is that I don't see other programs as &quot;competitors&quot;. I hope that PAScual is useful for everybody. I also expect that if someone finds PAScual useful, will acknowledge it by, e.g., citing. If other programs want to use some idea in my code, they are welcome (although if they use the code directly, they should respect the ters of the <a class="wiki_link" href="license.html">license</a>. Anyway, I used other people's ideas (written in articles) when implementing PAScual.</li>
+ Nothing. It is free. Furthermore, it is <a class="wiki_link_ext" href="http://www.gnu.org/philosophy/free-sw.html" rel="nofollow">free as in 'freedom'</a>. Its source code is available under the <a class="wiki_link" href="License.html">General Public License</a> for everybody to study it, modify it, etc.</li>
+    <li><h3 id="toc4">If everybody can see the code, what prevents competing programs to steal the ideas in PAScual?</h3>
+ The answer is that I don't see other programs as &quot;competitors&quot;. I hope that PAScual is useful for everybody. I also expect that if someone finds PAScual useful, will acknowledge it by, e.g., <a class="wiki_link" href="User%20Manual.html#citing">citing it</a>. If other programs want to use some idea in my code, they are welcome (although if they use the code directly, they should respect the terms of the <a class="wiki_link" href="license.html">license</a>. Anyway, I used other people's ideas (written in articles) when implementing PAScual.</li>
     <li><h3 id="toc5">What does the name 'PAScual' stand for?</h3>
- One could pretend that 'PAScual' stands for something like 'Positron Annihilation Spectroscopy controlled universal analysis layer', but the fact is that it is just a pretentious way of playing with the author's family name.</li>
+ One could pretend that 'PAScual' stands for something like 'Positron Annihilation Spectroscopy controlled universal analysis layer', but the fact is that it is just a pretentious way of playing with the author's family name.<a name="schedule"></a></li>
+    <li><h3 id="toc6">What is the intended schedule for new versions?</h3>
+ I currently work in PAScual as part of my research activity. However, I will be changing my field soon and my time devoted to PAScual will be considerably less. Therefore my objective is to leave PAScual in a stable state that can be used without problems. This was the objective for the version 1.x series and is already pretty much accomplished (e.g. from version 1.2). The idea is to give the final polishing to the interface in the 1.x series and leave model/physics implementations for a future 2.x series. If you need some feature, request it or, if you can, implement it yourself (remember that the source code is open).</li>
 </ol>
 
 <br />
-<h2 id="toc6">Installation and use</h2>
+<h2 id="toc7">Installation</h2>
 
 <ol>
-    <li><h3 id="toc7">What do I need to use PAScual?</h3>
- PAScual is written in Python. This means that you need to install a Python interpreter. PAScual also makes use of Scipy so you need to have that installed as well. Finally, You will need the Qt libraries and PyQt if you want to use the graphical user interface. Matplotlib is needed only if you want to generate graphics from the command line interface. Make sure you read the <a class="wiki_link" href="User%20Manual.html#installation">Installation section</a> of the <a class="wiki_link" href="User%20Manual.html">User Manual</a> to get the most comprehensive information regarding to the required packages.<a name="faqn4"></a></li>
-    <li><h3 id="toc8">Where can I download PAScual?</h3>
- Surprisingly, this can be done by following the link called <a class="wiki_link_ext" href="http://sourceforge.net/project/showfiles.php?group_id=217818" rel="nofollow">Download</a>. In general, you should download and install the latest available version.<a name="faqn5"></a></li>
-    <li><h3 id="toc9">Where can I get some information about installing/using PAScual?</h3>
- The main source of information is the <a class="wiki_link" href="User%20Manual.html">User Manual</a>.You may also want to have a look at the <a class="wiki_link_new" href="documentation.html">documentation</a> section. Finally, don't forget that PAScual is Free (as in freedom), so you can read its source code if you <strong>really</strong> want to know what's going on. Of course, you can also <a class="wiki_link" href="contact.html">ask the author</a> for help.<a name="faqn6"></a></li>
+    <li><h3 id="toc8">What do I need to use PAScual?</h3>
+ PAScual is written in Python. This means that you need to install a Python interpreter. PAScual also makes use of Scipy so you need to have that installed as well. Finally, You will need the Qt libraries and PyQt if you want to use the graphical user interface. Matplotlib is needed only if you want to generate graphics from the command line interface. Make sure you read the <a class="wiki_link" href="User%20Manual.html#installation">Installation section</a> of the <a class="wiki_link" href="User%20Manual.html">User Manual</a> to get the most comprehensive information regarding to the required packages.</li>
+    <li><h3 id="toc9">Where can I download PAScual?</h3>
+ Surprisingly, this can be done by following the link called <a class="wiki_link_ext" href="http://sourceforge.net/project/showfiles.php?group_id=217818" rel="nofollow">Download</a>. In general, you should download and install the latest available version.</li>
+    <li><h3 id="toc10">Where can I get some information about installing/using PAScual?</h3>
+ The main source of information is the <a class="wiki_link" href="User%20Manual.html">User Manual</a>.You may also want to have a look at the <a class="wiki_link_new" href="documentation.html">documentation</a> section. Finally, don't forget that PAScual is Free (as in freedom), so you can read its source code if you <strong>really</strong> want to know what's going on. Of course, you can also <a class="wiki_link" href="contact.html">ask the author</a> for help.</li>
 </ol>
 
 <br />
-<h2 id="toc10">Bugs/errors</h2>
+<h2 id="toc11">Using PAScual</h2>
 
 <ol>
-    <li><h3 id="toc11">PAScual crashes/does not work... what should I do?</h3>
+    <li><h3 id="toc12">Does PAScual support source corrections?</h3>
+ <strong>Yes</strong>, but not in a explicit way. The reason is that a source correction is, simply, one or more components (probably with fixed intensity and lifetime). Since in PAScual you can fix any parameter, you can introduce source correction components. Some programs choose to separate them them from the rest of components and not count them for the intensity total. I don't do that in PAScual because I prefer to see them just like another component in the spectrum. See the <a class="wiki_link" href="User%20Manual.html#sourcecorr">discussion</a> in the user manual regarding to this. Of course, if you really want PAScual to not count the source intensity in the total, just <a class="wiki_link" href="User%20Manual.html#contact">ask the author</a> for this feature (or implement it yourself).</li>
+</ol>
+
+<br />
+
+<ol>
+    <li><h3 id="toc13">Does PAScual support complex components?</h3>
+ <strong>Not yet, but...</strong> Pascual does not yet support Gaussian spread components, although the code has been written with them in mind and introducing them should be easy. A different module, called gridpals has already been implemented for analysis in a pseudo-continuous mode (<a class="wiki_link_ext" href="http://positron.physik.uni-halle.de/panet/software/Melt.zip" rel="nofollow">MELT</a>-like style). See <a class="wiki_link" href="FAQ.html#schedule this question about scheduled versions">FAQ</a>.</li>
+</ol>
+
+<br />
+
+<ol>
+    <li><h3 id="toc14">Does Pascual support non-Gaussian resolution functions?</h3>
+ <strong>Not yet, but...</strong> Part of the work for supporting a more complex resolution function (Gaussian+exponential tails) is already done, but not finished. See <a class="wiki_link" href="FAQ.html#schedule this question about scheduled versions">FAQ</a>.</li>
+</ol>
+
+<br />
+<h2 id="toc15">Bugs/errors</h2>
+
+<ol>
+    <li><h3 id="toc16">PAScual crashes/does not work... what should I do?</h3>
  First, make sure you have all the <a class="wiki_link" href="User%20Manual.html#required">required</a> packages installed. Also make sure you download <a class="wiki_link_new" href="the%20latest%20stable%20version.html">the latest stable version</a>. Then try to reproduce the examples in the <a class="wiki_link" href="User%20Manual.html">User Manual</a>. If these fail, <a class="wiki_link" href="contact.html">contact</a> the author. If the problem is with your own data, please contact the author sending:<ul>
         <li>a detailed description of the problem</li>
         <li>the details of your installation (operative system), version of PAScual and of the required packages</li>
         <li>A list of the steps needed to reproduce the error</li>
         <li>the data that causes the trouble</li>
     </ul></li>
-    <li><h3 id="toc12">I found a problem/bug in PAScual. How do I report it?</h3>
- At this moment no formal bug reporting procedure is stablished. Just <a class="wiki_link" href="contact.html">contact</a> the author.</li>
-    <li><h3 id="toc13">I solved a bug (or added a feature) in PAScual. Are you interested in my solution?</h3>
- Deffinitely!. Please send the code or the patch to the author. Of course, credits will be given. Also, if you are capable of programming and want to get involved in developing PAScual, you are more than welcome to do it. Just <a class="wiki_link" href="contact.html">contact</a> the author.</li>
+    <li><h3 id="toc17">I found a problem/bug in PAScual. How do I report it?</h3>
+ At this moment no formal bug reporting procedure is established. Just <a class="wiki_link" href="contact.html">contact</a> the author.</li>
+    <li><h3 id="toc18">I solved a bug (or added a feature) in PAScual. Are you interested in my solution?</h3>
+ Definitely!. Please send the code or the patch to the author. Of course, credits will be given. Also, if you are capable of programming and want to get involved in developing PAScual, you are more than welcome to do it. Just <a class="wiki_link" href="contact.html">contact</a> the author.</li>
 </ol>
 
 

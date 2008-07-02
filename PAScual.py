@@ -18,7 +18,7 @@
 '''
 
 
-__version__="1.2.0"
+__version__="1.3.0"
 
 import time, copy, sys, random, os, string
 import cPickle as pickle
@@ -585,27 +585,32 @@ class discretepals(fitable):
 		retval+="\n"
 		if not silent: file.write(retval)
 		return retval		
-	def showreport(self):
-		'''prints a report of the status of this discretepals spectrum
+
+	def showreport(self,silent=False):
+		'''prints a report of the status of this discretepals spectrum (and also returns the string)
 		Note that what it prints is human readable (i.e.) some output is processed before printing'''
 #		itynorm=100.*self.normalizeityfactor(ity=S.array([ob.mean for ob in self.itylist]))
 		itymean=100.*self.ity_mean
 		ityerr=100.*S.sqrt(self.ity_var)
-		print '---------------------'
-		print "Spectrum name:", self.name
-		print "ROI: min=%i max=%i    Calibration=%g ps/ch"%(self.roi[0],self.roi[-1],self.psperchannel)
-		print "FWHM [ps]: %5g (%g)\t  [%s]"%(self.fwhm.mean,S.sqrt(self.fwhm.var),self.fwhm.freetag)
-		print "C0   [ch]: %5g (%g)\t  [%s]"%(self.c0.mean,S.sqrt(self.c0.var),self.c0.freetag)
-		print "bg   [ct]: %5g (%g)\t  [%s]"%(self.bg.mean,S.sqrt(self.bg.var),self.bg.freetag)
-		print "Intensities [%]       Lifetimes [ps]"
+		result=''
+		result+='---------------------\n'
+		result+= "Spectrum name: %s\n"%self.name
+		result+= "ROI: min=%i max=%i    Calibration=%g ps/ch\n"%(self.roi[0],self.roi[-1],self.psperchannel)
+		result+= "FWHM [ps]: %5g (%g)\t  [%s]\n"%(self.fwhm.mean,S.sqrt(self.fwhm.var),self.fwhm.freetag)
+		result+= "C0   [ch]: %5g (%g)\t  [%s]\n"%(self.c0.mean,S.sqrt(self.c0.var),self.c0.freetag)
+		result+= "bg   [ct]: %5g (%g)\t  [%s]\n"%(self.bg.mean,S.sqrt(self.bg.var),self.bg.freetag)
+		result+= "Intensities [%]       Lifetimes [ps]\n"
 		for i in xrange(self.ncomp):
 			ity,tau=self.itylist[i],self.taulist[i]
-#			print "%4.1f (%4.1f) [%s]         %5i (%i) [%s]"%(ity.mean*itynorm[i], S.sqrt(ity.var)*itynorm[i], ity.freetag, tau.mean, S.sqrt(tau.var), tau.freetag)
-			print "%4.1f (%4.1f) [%s]         %5i (%i) [%s]"%(itymean[i], ityerr[i], ity.freetag, tau.mean, S.sqrt(tau.var), tau.freetag)
+#			result+= "%4.1f (%4.1f) [%s]         %5i (%i) [%s]\n"%(ity.mean*itynorm[i], S.sqrt(ity.var)*itynorm[i], ity.freetag, tau.mean, S.sqrt(tau.var), tau.freetag)
+			result+= "%4.1f (%4.1f) [%s]         %5i (%i) [%s]\n"%(itymean[i], ityerr[i], ity.freetag, tau.mean, S.sqrt(tau.var), tau.freetag)
 #		atocorr=self.calculate_residuals_local_correlation()
 		autocorr=0
-		print "Chi2: %.3f \t (=%.3e/DOF)\t AutoCorrel:%.3e"%(self.chi2/self.dof,self.chi2,autocorr)
-		print '---------------------'
+		result+= "Chi2: %.3f \t (=%.3e/DOF)\t AutoCorrel:%.3e\n"%(self.chi2/self.dof,self.chi2,autocorr)
+		result+= '---------------------'
+		if not silent:print result
+		return result
+		
 	def calculate_residuals_local_correlation(self, residuals=None, locallength=None):
 		'''It is a crude estimator of local correlations
 		Defined as the (normalised) sum of squared correlation coeffs in small boxes of the residuals'''

@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'C:\Documents and Settings\pas064\My Documents\src\PAScual-dev\Options.ui'
 #
-# Created: Sat Jun 28 23:32:31 2008
+# Created: Wed Jul 02 16:05:17 2008
 #      by: PyQt4 UI code generator 4.4.2
 #
 # WARNING! All changes made in this file will be lost!
@@ -193,45 +193,53 @@ class Ui_Options(object):
         self.miscTab.setObjectName("miscTab")
         self.gridLayout_5 = QtGui.QGridLayout(self.miscTab)
         self.gridLayout_5.setObjectName("gridLayout_5")
+        self.horizontalLayout_3 = QtGui.QHBoxLayout()
+        self.horizontalLayout_3.setObjectName("horizontalLayout_3")
         self.label_12 = QtGui.QLabel(self.miscTab)
         self.label_12.setObjectName("label_12")
-        self.gridLayout_5.addWidget(self.label_12,0,0,1,1)
+        self.horizontalLayout_3.addWidget(self.label_12)
         self.seedLE = QtGui.QLineEdit(self.miscTab)
         self.seedLE.setObjectName("seedLE")
-        self.gridLayout_5.addWidget(self.seedLE,0,1,1,1)
-        spacerItem10 = QtGui.QSpacerItem(135,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Minimum)
-        self.gridLayout_5.addItem(spacerItem10,0,2,1,1)
+        self.horizontalLayout_3.addWidget(self.seedLE)
+        self.gridLayout_5.addLayout(self.horizontalLayout_3,0,0,1,1)
+        spacerItem10 = QtGui.QSpacerItem(118,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Minimum)
+        self.gridLayout_5.addItem(spacerItem10,0,1,1,1)
         self.gridLayout_4 = QtGui.QGridLayout()
         self.gridLayout_4.setObjectName("gridLayout_4")
         self.label_14 = QtGui.QLabel(self.miscTab)
         self.label_14.setObjectName("label_14")
-        self.gridLayout_4.addWidget(self.label_14,0,0,1,2)
+        self.gridLayout_4.addWidget(self.label_14,0,0,1,1)
         self.warning_chi2_lowSB = QtGui.QDoubleSpinBox(self.miscTab)
         self.warning_chi2_lowSB.setAccelerated(True)
         self.warning_chi2_lowSB.setDecimals(1)
         self.warning_chi2_lowSB.setMaximum(10000000000.0)
         self.warning_chi2_lowSB.setProperty("value",QtCore.QVariant(0.1))
         self.warning_chi2_lowSB.setObjectName("warning_chi2_lowSB")
-        self.gridLayout_4.addWidget(self.warning_chi2_lowSB,0,2,1,1)
-        spacerItem11 = QtGui.QSpacerItem(68,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Minimum)
-        self.gridLayout_4.addItem(spacerItem11,1,0,1,1)
+        self.gridLayout_4.addWidget(self.warning_chi2_lowSB,0,1,1,1)
+        self.horizontalLayout_2 = QtGui.QHBoxLayout()
+        self.horizontalLayout_2.setObjectName("horizontalLayout_2")
+        spacerItem11 = QtGui.QSpacerItem(68,14,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Minimum)
+        self.horizontalLayout_2.addItem(spacerItem11)
         self.label_16 = QtGui.QLabel(self.miscTab)
         self.label_16.setObjectName("label_16")
-        self.gridLayout_4.addWidget(self.label_16,1,1,1,1)
+        self.horizontalLayout_2.addWidget(self.label_16)
+        self.gridLayout_4.addLayout(self.horizontalLayout_2,1,0,1,1)
         self.warning_chi2_highSB = QtGui.QDoubleSpinBox(self.miscTab)
         self.warning_chi2_highSB.setAccelerated(True)
         self.warning_chi2_highSB.setDecimals(1)
         self.warning_chi2_highSB.setMaximum(10000000000.0)
         self.warning_chi2_highSB.setProperty("value",QtCore.QVariant(0.1))
         self.warning_chi2_highSB.setObjectName("warning_chi2_highSB")
-        self.gridLayout_4.addWidget(self.warning_chi2_highSB,1,2,1,1)
-        self.gridLayout_5.addLayout(self.gridLayout_4,1,0,1,2)
-        spacerItem12 = QtGui.QSpacerItem(135,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Minimum)
-        self.gridLayout_5.addItem(spacerItem12,1,2,1,1)
+        self.gridLayout_4.addWidget(self.warning_chi2_highSB,1,1,1,1)
+        self.gridLayout_5.addLayout(self.gridLayout_4,1,0,1,1)
+        spacerItem12 = QtGui.QSpacerItem(118,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Minimum)
+        self.gridLayout_5.addItem(spacerItem12,1,1,1,1)
         self.autoWizardOnLoadCB = QtGui.QCheckBox(self.miscTab)
         self.autoWizardOnLoadCB.setChecked(True)
         self.autoWizardOnLoadCB.setObjectName("autoWizardOnLoadCB")
         self.gridLayout_5.addWidget(self.autoWizardOnLoadCB,2,0,1,1)
+        spacerItem13 = QtGui.QSpacerItem(118,20,QtGui.QSizePolicy.Expanding,QtGui.QSizePolicy.Minimum)
+        self.gridLayout_5.addItem(spacerItem13,2,1,1,1)
         self.tabWidget.addTab(self.miscTab,"")
         self.verticalLayout.addWidget(self.tabWidget)
         self.buttonBox = QtGui.QDialogButtonBox(Options)
@@ -302,7 +310,11 @@ class Ui_Options(object):
         self.label_4.setText(QtGui.QApplication.translate("Options", "Max Iter", None, QtGui.QApplication.UnicodeUTF8))
         self.SA_maxiterSB.setToolTip(QtGui.QApplication.translate("Options", "The Simulated annealing will stop after this many iterations.", None, QtGui.QApplication.UnicodeUTF8))
         self.SA_maxiterSB.setSpecialValueText(QtGui.QApplication.translate("Options", "No limit", None, QtGui.QApplication.UnicodeUTF8))
-        self.SA_stopTSB.setToolTip(QtGui.QApplication.translate("Options", "The Simulated annealing will stop if the T parameter gets reaches this value.", None, QtGui.QApplication.UnicodeUTF8))
+        self.SA_stopTSB.setToolTip(QtGui.QApplication.translate("Options", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">The Simulated annealing will stop if the T parameter reaches this value.</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.SA_stopTSB.setSpecialValueText(QtGui.QApplication.translate("Options", "No limit", None, QtGui.QApplication.UnicodeUTF8))
         self.SA_tolSB.setToolTip(QtGui.QApplication.translate("Options", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
@@ -315,7 +327,11 @@ class Ui_Options(object):
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">The Simulated annealing will stop if the Chi<span style=\" vertical-align:super;\">2</span> gets lower than this value.</p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.label.setText(QtGui.QApplication.translate("Options", "Tolerance", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_2.setToolTip(QtGui.QApplication.translate("Options", "The Simulated annealing will stop if the T parameter gets reaches this value.", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_2.setToolTip(QtGui.QApplication.translate("Options", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">The Simulated annealing will stop if the T parameter reaches this value.</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
         self.label_2.setText(QtGui.QApplication.translate("Options", "Stop T", None, QtGui.QApplication.UnicodeUTF8))
         self.tabWidget.setTabText(self.tabWidget.indexOf(self.SATab), QtGui.QApplication.translate("Options", "SimAnn", None, QtGui.QApplication.UnicodeUTF8))
         self.label_7.setToolTip(QtGui.QApplication.translate("Options", "Length of the Markov chain for the MCMC-BI algorithm\n"
@@ -397,7 +413,7 @@ class Ui_Options(object):
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:\'MS Shell Dlg 2\'; font-size:8.25pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:8pt;\">Fixed seed for pseudo-random number generator. If you leave this field blank, the seed will be different each time you start PAScual.</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_12.setText(QtGui.QApplication.translate("Options", "Seed (Random gen.)", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_12.setText(QtGui.QApplication.translate("Options", "Seed for random generators", None, QtGui.QApplication.UnicodeUTF8))
         self.seedLE.setToolTip(QtGui.QApplication.translate("Options", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
@@ -408,7 +424,7 @@ class Ui_Options(object):
         self.warning_chi2_lowSB.setToolTip(QtGui.QApplication.translate("Options", "The results table will warn that the fit is suspicious (by turning the row red) if the chi2 is outside the range set here.", None, QtGui.QApplication.UnicodeUTF8))
         self.warning_chi2_lowSB.setSpecialValueText(QtGui.QApplication.translate("Options", "No limit", None, QtGui.QApplication.UnicodeUTF8))
         self.label_16.setToolTip(QtGui.QApplication.translate("Options", "The results table will warn that the fit is suspicious (by turning the row red) if the chi2 is outside the range set here.", None, QtGui.QApplication.UnicodeUTF8))
-        self.label_16.setText(QtGui.QApplication.translate("Options", "or more than", None, QtGui.QApplication.UnicodeUTF8))
+        self.label_16.setText(QtGui.QApplication.translate("Options", "...or more than", None, QtGui.QApplication.UnicodeUTF8))
         self.warning_chi2_highSB.setToolTip(QtGui.QApplication.translate("Options", "The results table will warn that the fit is suspicious (by turning the row red) if the chi2 is outside the range set here.", None, QtGui.QApplication.UnicodeUTF8))
         self.warning_chi2_highSB.setSpecialValueText(QtGui.QApplication.translate("Options", "No limit", None, QtGui.QApplication.UnicodeUTF8))
         self.autoWizardOnLoadCB.setText(QtGui.QApplication.translate("Options", "Automatically open the Wizard when loading spectra", None, QtGui.QApplication.UnicodeUTF8))

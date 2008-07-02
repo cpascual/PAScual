@@ -703,38 +703,39 @@ p, li { white-space: pre-wrap; }
        <attribute name="title" >
         <string>Results</string>
        </attribute>
-       <layout class="QGridLayout" >
-        <property name="margin" >
-         <number>9</number>
-        </property>
-        <property name="spacing" >
-         <number>6</number>
-        </property>
-        <item row="1" column="0" >
-         <layout class="QHBoxLayout" >
-          <property name="spacing" >
-           <number>6</number>
-          </property>
-          <property name="margin" >
-           <number>0</number>
-          </property>
+       <layout class="QGridLayout" name="gridLayout" >
+        <item row="0" column="0" colspan="2" >
+         <layout class="QHBoxLayout" name="horizontalLayout" >
           <item>
-           <widget class="QToolButton" name="hideResultsBT" >
-            <property name="text" >
-             <string>Hide</string>
+           <spacer name="horizontalSpacer" >
+            <property name="orientation" >
+             <enum>Qt::Horizontal</enum>
             </property>
-           </widget>
+            <property name="sizeHint" stdset="0" >
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
           </item>
           <item>
-           <widget class="QToolButton" name="showResultsBT" >
+           <widget class="QToolButton" name="plotFitBT" >
+            <property name="toolTip" >
+             <string>Show detailed report.</string>
+            </property>
             <property name="text" >
-             <string>Show</string>
+             <string>...</string>
+            </property>
+            <property name="icon" >
+             <iconset resource="PAScual.qrc" >
+              <normaloff>:/Icons/icons/mine/qwtplot.png</normaloff>:/Icons/icons/mine/qwtplot.png</iconset>
             </property>
            </widget>
           </item>
          </layout>
         </item>
-        <item row="0" column="0" >
+        <item row="1" column="0" >
          <widget class="QListWidget" name="resultsColumnsListWidget" >
           <property name="sizePolicy" >
            <sizepolicy vsizetype="Expanding" hsizetype="Preferred" >
@@ -761,14 +762,38 @@ p, li { white-space: pre-wrap; }
           </property>
          </widget>
         </item>
-        <item row="0" column="1" >
+        <item row="1" column="1" >
          <widget class="QTableWidget" name="resultsTable" >
           <property name="contextMenuPolicy" >
            <enum>Qt::ActionsContextMenu</enum>
           </property>
          </widget>
         </item>
-        <item row="1" column="1" >
+        <item row="2" column="0" >
+         <layout class="QHBoxLayout" >
+          <property name="spacing" >
+           <number>6</number>
+          </property>
+          <property name="margin" >
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="QToolButton" name="hideResultsBT" >
+            <property name="text" >
+             <string>Hide</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QToolButton" name="showResultsBT" >
+            <property name="text" >
+             <string>Show</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item row="2" column="1" >
          <layout class="QHBoxLayout" >
           <property name="spacing" >
            <number>6</number>

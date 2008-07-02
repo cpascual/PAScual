@@ -297,7 +297,11 @@ p, li { white-space: pre-wrap; }
        <item row="1" column="1" >
         <widget class="QDoubleSpinBox" name="SA_stopTSB" >
          <property name="toolTip" >
-          <string>The Simulated annealing will stop if the T parameter gets reaches this value.</string>
+          <string>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" font-size:8pt;">The Simulated annealing will stop if the T parameter reaches this value.&lt;/span>&lt;/p>&lt;/body>&lt;/html></string>
          </property>
          <property name="specialValueText" >
           <string>No limit</string>
@@ -344,7 +348,11 @@ p, li { white-space: pre-wrap; }
        <item row="1" column="0" >
         <widget class="QLabel" name="label_2" >
          <property name="toolTip" >
-          <string>The Simulated annealing will stop if the T parameter gets reaches this value.</string>
+          <string>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" font-size:8pt;">The Simulated annealing will stop if the T parameter reaches this value.&lt;/span>&lt;/p>&lt;/body>&lt;/html></string>
          </property>
          <property name="text" >
           <string>Stop T</string>
@@ -667,46 +675,50 @@ p, li { white-space: pre-wrap; }
       </attribute>
       <layout class="QGridLayout" name="gridLayout_5" >
        <item row="0" column="0" >
-        <widget class="QLabel" name="label_12" >
-         <property name="toolTip" >
-          <string>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+        <layout class="QHBoxLayout" name="horizontalLayout_3" >
+         <item>
+          <widget class="QLabel" name="label_12" >
+           <property name="toolTip" >
+            <string>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
 &lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
 p, li { white-space: pre-wrap; }
 &lt;/style>&lt;/head>&lt;body style=" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;">
 &lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" font-size:8pt;">Fixed seed for pseudo-random number generator. If you leave this field blank, the seed will be different each time you start PAScual.&lt;/span>&lt;/p>&lt;/body>&lt;/html></string>
-         </property>
-         <property name="text" >
-          <string>Seed (Random gen.)</string>
-         </property>
-        </widget>
+           </property>
+           <property name="text" >
+            <string>Seed for random generators</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLineEdit" name="seedLE" >
+           <property name="toolTip" >
+            <string>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
+&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
+p, li { white-space: pre-wrap; }
+&lt;/style>&lt;/head>&lt;body style=" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;">
+&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" font-size:8pt;">Fixed seed for pseudo-random number generator. If you leave this field blank, the seed will be different each time you start PAScual.&lt;/span>&lt;/p>&lt;/body>&lt;/html></string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item row="0" column="1" >
-        <widget class="QLineEdit" name="seedLE" >
-         <property name="toolTip" >
-          <string>&lt;!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0//EN" "http://www.w3.org/TR/REC-html40/strict.dtd">
-&lt;html>&lt;head>&lt;meta name="qrichtext" content="1" />&lt;style type="text/css">
-p, li { white-space: pre-wrap; }
-&lt;/style>&lt;/head>&lt;body style=" font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;">
-&lt;p style=" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;">&lt;span style=" font-size:8pt;">Fixed seed for pseudo-random number generator. If you leave this field blank, the seed will be different each time you start PAScual.&lt;/span>&lt;/p>&lt;/body>&lt;/html></string>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="2" >
         <spacer name="horizontalSpacer_6" >
          <property name="orientation" >
           <enum>Qt::Horizontal</enum>
          </property>
          <property name="sizeHint" stdset="0" >
           <size>
-           <width>135</width>
+           <width>118</width>
            <height>20</height>
           </size>
          </property>
         </spacer>
        </item>
-       <item row="1" column="0" colspan="2" >
+       <item row="1" column="0" >
         <layout class="QGridLayout" name="gridLayout_4" >
-         <item row="0" column="0" colspan="2" >
+         <item row="0" column="0" >
           <widget class="QLabel" name="label_14" >
            <property name="toolTip" >
             <string>The results table will warn that the fit is suspicious (by turning the row red) if the chi2 is outside the range set here.</string>
@@ -716,7 +728,7 @@ p, li { white-space: pre-wrap; }
            </property>
           </widget>
          </item>
-         <item row="0" column="2" >
+         <item row="0" column="1" >
           <widget class="QDoubleSpinBox" name="warning_chi2_lowSB" >
            <property name="toolTip" >
             <string>The results table will warn that the fit is suspicious (by turning the row red) if the chi2 is outside the range set here.</string>
@@ -739,29 +751,33 @@ p, li { white-space: pre-wrap; }
           </widget>
          </item>
          <item row="1" column="0" >
-          <spacer name="horizontalSpacer_8" >
-           <property name="orientation" >
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0" >
-            <size>
-             <width>68</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
+          <layout class="QHBoxLayout" name="horizontalLayout_2" >
+           <item>
+            <spacer name="horizontalSpacer_8" >
+             <property name="orientation" >
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0" >
+              <size>
+               <width>68</width>
+               <height>14</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QLabel" name="label_16" >
+             <property name="toolTip" >
+              <string>The results table will warn that the fit is suspicious (by turning the row red) if the chi2 is outside the range set here.</string>
+             </property>
+             <property name="text" >
+              <string>...or more than</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
          </item>
          <item row="1" column="1" >
-          <widget class="QLabel" name="label_16" >
-           <property name="toolTip" >
-            <string>The results table will warn that the fit is suspicious (by turning the row red) if the chi2 is outside the range set here.</string>
-           </property>
-           <property name="text" >
-            <string>or more than</string>
-           </property>
-          </widget>
-         </item>
-         <item row="1" column="2" >
           <widget class="QDoubleSpinBox" name="warning_chi2_highSB" >
            <property name="toolTip" >
             <string>The results table will warn that the fit is suspicious (by turning the row red) if the chi2 is outside the range set here.</string>
@@ -785,14 +801,14 @@ p, li { white-space: pre-wrap; }
          </item>
         </layout>
        </item>
-       <item row="1" column="2" >
-        <spacer name="horizontalSpacer_7" >
+       <item row="1" column="1" >
+        <spacer name="horizontalSpacer_5" >
          <property name="orientation" >
           <enum>Qt::Horizontal</enum>
          </property>
          <property name="sizeHint" stdset="0" >
           <size>
-           <width>135</width>
+           <width>118</width>
            <height>20</height>
           </size>
          </property>
@@ -807,6 +823,19 @@ p, li { white-space: pre-wrap; }
           <bool>true</bool>
          </property>
         </widget>
+       </item>
+       <item row="2" column="1" >
+        <spacer name="horizontalSpacer_7" >
+         <property name="orientation" >
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeHint" stdset="0" >
+          <size>
+           <width>118</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
        </item>
       </layout>
      </widget>
