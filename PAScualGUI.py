@@ -1466,7 +1466,8 @@ if __name__ == "__main__":
 	app = QApplication(sys.argv)
 	app.setOrganizationName("CPI")
 	app.setApplicationName("PAScual")
-	app.setApplicationVersion(__version__)
+	try: app.setApplicationVersion(__version__)	#This only works with pyQT v>=4.4 (but the rest works ok with pyQTv4.3)
+	except AttributeError: print "DEBUG: setApplicationVersion() fails (nothing serious).\n Is pyQt version older than 4.4?"
 
 	form = PAScualGUI()
 	form.show()
