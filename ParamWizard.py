@@ -88,8 +88,8 @@ class GainAndFWHMPage(QWizardPage):
 		self.setLayout(layout)
 		
 		#register fields
-		self.registerField("psperchannel",self.psperchannelSB, "value","valueChanged()")
-		self.registerField("FWHM",self.FWHMSB, "value","valueChanged()")
+		self.registerField("psperchannel",self.psperchannelSB, "value", SIGNAL("valueChanged()"))
+		self.registerField("FWHM",self.FWHMSB, "value",SIGNAL("valueChanged()"))
 	
 	def validatePage(self):
 		w=self.wizard()
@@ -118,10 +118,10 @@ class ROIPage(QWizardPage):
 		self.ROIsel.lowerlimSB.setValue(-5)
 		
 		#register fields
-		self.registerField("lowerlimRel",self.ROIsel.lowerlimRelCB, "checked","toggled()")
-		self.registerField("lowerlim",self.ROIsel.lowerlimSB, "value","valueChanged()")
-		self.registerField("upperlimRel",self.ROIsel.upperlimRelCB, "checked","toggled()")
-		self.registerField("upperlim",self.ROIsel.upperlimSB, "value","valueChanged()")
+		self.registerField("lowerlimRel",self.ROIsel.lowerlimRelCB, "checked",SIGNAL("toggled()"))
+		self.registerField("lowerlim",self.ROIsel.lowerlimSB, "value",SIGNAL("valueChanged()"))
+		self.registerField("upperlimRel",self.ROIsel.upperlimRelCB, "checked",SIGNAL("toggled()"))
+		self.registerField("upperlim",self.ROIsel.upperlimSB, "value",SIGNAL("valueChanged()"))
 		
 		
 	def validatePage(self):
@@ -146,7 +146,7 @@ class AddCompsPage(QWizardPage):
 		self.setLayout(layout)
 		
 		#register fields
-		self.registerField("comps",self.AddCompsWidget.selectionsTE, "text","	textChanged()")
+		self.registerField("comps",self.AddCompsWidget.selectionsTE, "text",SIGNAL("textChanged()"))
 	
 	def validatePage(self):
 		okflag=self.AddCompsWidget.getComps()

@@ -340,7 +340,8 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		self.openFilesDlg.setDirectory(self.options.workDirectory)
 		selectedfilter=self.settings.value("openfilefilter", QVariant(QString(self.openFilesDlg.specFileLoaderDict['ASCII'].name))).toString()
 		self.openFilesDlg.selectFilter(selectedfilter)
-	
+		self.openFilesDlg.setOption(self.openFilesDlg.DontUseNativeDialog) #needed as a workaround to a bug in selectedNameFilter in the linux dialog
+	    
 	def onOptions(self):
 		'''Shows the options dialog and saves any changes if accepted'''
 		if self.optionsDlg is None: self.optionsDlg=PASoptions.OptionsDlg(self) #create the dialog if not already done
@@ -1156,6 +1157,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 				self.saveFilesDlg=QFileDialog(self, "%s - Save spectrum '%s'"%(QApplication.applicationName(),spectrum.name), "./","")
 				fileloadersdict=self.openFilesDlg.specFileLoaderDict
 				filefilters=["%s (%s)"%(fileloadersdict[k].name,fileloadersdict[k].filenamefilter) for k in ['PAScual','ASCII','LT']]
+				self.saveFilesDlg.setOption(QFileDialog.DontUseNativeDialog)#needed as a workaround to a bug in selectedNameFilter in the linux dialog
 				self.saveFilesDlg.setFilters(filefilters)
 				self.saveFilesDlg.selectFilter(fileloadersdict['PAScual'].name)
 			self.saveFilesDlg.setWindowTitle ("%s - Save spectrum '%s'"%(QApplication.applicationName(),spectrum.name))
