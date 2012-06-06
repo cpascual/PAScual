@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''
 	PAScualGUI: Graphical User Interface for PAScual
     PAScual: Positron Annihilation Spectroscopy data analysis
@@ -371,9 +372,11 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		
 
 	def onResultsFileSelectBT(self):
-		filename=QFileDialog.getSaveFileName ( self, "Results File Selection", self.options.workDirectory+'/PASresults.txt',
-											"ASCII (*.txt)"+
-											"All (*)",'',QFileDialog.DontConfirmOverwrite)
+		filename=QFileDialog.getSaveFileName ( self, "Results File Selection",
+						       self.options.workDirectory+'/PASresults.txt',
+						       "ASCII (*.txt)\nAll (*)", 
+						       '',
+						       QFileDialog.DontConfirmOverwrite|QFileDialog.DontUseNativeDialog)
 		if filename: self.resultsFileLE.setText(filename)
 		
 	def onSaveOutput_as(self,ofile=None ):
@@ -383,7 +386,11 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 			return
 		if ofile is None: #if a file is not given, prompt the user for a file name
 			if self.outputFileName is None: self.outputFileName=self.options.workDirectory+'/PASoutput.txt' #set default file name
-			ofile=QFileDialog.getSaveFileName (self, "Output File Selection", self.outputFileName,"ASCII (*.txt)\nAll (*)",'',QFileDialog.DontConfirmOverwrite)
+			ofile=QFileDialog.getSaveFileName (self, "Output File Selection", 
+							   self.outputFileName,
+							   "ASCII (*.txt)\nAll (*)",
+							   '',
+							   QFileDialog.DontConfirmOverwrite|QFileDialog.DontUseNativeDialog)
 			if not ofile: return #failed to get a valid filename
 		
 		#Manage the file
@@ -1351,7 +1358,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 					
 	def loadParameters(self):
 		'''uses a dp to fill the parameters. If no spectra si given, it asks to load a file which is expected to contain a pickled discretepals'''
-		filename=QFileDialog.getOpenFileName ( self, "Load parameters from...", self.options.workDirectory,	"(*.par *.ps1)")
+		filename=QFileDialog.getOpenFileName ( self, "Load parameters from...", self.options.workDirectory, "(*.par *.ps1)", '', QFileDialog.DontUseNativeDialog)
 		if filename: 
 			loader=SpecFiles.PAScualfileLoader()
 			dp=loader.getDiscretePals(filename)
@@ -1362,7 +1369,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 	
 	def saveParameters(self,filename=None):
 		if filename is None:
-			filename=unicode(QFileDialog.getSaveFileName ( self, "Save parameters in...", self.options.workDirectory+'/PASparams.par', "Parameters File (*.par)"))
+			filename=unicode(QFileDialog.getSaveFileName ( self, "Save parameters in...", self.options.workDirectory+'/PASparams.par', "Parameters File (*.par)", '',QFileDialog.DontUseNativeDialog))
 		if filename: 
 			bg=self.bgFitparWidget.getFitpar()
 			c0=self.c0FitparWidget.getFitpar()
