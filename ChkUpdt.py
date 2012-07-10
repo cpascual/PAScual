@@ -85,12 +85,13 @@ class updater(QDialog):
 		if lastrls is None: 
 			self.daysSB.setValue(__RETRYONERROR__)
 		else:
-			if self.compareversions(self.currver,lastrls)<0: 
+			if self.compareversions(self.currver,lastrls)<0:
+				updateurl = url[:-3]+"php" 
 				QMessageBox.information(self, "Update recommended","""<p>You are currently running v%s.</p>"""
 																"""<p>A newer version (v%s) is available.</p>"""
 																"""<p>Newer versions correct bugs and introduce more features and documentation</p>"""
 																"""<p><b>Updating is recommended</b></p>"""
-																"""<p>Click <a href="%s">here</a> to download the newest version</p>"""%(self.currver,lastrls,url[:-3]+"php"))
+																"""<p>Visit <a href="%s">%s</a> to download the newest version</p>"""%(self.currver,lastrls,updateurl,updateurl))
 			else:
 				QMessageBox.information(self, "Current version is up-to-date","""<p>The version that you are running (v%s) seems up-to-date.</p>"""
 																			"""<p>If you want to be informed of new releases of PAScual,"""
