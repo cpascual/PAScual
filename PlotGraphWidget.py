@@ -106,6 +106,11 @@ class PALSplot(Qwt.QwtPlot):
 		self._plotdict={}
 		self.__clear=self.clear
 # 		self.connect(self.picker, Qt.SIGNAL('selected(const QwtDoublePoint&)'), pointselected)
+		self.setContextMenuPolicy(Qt.Qt.ActionsContextMenu)
+		self._exportPdfAction = Qt.QAction("Export plot to PDF...", self)
+		self.connect(self._exportPdfAction, Qt.SIGNAL("triggered()"), self.exportPdf)
+		self.addAction(self._exportPdfAction)
+
 	def attachCurve(self, x, y, name='', pen=None, style="Lines"):
 		if pen is None: pen=Qt.QPen(self.autocolor.next())
 		self.YscaleMax=max(self.YscaleMax,1.2*max(y))
@@ -136,6 +141,34 @@ class PALSplot(Qwt.QwtPlot):
 		self.setAxisScale(Qwt.QwtPlot.yLeft,self.YscaleMin,self.YscaleMax)
 		self.replot()
 		self.zoomer.setZoomBase()
+	def exportPdf(self,fileName=None):
+		"""Export the plot to a PDF. slot for the _exportPdfAction.
+
+		:param fileName: (str) The name of the file to which the plot will be
+						 exported. If None given, the user will be prompted for
+						 a file name.
+		"""
+		if fileName is None:
+			fileName = Qt.QFileDialog.getSaveFileName(self, 'Export File Name', 
+													'plot.pdf', 'PDF Documents (*.pdf)','',
+													Qt.QFileDialog.DontUseNativeDialog)
+		fileName = str(fileName)	
+		if fileName:
+			try: #check if the file is actually writable
+				f = open(fileName,'w') 
+				f.close()
+			except:
+				self.error("Can't write to '%s'"%fileName)
+				Qt.QMessageBox.warning(self, "File Error",
+									   "Can't write to\n'%s'"%fileName,
+										Qt.QMessageBox.Ok)
+				return
+			printer = Qt.QPrinter()
+			printer.setOutputFormat(Qt.QPrinter.PdfFormat)
+			printer.setOrientation(Qt.QPrinter.Landscape)
+			printer.setOutputFileName(fileName)
+			printer.setCreator('PAScual')
+			self.print_(printer)
 
 
 class ResPlot(Qwt.QwtPlot):	
@@ -184,6 +217,11 @@ class ResPlot(Qwt.QwtPlot):
 		self._plotdict={}
 		self.__clear=self.clear
 # 		self.connect(self.picker, Qt.SIGNAL('selected(const QwtDoublePoint&)'), pointselected)
+		self.setContextMenuPolicy(Qt.Qt.ActionsContextMenu)
+		self._exportPdfAction = Qt.QAction("Export plot to PDF...", self)
+		self.connect(self._exportPdfAction, Qt.SIGNAL("triggered()"), self.exportPdf)
+		self.addAction(self._exportPdfAction)
+
 	def attachCurve(self, x, y, name='', pen=None):
 		if pen is None: pen=Qt.QPen(self.autocolor.next(),2)
 		self.YscaleMax=min(10,1.2*max(y))
@@ -216,6 +254,35 @@ class ResPlot(Qwt.QwtPlot):
 		self.zoomer.setZoomBase()	
 	def sizeHint(self):
 		return Qt.QSize(300,150)
+	def exportPdf(self,fileName=None):
+		"""Export the plot to a PDF. slot for the _exportPdfAction.
+
+		:param fileName: (str) The name of the file to which the plot will be
+						 exported. If None given, the user will be prompted for
+						 a file name.
+		"""
+		if fileName is None:
+			fileName = Qt.QFileDialog.getSaveFileName(self, 'Export File Name', 
+													'plot.pdf', 'PDF Documents (*.pdf)','',
+													Qt.QFileDialog.DontUseNativeDialog)
+		fileName = str(fileName)	
+		if fileName:
+			try: #check if the file is actually writable
+				f = open(fileName,'w') 
+				f.close()
+			except:
+				self.error("Can't write to '%s'"%fileName)
+				Qt.QMessageBox.warning(self, "File Error",
+									   "Can't write to\n'%s'"%fileName,
+										Qt.QMessageBox.Ok)
+				return
+			printer = Qt.QPrinter()
+			printer.setOutputFormat(Qt.QPrinter.PdfFormat)
+			printer.setOrientation(Qt.QPrinter.Landscape)
+			printer.setOutputFileName(fileName)
+			printer.setCreator('PAScual')
+			self.print_(printer)
+
 		
 def make():
 	demo = PALSplot()
