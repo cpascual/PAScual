@@ -21,8 +21,9 @@
 
 
 #########DO NOT TOUCH THIS BLOCK ##############################
-from scipy import inf, array, arange,log, exp, concatenate,savetxt
 from glob import glob as matchfilenames
+from scipy import inf, array, arange, log, exp, concatenate, savetxt
+
 ############# END OF "DO-NOT-TOUCH" BLOCK #####################
 
 
@@ -49,7 +50,7 @@ from glob import glob as matchfilenames
 # expfilenames=['data/KansyA.dat','data/KansyB.dat','data/KansyC.dat','data/KansyD.dat']
 # path="C:\Documents and Settings\pas064\My Documents\PALS\Aurelia\Al holder\PHYT_T20/selectedsums/"
 # path="C:\Documents and Settings\pas064\My Documents\PALS\Aurelia\Al holder\PHYT_T20/"
-path='./examples/'
+path = './examples/'
 
 # expfilenames=[]
 # expfilenames=matchfilenames(path+'Pure*/??_???*sum.al2')
@@ -68,17 +69,16 @@ path='./examples/'
 # expfilenames+=matchfilenames(path+'28/??_???.al2')[:10]
 
 
-expfilenames=matchfilenames(path+'*.dat')
-
+expfilenames = matchfilenames(path + '*.dat')
 
 # expfilenames+=matchfilenames(path+'CPI_A_*.dat')
 # expfilenames=5*[None]
 
 # skipfilenames=(matchfilenames(path+'28_1??.al2')) # list of file names names to ignore (useful if matchfilenames() returned some unwanted file names)
-headerlines=4						#(*1) Number of rows to skip when reading the exp file (to skip the header). Put to 0 if no header.
+headerlines = 4  # (*1) Number of rows to skip when reading the exp file (to skip the header). Put to 0 if no header.
 
 ####### Calibration.
-psperchannel=50			# (*1) Channel width in picoseconds. 
+psperchannel = 50  # (*1) Channel width in picoseconds.
 
 ######ROI definition.
 #### Any roi can be given. Just do an array (or list) containing channel numbers in the ROI. 
@@ -86,9 +86,8 @@ psperchannel=50			# (*1) Channel width in picoseconds.
 # roi=arange(213,879)  				#roi between channels 10 and 800
 # roi=range(10,200)+range(400,500)  #roi defined in by two subranges 							# (*1) The whole spectrum
 #### OR, ALTERNATIVELY, instead of directly defining the roi, you can define the left_of_max and stopdat variables as in MELT. 
-left_of_max=5				# (*1) Start this much at the left of the channel with the max number of counts.
-stopdat=689				# (*1) Channel where the data stops.
-
+left_of_max = 5  # (*1) Start this much at the left of the channel with the max number of counts.
+stopdat = 689  # (*1) Channel where the data stops.
 
 ####### Named parameters
 #### For convenience, it is possible to assign a name to a parameter. 
@@ -98,24 +97,26 @@ stopdat=689				# (*1) Channel where the data stops.
 #### therefore that parameter will be independent (as opposed to "common")
 #### On the other hand, if a "*" is appended to the name when referring to it, a copy is NOT made (allowing to have common parameters)
 
-namedparameters={
-'fwhm':(270,100,500),
-'c0':(30,10,100),
-'bg':(20,1,1000),
-'tau_pPs':(125,50,250),'tau_drt':(400,250,600),'tau_oPs':(3000,600,142e3), 
-'tau1':(125,50,350),'tau2':(400,150,600),'tau3':(1900,500,142e3),
-'tau':(300,psperchannel,142e3),'tauKansy':(300,psperchannel,142e3),
-'ity':(1,0,None),'ityKansy':(1,0,None),
-'tau4':(1300,800,5000),'at1':(1500,1000,4000),'at2':1.7,
-'tausrc':1630, 'itysrc':.066,'tauH2O':(1800,1600,2000),'tauPHYT':(2800,2000,3500)}
+namedparameters = {
+    'fwhm': (270, 100, 500),
+    'c0': (30, 10, 100),
+    'bg': (20, 1, 1000),
+    'tau_pPs': (125, 50, 250), 'tau_drt': (400, 250, 600),
+    'tau_oPs': (3000, 600, 142e3),
+    'tau1': (125, 50, 350), 'tau2': (400, 150, 600), 'tau3': (1900, 500, 142e3),
+    'tau': (300, psperchannel, 142e3), 'tauKansy': (300, psperchannel, 142e3),
+    'ity': (1, 0, None), 'ityKansy': (1, 0, None),
+    'tau4': (1300, 800, 5000), 'at1': (1500, 1000, 4000), 'at2': 1.7,
+    'tausrc': 1630, 'itysrc': .066, 'tauH2O': (1800, 1600, 2000),
+    'tauPHYT': (2800, 2000, 3500)}
 
 ######Background.
 ####Note: unless you fix the background, it doesn't really matter to give a precise value.
 # bg=(100,0,1e4)			# (*1)(*2) 
 #### ALTERNATIVELY: If the baseline is present in a region of your spectrum, you can just give its starting and end channels
 ####                In this case, it is assumed to be free non-common parameter(s)  and the min and max will be automatically calculated
-startbg=660 				# (*1) first bin for background initialisation 
-stopbg=680					# (*1) last bin for background initialisation
+startbg = 660  # (*1) first bin for background initialisation
+stopbg = 680  # (*1) last bin for background initialisation
 # bg=(20,1,200)
 # bg=25*5
 # bg=[5e-5*1e6*float(a) for a in areaList ]
@@ -126,7 +127,7 @@ stopbg=680					# (*1) last bin for background initialisation
 #### Resolution function Full Width Half Maximum in ps (assuming Gaussian shape)
 # fwhm=(300,200,400)  # (*1)(*2) FWHM
 # fwhm="fwhm"
-fwhm=(280,None,None)
+fwhm = (280, None, None)
 # fwhm=270
 
 ###### Offset. 
@@ -139,7 +140,8 @@ fwhm=(280,None,None)
 ####### Lifetimes
 #### Define the lifetimes as a TUPLE of fitpar descriptors, i.e., as (t1,t2,t3,...),  where ti is one of the cases described by (*2)
 #### note that a "list of tuples of descriptors" is also possible just following (*1)
-tau=((100,50,200),(400,200,500),(1000,500,1.42e5))  		# (*1)(*2) lifetimes in ps.  Note, min>0 and max<1.42e5ps
+tau = ((100, 50, 200), (400, 200, 500), (
+1000, 500, 1.42e5))  # (*1)(*2) lifetimes in ps.  Note, min>0 and max<1.42e5ps
 # tau=[("tau1","tau2","tau3",1000), ("tau1","tau2","tau3",1050)]+2*[(234,"Ctau2")]
 # tau=[("tau1","tau2","tau3","tau4")]+2*[(234,"Ctau2")]
 # tau=('tau1*','tau2*','tau3*',(1140,50,150000))
@@ -176,7 +178,7 @@ tau=((100,50,200),(400,200,500),(1000,500,1.42e5))  		# (*1)(*2) lifetimes in ps
 ####					BI should be run after the global minimum is found in order to calculate the errors. Use it after SA
 ####					LOCAL is not robust but it is fast once you are near the minimum. Use it after SA. 
 
-fitmode=('LOCAL','LOG '+path+'results.txt')
+fitmode = ('LOCAL', 'LOG ' + path + 'results.txt')
 # fitmode=('LOAD','SA','LOCAL','BI','SAVE')
 # fitmode=('LOAD','BI','REPORT','SAVE')
 # fitmode=[('SA','SAVE kk0_SA','BI','SAVE kk0_BI','LOCAL','SAVE kk0_LOCAL'),('SA','SAVE kk1_SA','BI','SAVE kk1_BI','LOCAL','SAVE kk1_LOCAL'),('SA','SAVE kk2_SA','BI','SAVE kk2_BI','LOCAL','SAVE kk2_LOCAL'),('SA','SAVE kk3_SA','BI','SAVE kk3_BI','LOCAL','SAVE kk3_LOCAL')]
@@ -200,32 +202,33 @@ fitmode=('LOCAL','LOG '+path+'results.txt')
 ######Output 
 ###Output data file. See following examples:
 # outputfile=path+'output.txt' #a name
-outputfile=None 		#no output file creation
+outputfile = None  # no output file creation
 # outputfile=expfilename.rsplit('.',1)[0]+'.out' #same as the experimental but with .out extension
 # outputfile=expfilename.rsplit('.',1)[0]+'20.out'
-BI_report=500		   #A report will be shown every this steps during BI (put to -1 for no reports). Be Careful: too much reports may slow down the calc.
-
+BI_report = 500  # A report will be shown every this steps during BI (put to -1 for no reports). Be Careful: too much reports may slow down the calc.
 
 ####Advanced fitting parameters
 #### IMPORTANT:
 #### The following parameters are not supposed to be changed by regular users. They deal with internal algorithmical choices.
 #### The default values are generally correct. Don't mess with them if you don't know exactly what you are doing
-SA_tol=1e-5			#(*3)Tolerance for stopping the SA
-SA_stopT=.1 		#(*3)Stop temperature for SA (put to 0 to disable). (SA_stopT>1 is not recommended)
-SA_maxiter=inf		#(*3)Max number of iterations in the SimAnn fit
-SA_direct=True 		#(*3)Whether to use the direct mode in NNRLA for SA. Note: If SA_NNRLA=False (or <=0), SA_direct is ignored.
-SA_meltratio=0.97	#(*3)The "melting" phase of the SA will stop when this acceptance ratio is reached
+SA_tol = 1e-5  # (*3)Tolerance for stopping the SA
+SA_stopT = .1  # (*3)Stop temperature for SA (put to 0 to disable). (SA_stopT>1 is not recommended)
+SA_maxiter = inf  # (*3)Max number of iterations in the SimAnn fit
+SA_direct = True  # (*3)Whether to use the direct mode in NNRLA for SA. Note: If SA_NNRLA=False (or <=0), SA_direct is ignored.
+SA_meltratio = 0.97  # (*3)The "melting" phase of the SA will stop when this acceptance ratio is reached
 
-LOCAL_tol=0			#(NOT USED) (*3)Local search tolerance (the lower, the more time it will take). Put this to 0 to skip Local search and ~1e-5 for calculating
-LOCAL_maxiter=1e5	#(NOT USED) (*3)Max number of iterations in the LOCAL fit. 
+LOCAL_tol = 0  # (NOT USED) (*3)Local search tolerance (the lower, the more time it will take). Put this to 0 to skip Local search and ~1e-5 for calculating
+LOCAL_maxiter = 1e5  # (NOT USED) (*3)Max number of iterations in the LOCAL fit.
 
-BI_stab=5000		#(*3)This much steps (multiplied by the order of the searching space!) of BI will be done and not considered for statistical purposes. Put this to 0 to skip stabilisation.
-BI_length=50000	#(*3)This much steps (multiplied by the order of the searching space) will be calculated by BI.
-seed=1345 		#Seed for pseudorandom generator 
+BI_stab = 5000  # (*3)This much steps (multiplied by the order of the searching space!) of BI will be done and not considered for statistical purposes. Put this to 0 to skip stabilisation.
+BI_length = 50000  # (*3)This much steps (multiplied by the order of the searching space) will be calculated by BI.
+seed = 1345  # Seed for pseudorandom generator
 
+if __name__ == '__main__':
+    from PAScual import *
 
-if __name__=='__main__': 
-	from PAScual import *
-	try: import pylab
-	except:	print >>sys.stderr, "Pylab could not be imported. Graphical output won't be supported"
-	safemain()	
+    try:
+        import pylab
+    except:
+        print >> sys.stderr, "Pylab could not be imported. Graphical output won't be supported"
+    safemain()

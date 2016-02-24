@@ -27,69 +27,77 @@ See: TL Dull et al., J. Phys Chem B 105, 4657 (2001)
 
 from pyTaoEldrup import *
 
+
 def raw_inputdflt(prompt, dflt=None):
-	"""Like  raw_input() but it accepts a default answer.
-	"""
-	if dflt:
-		prompt = "%s[%s] " % (prompt, dflt)
-		res = raw_input(prompt)
-	if not res and dflt:
-		return dflt
-	return res
-	
-#////////////////////////////////MAIN FUNCTION\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
+    """Like  raw_input() but it accepts a default answer.
+    """
+    if dflt:
+        prompt = "%s[%s] " % (prompt, dflt)
+        res = raw_input(prompt)
+    if not res and dflt:
+        return dflt
+    return res
+
+
+# ////////////////////////////////MAIN FUNCTION\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 def TEcalc():
-	print 'Tao-Eldrup Calculator, v0.3'
-	print '(C) 2007 Carlos Pascual-Izarra\n'
-	T=298.
-	cont=True
-	while (cont):
-		try:
-			tau=float(raw_input('oPs lifetime? (ns) (enter 0 to finish) '))		
-		except ValueError:
-			continue
-		if tau>0: 
-			T=float(raw_inputdflt('Temperature? (Kelvin)',T))
-			if tau<15.:
-				R=TE_radius(tau)
-				print '\nOriginal TE model: Sphere radius= %.5lg nm or %.5lg nm (hard sphere) '%(R,R+TE_softwall)
-			else:print 'Original TE model: (out of range)'
-			a=RTE_cube(tau,T)
-			print 'RTE model: Cube side= %.5lg nm'%a
-			R=a/2.-TE_softwall
-			print 'RTE model: Equivalent sphere radius= %.5lg nm or %.5lg nm (hard sphere) '%(R,R+TE_softwall)
-			print 'RTE model: Square channel side= %.5lg nm'%RTE_channel(tau,T)
-			print 'RTE model: Sheet spacing= %.5lg nm\n'%RTE_sheet(tau,T)
-		else: 
-			cont=False
+    print 'Tao-Eldrup Calculator, v0.3'
+    print '(C) 2007 Carlos Pascual-Izarra\n'
+    T = 298.
+    cont = True
+    while (cont):
+        try:
+            tau = float(raw_input('oPs lifetime? (ns) (enter 0 to finish) '))
+        except ValueError:
+            continue
+        if tau > 0:
+            T = float(raw_inputdflt('Temperature? (Kelvin)', T))
+            if tau < 15.:
+                R = TE_radius(tau)
+                print '\nOriginal TE model: Sphere radius= %.5lg nm or %.5lg nm (hard sphere) ' % (
+                R, R + TE_softwall)
+            else:
+                print 'Original TE model: (out of range)'
+            a = RTE_cube(tau, T)
+            print 'RTE model: Cube side= %.5lg nm' % a
+            R = a / 2. - TE_softwall
+            print 'RTE model: Equivalent sphere radius= %.5lg nm or %.5lg nm (hard sphere) ' % (
+            R, R + TE_softwall)
+            print 'RTE model: Square channel side= %.5lg nm' % RTE_channel(tau,
+                                                                           T)
+            print 'RTE model: Sheet spacing= %.5lg nm\n' % RTE_sheet(tau, T)
+        else:
+            cont = False
+
 
 def PlotCurves():
-	try:
-	    import pylab
-	except ImportError:
-	    print '\nError: you need http://matplotlib.sourceforge.net/ installed on your computer for PlotCurves to work'
-	    print 'See http://matplotlib.sourceforge.net/\n'
-	    return
-	T=298.
-	mfp=S.concatenate((S.arange(.3,10,.1),S.arange(10,100,1.),S.arange(100,500,10)))
-	R=(3./4.)*mfp-TE_softwall
-	a_cube=mfp*1.5
-	a_chann=mfp
-	a_sheet=0.5*mfp
-	v_RTE=S.vectorize(RectangularTaoEldrup)
-	v_TE=S.vectorize(TaoEldrup)
-	lim=25
-	pylab.ylabel('oPs lifetime (ns)')
-	pylab.xlabel('Mean free path(nm)')
-	pylab.gca().set_xscale('log')
-	pylab.plot(mfp[:lim],v_TE(R[:lim]),'r-.')
-	pylab.plot(mfp,v_RTE(a_cube,a_cube,a_cube,T),'-')
-	pylab.plot(mfp,v_RTE(a_chann,a_chann,S.inf,T),':')
-	pylab.plot(mfp,v_RTE(a_sheet,S.inf,S.inf,T),'--')
-	pylab.show()
+    try:
+        import pylab
+    except ImportError:
+        print '\nError: you need http://matplotlib.sourceforge.net/ installed on your computer for PlotCurves to work'
+        print 'See http://matplotlib.sourceforge.net/\n'
+        return
+    T = 298.
+    mfp = S.concatenate(
+        (S.arange(.3, 10, .1), S.arange(10, 100, 1.), S.arange(100, 500, 10)))
+    R = (3. / 4.) * mfp - TE_softwall
+    a_cube = mfp * 1.5
+    a_chann = mfp
+    a_sheet = 0.5 * mfp
+    v_RTE = S.vectorize(RectangularTaoEldrup)
+    v_TE = S.vectorize(TaoEldrup)
+    lim = 25
+    pylab.ylabel('oPs lifetime (ns)')
+    pylab.xlabel('Mean free path(nm)')
+    pylab.gca().set_xscale('log')
+    pylab.plot(mfp[:lim], v_TE(R[:lim]), 'r-.')
+    pylab.plot(mfp, v_RTE(a_cube, a_cube, a_cube, T), '-')
+    pylab.plot(mfp, v_RTE(a_chann, a_chann, S.inf, T), ':')
+    pylab.plot(mfp, v_RTE(a_sheet, S.inf, S.inf, T), '--')
+    pylab.show()
 
-if __name__=='__main__':
-	TEcalc() 
+
+if __name__ == '__main__':
+    TEcalc()
 # 	PlotCurves()
-

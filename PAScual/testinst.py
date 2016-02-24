@@ -18,56 +18,68 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-
 print "Testing the required Python packages"
 
 ##print '**Required for PAScual.py'
 print '\nnumpy...',
-try: import numpy as t1
-except:	print "Failed"
-else: 
-	print 'ok, version:',t1.version.version
+try:
+    import numpy as t1
+except:
+    print "Failed"
+else:
+    print 'ok, version:', t1.version.version
 
 print '\nscipy...',
-try: import scipy as t2
-except:	print "Failed"
-else: 
-	print 'ok, version:',t2.version.version
+try:
+    import scipy as t2
+except:
+    print "Failed"
+else:
+    print 'ok, version:', t2.version.version
 
 ##print '**Required for graphs in text mode'
 
 print '\nmatplotlib...',
-try: import matplotlib as t3
-except:	print "Failed"
-else: 
-	print 'ok, version:',t3.__version__
+try:
+    import matplotlib as t3
+except:
+    print "Failed"
+else:
+    print 'ok, version:', t3.__version__
 
 ##print '**Required for PAScualGUI.py'
 
 print '\nPyQt...',
-try: 
-	import PyQt4.QtCore as t4
-	import PyQt4.QtGui as t4b
-except:	print "Failed"
-else: 
-	print 'ok, version:',t4.PYQT_VERSION_STR
+try:
+    import PyQt4.QtCore as t4
+    import PyQt4.QtGui as t4b
+except:
+    print "Failed"
+else:
+    print 'ok, version:', t4.PYQT_VERSION_STR
 
 print '\nPyQwt...',
-try: import PyQt4.Qwt5 as t5
-except:	print "Failed"
-else: 
-	print 'ok, version:',t5.QWT_VERSION_STR
+try:
+    import PyQt4.Qwt5 as t5
+except:
+    print "Failed"
+else:
+    print 'ok, version:', t5.QWT_VERSION_STR
 
 print '\n\nTesting PAScual.py',
-try: import PAScual as t6
-except:	print "Failed"
-else: 
-	print 'ok, version:',t6.__version__
-	
+try:
+    import PAScual as t6
+except:
+    print "Failed"
+else:
+    print 'ok, version:', t6.__version__
+
 print '\n\nTesting PAScualGUI.py',
-try: import PAScualGUI as t7
-except:	print "Failed"
-else: 
-	print 'ok, version:',t7.__version__
+try:
+    import PAScualGUI as t7
+except:
+    print "Failed"
+else:
+    print 'ok, version:', t7.__version__
 
 raw_input('\n\nPress <Enter> key to finish')

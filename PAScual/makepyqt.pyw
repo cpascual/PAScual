@@ -22,6 +22,7 @@ import os
 import platform
 import stat
 import sys
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
@@ -29,36 +30,35 @@ __version__ = "1.1.0m"
 
 
 class OptionsForm(QDialog):
-
     def __init__(self, parent=None):
         super(OptionsForm, self).__init__(parent)
 
         settings = QSettings()
         pyuic4Label = QLabel("pyuic4")
         self.pyuic4Label = QLabel(
-                settings.value("pyuic4", QVariant(PYUIC4)).toString())
-        self.pyuic4Label.setFrameStyle(QFrame.StyledPanel|QFrame.Sunken)
+            settings.value("pyuic4", QVariant(PYUIC4)).toString())
+        self.pyuic4Label.setFrameStyle(QFrame.StyledPanel | QFrame.Sunken)
         pyuic4Button = QPushButton("py&uic4...")
         pyrcc4Label = QLabel("pyrcc4")
         self.pyrcc4Label = QLabel(
-                settings.value("pyrcc4", QVariant(PYRCC4)).toString())
-        self.pyrcc4Label.setFrameStyle(QFrame.StyledPanel|QFrame.Sunken)
+            settings.value("pyrcc4", QVariant(PYRCC4)).toString())
+        self.pyrcc4Label.setFrameStyle(QFrame.StyledPanel | QFrame.Sunken)
         pyrcc4Button = QPushButton("pyr&cc4...")
         pylupdate4Label = QLabel("pylupdate4")
         self.pylupdate4Label = QLabel(
-                settings.value("pylupdate4",
-                        QVariant(PYLUPDATE4)).toString())
-        self.pylupdate4Label.setFrameStyle(QFrame.StyledPanel|
+            settings.value("pylupdate4",
+                           QVariant(PYLUPDATE4)).toString())
+        self.pylupdate4Label.setFrameStyle(QFrame.StyledPanel |
                                            QFrame.Sunken)
         pylupdate4Button = QPushButton("py&lupdate4...")
         lreleaseLabel = QLabel("lrelease")
         self.lreleaseLabel = QLabel(
-                settings.value("lrelease",
-                        QVariant("lrelease")).toString())
-        self.lreleaseLabel.setFrameStyle(QFrame.StyledPanel|QFrame.Sunken)
+            settings.value("lrelease",
+                           QVariant("lrelease")).toString())
+        self.lreleaseLabel.setFrameStyle(QFrame.StyledPanel | QFrame.Sunken)
         lreleaseButton = QPushButton("l&release...")
 
-        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok|
+        buttonBox = QDialogButtonBox(QDialogButtonBox.Ok |
                                      QDialogButtonBox.Cancel)
 
         layout = QGridLayout()
@@ -78,28 +78,26 @@ class OptionsForm(QDialog):
         self.setLayout(layout)
 
         self.connect(pyuic4Button, SIGNAL("clicked()"),
-                lambda: self.setPath("pyuic4"))
+                     lambda: self.setPath("pyuic4"))
         self.connect(pyrcc4Button, SIGNAL("clicked()"),
-                lambda: self.setPath("pyrcc4"))
+                     lambda: self.setPath("pyrcc4"))
         self.connect(pylupdate4Button, SIGNAL("clicked()"),
-                lambda: self.setPath("pylupdate4"))
+                     lambda: self.setPath("pylupdate4"))
         self.connect(lreleaseButton, SIGNAL("clicked()"),
-                lambda: self.setPath("lrelease"))
+                     lambda: self.setPath("lrelease"))
         self.connect(buttonBox, SIGNAL("accepted()"), self.accept)
         self.connect(buttonBox, SIGNAL("rejected()"), self.reject)
 
         self.setWindowTitle("Make PyQt - Tool Paths")
-
 
     def accept(self):
         settings = QSettings()
         settings.setValue("pyuic4", QVariant(self.pyuic4Label.text()))
         settings.setValue("pyrcc4", QVariant(self.pyrcc4Label.text()))
         settings.setValue("pylupdate4",
-                QVariant(self.pylupdate4Label.text()))
+                          QVariant(self.pylupdate4Label.text()))
         settings.setValue("lrelease", QVariant(self.lreleaseLabel.text()))
         QDialog.accept(self)
-
 
     def setPath(self, tool):
         if tool == "pyuic4":
@@ -111,13 +109,13 @@ class OptionsForm(QDialog):
         elif tool == "lrelease":
             label = self.lreleaseLabel
         path = QFileDialog.getOpenFileName(self,
-                "Make PyQt - Set Tool Path", label.text())
+                                           "Make PyQt - Set Tool Path",
+                                           label.text())
         if path:
             label.setText(QDir.toNativeSeparators(path))
 
 
 class Form(QMainWindow):
-
     def __init__(self):
         super(Form, self).__init__(None)
 
@@ -130,31 +128,31 @@ class Form(QMainWindow):
                     os.getcwd())
         else:
             path = (sys.argv[1] if len(sys.argv) > 1 and
-                            QFile.exists(sys.argv[1]) else os.getcwd())
+                                   QFile.exists(sys.argv[1]) else os.getcwd())
         self.pathLabel = QLabel(path)
-        self.pathLabel.setFrameStyle(QFrame.StyledPanel|QFrame.Sunken)
+        self.pathLabel.setFrameStyle(QFrame.StyledPanel | QFrame.Sunken)
         self.pathLabel.setToolTip("The relative path; all actions will "
-                "take place here,<br>and in this path's subdirectories "
-                "if the Recurse checkbox is checked")
+                                  "take place here,<br>and in this path's subdirectories "
+                                  "if the Recurse checkbox is checked")
         self.pathButton = QPushButton("&Path...")
         self.pathButton.setToolTip(self.pathLabel.toolTip().replace(
-                "The", "Sets the"))
+            "The", "Sets the"))
         self.recurseCheckBox = QCheckBox("&Recurse")
         self.recurseCheckBox.setToolTip("Clean or build all the files "
-                "in the path directory,<br>and all its subdirectories, "
-                "as deep as they go.")
+                                        "in the path directory,<br>and all its subdirectories, "
+                                        "as deep as they go.")
         self.transCheckBox = QCheckBox("&Translate")
         self.transCheckBox.setToolTip("Runs <b>pylupdate4</b> on all "
-                "<tt>.py</tt> and <tt>.pyw</tt> files in conjunction "
-                "with each <tt>.ts</tt> file.<br>Then runs "
-                "<b>lrelease</b> on all <tt>.ts</tt> files to produce "
-                "corresponding <tt>.qm</tt> files.<br>The "
-                "<tt>.ts</tt> files must have been created initially by "
-                "running <b>pylupdate4</b><br>directly on a <tt>.py</tt> "
-                "or <tt>.pyw</tt> file using the <tt>-ts</tt> option.")
+                                      "<tt>.py</tt> and <tt>.pyw</tt> files in conjunction "
+                                      "with each <tt>.ts</tt> file.<br>Then runs "
+                                      "<b>lrelease</b> on all <tt>.ts</tt> files to produce "
+                                      "corresponding <tt>.qm</tt> files.<br>The "
+                                      "<tt>.ts</tt> files must have been created initially by "
+                                      "running <b>pylupdate4</b><br>directly on a <tt>.py</tt> "
+                                      "or <tt>.pyw</tt> file using the <tt>-ts</tt> option.")
         self.debugCheckBox = QCheckBox("&Dry Run")
         self.debugCheckBox.setToolTip("Shows the actions that would "
-                "take place but does not do them.")
+                                      "take place but does not do them.")
         self.logBrowser = QTextBrowser()
         self.logBrowser.setLineWrapMode(QTextEdit.NoWrap)
         self.buttonBox = QDialogButtonBox()
@@ -165,26 +163,26 @@ class Form(QMainWindow):
         self.rememberPathAction.setChecked(rememberPath)
         aboutAction = menu.addAction("&About")
         moreButton = self.buttonBox.addButton("&More",
-                QDialogButtonBox.ActionRole)
+                                              QDialogButtonBox.ActionRole)
         moreButton.setMenu(menu)
         moreButton.setToolTip("Use <b>More-&gt;Tool paths</b> to set the "
-                "paths to the tools if they are not found by default")
+                              "paths to the tools if they are not found by default")
         self.buildButton = self.buttonBox.addButton("&Build",
-                QDialogButtonBox.ActionRole)
+                                                    QDialogButtonBox.ActionRole)
         self.buildButton.setToolTip("Runs <b>pyuic4</b> on all "
-                "<tt>.ui</tt> "
-                "files and <b>pyrcc4</b> on all <tt>.qrc</tt> files "
-                "that are out-of-date.<br>Also runs <b>pylupdate4</b> "
-                "and <b>lrelease</b> if the Translate checkbox is "
-                "checked.")
+                                    "<tt>.ui</tt> "
+                                    "files and <b>pyrcc4</b> on all <tt>.qrc</tt> files "
+                                    "that are out-of-date.<br>Also runs <b>pylupdate4</b> "
+                                    "and <b>lrelease</b> if the Translate checkbox is "
+                                    "checked.")
         self.cleanButton = self.buttonBox.addButton("&Clean",
-                QDialogButtonBox.ActionRole)
+                                                    QDialogButtonBox.ActionRole)
         self.cleanButton.setToolTip("Deletes all <tt>.py</tt> files that "
-                "were generated from <tt>.ui</tt> and <tt>.qrc</tt> "
-                "files,<br>i.e., all files matching <tt>*_rc.py</tt> "
-                " and <tt>ui_*.py.")
+                                    "were generated from <tt>.ui</tt> and <tt>.qrc</tt> "
+                                    "files,<br>i.e., all files matching <tt>*_rc.py</tt> "
+                                    " and <tt>ui_*.py.")
         quitButton = self.buttonBox.addButton("&Quit",
-                QDialogButtonBox.RejectRole)
+                                              QDialogButtonBox.RejectRole)
 
         topLayout = QHBoxLayout()
         topLayout.addWidget(pathLabel)
@@ -213,41 +211,38 @@ class Form(QMainWindow):
 
         self.setWindowTitle("Make PyQt")
 
-
     def closeEvent(self, event):
         settings = QSettings()
         settings.setValue("rememberpath",
-                QVariant(self.rememberPathAction.isChecked()))
+                          QVariant(self.rememberPathAction.isChecked()))
         settings.setValue("path", QVariant(self.pathLabel.text()))
         event.accept()
 
-
     def about(self):
         QMessageBox.about(self, "About Make PyQt",
-                """<b>Make PyQt</b> v %s
-                <p>Copyright &copy; 2007-8 Qtrac Ltd. 
-                All rights reserved.
-                <p>This application can be used to build PyQt
-                applications.
-                It runs pyuic4, pyrcc4, pylupdate4, and lrelease as
-                required, although pylupdate4 must be run directly to
-                create the initial .ts files.
-                <p>Python %s - Qt %s - PyQt %s on %s""" % (
-                __version__, platform.python_version(),
-                QT_VERSION_STR, PYQT_VERSION_STR, platform.system()))
-
+                          """<b>Make PyQt</b> v %s
+                          <p>Copyright &copy; 2007-8 Qtrac Ltd.
+                          All rights reserved.
+                          <p>This application can be used to build PyQt
+                          applications.
+                          It runs pyuic4, pyrcc4, pylupdate4, and lrelease as
+                          required, although pylupdate4 must be run directly to
+                          create the initial .ts files.
+                          <p>Python %s - Qt %s - PyQt %s on %s""" % (
+                              __version__, platform.python_version(),
+                              QT_VERSION_STR, PYQT_VERSION_STR,
+                              platform.system()))
 
     def setPath(self):
         path = QFileDialog.getExistingDirectory(self,
-                "Make PyQt - Set Path", self.pathLabel.text())
+                                                "Make PyQt - Set Path",
+                                                self.pathLabel.text())
         if path:
             self.pathLabel.setText(QDir.toNativeSeparators(path))
-
 
     def setToolPaths(self):
         dlg = OptionsForm(self)
         dlg.exec_()
-
 
     def build(self):
         self.updateUi(False)
@@ -259,7 +254,6 @@ class Form(QMainWindow):
             self._apply(recurse, self._translate, path)
         self.updateUi(True)
 
-
     def clean(self):
         self.updateUi(False)
         self.logBrowser.clear()
@@ -268,18 +262,16 @@ class Form(QMainWindow):
         self._apply(recurse, self._clean, path)
         self.updateUi(True)
 
-
     def updateUi(self, enable):
         for widget in (self.buildButton, self.cleanButton,
-                self.pathButton, self.recurseCheckBox,
-                self.transCheckBox, self.debugCheckBox):
+                       self.pathButton, self.recurseCheckBox,
+                       self.transCheckBox, self.debugCheckBox):
             widget.setEnabled(enable)
         if not enable:
             QApplication.setOverrideCursor(QCursor(Qt.WaitCursor))
         else:
             QApplication.restoreOverrideCursor()
             self.buildButton.setFocus()
-
 
     def _apply(self, recurse, function, path):
         if not recurse:
@@ -288,7 +280,6 @@ class Form(QMainWindow):
             for root, dirs, files in os.walk(path):
                 for dir in sorted(dirs):
                     function(os.path.join(root, dir))
-
 
     def _build(self, path):
         settings = QSettings()
@@ -306,15 +297,15 @@ class Form(QMainWindow):
             target = None
             if source.endswith(".ui"):
                 target = os.path.join(path,
-                                    "ui_" + name.replace(".ui", ".py"))
+                                      "ui_" + name.replace(".ui", ".py"))
                 command = pyuic4
             elif source.endswith(".qrc"):
                 target = os.path.join(path, name.replace(".qrc", "_rc.py"))
                 command = pyrcc4
             if target is not None:
                 if not os.access(target, os.F_OK) or (
-                   os.stat(source)[stat.ST_MTIME] > \
-                   os.stat(target)[stat.ST_MTIME]):
+                            os.stat(source)[stat.ST_MTIME] > \
+                                os.stat(target)[stat.ST_MTIME]):
                     args = ["-o", target, source]
                     msg = "converted <font color=darkblue>" + source + \
                           "</font> to <font color=blue>" + target + \
@@ -324,21 +315,20 @@ class Form(QMainWindow):
                     else:
                         process.start(command, args)
                         if (not process.waitForFinished(2 * 60 * 1000) or
-                            not QFile.exists(target)):
+                                not QFile.exists(target)):
                             msg = "<font color=red>FAILED: %s</font>" % \
-                                command
+                                  command
                             failed += 1
                     self.logBrowser.append(msg.replace(prefix, ""))
                 else:
                     self.logBrowser.append("<font color=green>"
-                            "# %s is up-to-date</font>" % \
-                            source.replace(prefix, ""))
+                                           "# %s is up-to-date</font>" % \
+                                           source.replace(prefix, ""))
                 QApplication.processEvents()
         if failed:
             QMessageBox.information(self, "Make PyQt - Failures",
-                    "Try manually setting the paths to the tools "
-                    "using <b>More-&gt;Tool paths</b>")
-
+                                    "Try manually setting the paths to the tools "
+                                    "using <b>More-&gt;Tool paths</b>")
 
     def _clean(self, path):
         prefix = unicode(self.pathLabel.text())
@@ -349,10 +339,10 @@ class Form(QMainWindow):
             target = os.path.join(path, name)
             source = None
             if target.endswith(".py") or target.endswith(".pyc") or \
-               target.endswith(".pyo"):
+                    target.endswith(".pyo"):
                 if name.startswith("ui_") and not name[-1] in "oc":
                     source = os.path.join(path, name[3:-3] + ".ui")
-                elif name.rsplit('.',1)[0].endswith("_rc"):
+                elif name.rsplit('.', 1)[0].endswith("_rc"):
                     if target[-1] in "oc":
                         source = os.path.join(path, name[0:-7] + ".qrc")
                     else:
@@ -363,24 +353,23 @@ class Form(QMainWindow):
                     if os.access(source, os.F_OK):
                         if self.debugCheckBox.isChecked():
                             self.logBrowser.append("<font color=green>"
-                                    "# delete %s</font>" % \
-                                    target.replace(prefix, ""))
+                                                   "# delete %s</font>" % \
+                                                   target.replace(prefix, ""))
                         else:
                             deletelist.append(target)
                     else:
                         self.logBrowser.append("<font color=darkred>"
-                                "will not remove "
-                                "'%s' since `%s' not found</font>" % (
-                                target.replace(prefix, ""),
-                                source.replace(prefix, "")))
+                                               "will not remove "
+                                               "'%s' since `%s' not found</font>" % (
+                                                   target.replace(prefix, ""),
+                                                   source.replace(prefix, "")))
         if not self.debugCheckBox.isChecked():
             for target in deletelist:
                 self.logBrowser.append("deleted "
-                        "<font color=red>%s</font>" % \
-                        target.replace(prefix, ""))
+                                       "<font color=red>%s</font>" % \
+                                       target.replace(prefix, ""))
                 os.remove(target)
                 QApplication.processEvents()
-
 
     def _translate(self, path):
         prefix = unicode(self.pathLabel.text())
@@ -397,9 +386,9 @@ class Form(QMainWindow):
             return
         settings = QSettings()
         pylupdate4 = unicode(settings.value("pylupdate4",
-                             QVariant(PYLUPDATE4)).toString())
+                                            QVariant(PYLUPDATE4)).toString())
         lrelease = unicode(settings.value("lrelease",
-                           QVariant(LRELEASE)).toString())
+                                          QVariant(LRELEASE)).toString())
         process = QProcess()
         failed = 0
         for ts in tsfiles:
@@ -409,7 +398,7 @@ class Form(QMainWindow):
             command2 = lrelease
             args2 = ["-silent", ts, "-qm", qm]
             msg = "updated <font color=blue>%s</font>" % \
-                    ts.replace(prefix, "")
+                  ts.replace(prefix, "")
             if self.debugCheckBox.isChecked():
                 msg = "<font color=green># %s</font>" % msg
             else:
@@ -419,7 +408,7 @@ class Form(QMainWindow):
                     failed += 1
             self.logBrowser.append(msg)
             msg = "generated <font color=blue>%s</font>" % \
-                    qm.replace(prefix, "")
+                  qm.replace(prefix, "")
             if self.debugCheckBox.isChecked():
                 msg = "<font color=green># %s</font>" % msg
             else:
@@ -431,8 +420,8 @@ class Form(QMainWindow):
             QApplication.processEvents()
         if failed:
             QMessageBox.information(self, "Make PyQt - Failures",
-                    "Try manually setting the paths to the tools "
-                    "using <b>More-&gt;Tool paths</b>")
+                                    "Try manually setting the paths to the tools "
+                                    "using <b>More-&gt;Tool paths</b>")
 
 
 app = QApplication(sys.argv)
