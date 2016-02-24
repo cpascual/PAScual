@@ -476,6 +476,30 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		#show the spectrum report
 		self.plotfitDlg.textTE.setPlainText(dp.showreport(silent=True))
 		
+       	def saveFitCurves(self, globalprefix=''):
+		'''
+		Write the fit data as ASCII tables. For each spectrum, a file 
+		ended in _fit.dat is created containing the total fit, 
+		the background, the components and the residuals
+		'''
+		
+		for dp in self.resultsdplist:
+                        prefix, _ = os.path.splitext(os.path.basename(dp.name))
+                        fname = "%s%s_fit.dat" % (globalprefix, prefix)
+                        fit = S.zeros((dp.roi.size, dp.ncomp+4)) # ch + fit + bg + comp + res
+                        header = 'Channel Fit Bkgnd'
+                        fit[:,0] = dp.roi
+                        fit[:,1] = dp.sim
+                        fit[:,2] = S.ones(dp.sim.size)*dp.bg.val 
+                        ity=dp.normalizeity()
+                        for i in xrange(dp.ncomp):
+                                header += ' Comp%i'%(i+1)
+                                area=dp.M_dot_a.sum()
+                                fit[:,3+i] = ((dp.exparea-dp.bg.val*S.size(dp.sim))/area)*dp.M[:,i]*ity[i]
+                        header += ' Res'
+                        fit[:,-1] = (dp.sim-dp.exp[dp.roi])/dp.deltaexp[dp.roi]
+                        S.savetxt(fname, fit, header=header)
+                        
 	def onHideResults(self):
 		indexes=self.resultsColumnsListWidget.selectedIndexes()
 		for idx in indexes: 
@@ -1244,6 +1268,10 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 					ofile.write(fmt%unicode(self.resultsTable.item(row,col).text()))					
 		ofile.close()
 		self.dirtyresults=False
+		
+		# offer saving the fit
+		globalpreffix = "%s_" % os.path.splitext(ofile.name)[0]
+		self.saveFitCurves(globalpreffix)
 	
 		
 	def createFakeSpectrum(self, area=None, roi=S.arange(1024), name=None):
