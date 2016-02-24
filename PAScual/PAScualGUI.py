@@ -33,20 +33,22 @@
 #TODO: (General) Incorporate plothistory.py to the GUI. It could also be used to display ellipses taken from the covariance matrix when no history has been stored
 #TODO: (General) make installer?
 
-import sys, os, copy, platform, time
-import cPickle as pickle
-import scipy as S
+import platform
+import sys
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
-import ui_PAScualGUI, ui_FitparWidget
+
+import CommandsTableMV as CMDTMV
+import ComponentTableMV as CTMV
+import PASCommandProcess as PCP
+import PASoptions
+import SpecFiles
+import SpectraTableMV as STMV
+import ui_FitparWidget
+import ui_PAScualGUI
 from PlotGraphWidget import PALSplot, ResPlot
 from ROISelectorDlg import ROISelectorDialog
-import ComponentTableMV as CTMV
-import SpectraTableMV as STMV
-import CommandsTableMV as CMDTMV
-import PASCommandProcess as PCP
-import SpecFiles
-import PASoptions
 
 # import AdvOpt as advopt
 
@@ -304,7 +306,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		
 	def loadOptions(self):
 		'''create the self.options object from values stored in the settings'''
-		self.options=PASoptions.Options()
+		self.options= PASoptions.Options()
 		for opt,dflt in zip(self.options.optlist,self.options.dfltlist):
 			if isinstance(dflt,(str,unicode)): 
 				setattr(self.options,opt,unicode(self.settings.value('Options/'+opt,QVariant(QString(dflt))).toString()))
@@ -327,12 +329,12 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 	def createOpenFilesDlg(self):
 		#General OpenFile Dialog (it is never closed, just hidden)
 		self.openFilesDlg=QFileDialog(self, "%s - Open spectra"%QApplication.applicationName(), "./","")
-		self.openFilesDlg.specFileLoaderDict={	'ASCII':SpecFiles.ASCIIfileloader('ASCII','*.dat *.txt *.al2 *.chn',0,'ASCII without header'),
-												'ASCII-custom':SpecFiles.ASCIIfileloader('ASCII-custom','*',None,'ASCII with user-selected header','qt',self.openFilesDlg),
-												'LT':SpecFiles.ASCIIfileloader('LT','*.dat *.txt *.al2 *.chn',4,'ASCII with a 4 rows header'),
-												'L80':SpecFiles.ASCIIfileloader('L80','*.80',0,'multicolumn ASCII with no header'),
-												'MAESTRO':SpecFiles.MAESTROfileLoader('MAESTRO'),
-												'PAScual':SpecFiles.PAScualfileLoader('PAScual') } #instantiate file loaders and put them in a dict belonging to the OpenFile dialog
+		self.openFilesDlg.specFileLoaderDict={	'ASCII': SpecFiles.ASCIIfileloader('ASCII', '*.dat *.txt *.al2 *.chn', 0, 'ASCII without header'),
+												'ASCII-custom': SpecFiles.ASCIIfileloader('ASCII-custom', '*', None, 'ASCII with user-selected header', 'qt', self.openFilesDlg),
+												'LT': SpecFiles.ASCIIfileloader('LT', '*.dat *.txt *.al2 *.chn', 4, 'ASCII with a 4 rows header'),
+												'L80': SpecFiles.ASCIIfileloader('L80', '*.80', 0, 'multicolumn ASCII with no header'),
+												'MAESTRO': SpecFiles.MAESTROfileLoader('MAESTRO'),
+												'PAScual': SpecFiles.PAScualfileLoader('PAScual')} #instantiate file loaders and put them in a dict belonging to the OpenFile dialog
 		self.openFilesDlg.specFileLoaderDict['ASCII-custom'].needExtraInput=True #makes
 		filefilters=["%s (%s)"%(self.openFilesDlg.specFileLoaderDict[k].name,self.openFilesDlg.specFileLoaderDict[k].filenamefilter) for k in sorted(self.openFilesDlg.specFileLoaderDict.keys())]
 		self.openFilesDlg.setFileMode(QFileDialog.ExistingFiles)
@@ -345,7 +347,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 	    
 	def onOptions(self):
 		'''Shows the options dialog and saves any changes if accepted'''
-		if self.optionsDlg is None: self.optionsDlg=PASoptions.OptionsDlg(self) #create the dialog if not already done
+		if self.optionsDlg is None: self.optionsDlg= PASoptions.OptionsDlg(self) #create the dialog if not already done
 		#make sure that the Dlg is in sync with the options
 		self.optionsDlg.setOptions(self.options)
 		#launch the options dialog
@@ -1321,7 +1323,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		It only does so if it is time for the next scheduled reminder (or if called with force=True)'''
 		if force or time.time()>self.nextupdatechk:
 			import ChkUpdt
-			self.updaterDlg=ChkUpdt.updater(self,'PAScual-Autocheck Updates',"""Do you want to check for updated versions? """,__version__,__homepage__+"/lastrls.txt")
+			self.updaterDlg= ChkUpdt.updater(self, 'PAScual-Autocheck Updates', """Do you want to check for updated versions? """, __version__, __homepage__ + "/lastrls.txt")
 			self.updaterDlg.exec_()
 			self.nextupdatechk=self.updaterDlg.nextupdatechk #retrieve the sggested time for next updates check
 			
@@ -1388,7 +1390,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		'''uses a dp to fill the parameters. If no spectra si given, it asks to load a file which is expected to contain a pickled discretepals'''
 		filename=QFileDialog.getOpenFileName ( self, "Load parameters from...", self.options.workDirectory, "(*.par *.ps1)", '', QFileDialog.DontUseNativeDialog)
 		if filename: 
-			loader=SpecFiles.PAScualfileLoader()
+			loader= SpecFiles.PAScualfileLoader()
 			dp=loader.getDiscretePals(filename)
 			self.spectraTable.clearSelection()
 			self.onUpdateParamsView(dp)			

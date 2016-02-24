@@ -17,10 +17,11 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+
 import ui_Options
+
 
 class Options(object):
 	def __init__(self):

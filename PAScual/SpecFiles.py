@@ -50,7 +50,7 @@ class MAESTROfileLoader(spectrumFileLoader):
 		self.filenamefilter='*.chn'
 	def expdata(self, fname):
 		import CHNfiles  
-		hdr,expdata=CHNfiles.CHN.readCHN(fname)
+		hdr,expdata= CHNfiles.CHN.readCHN(fname)
 		return S.array(expdata, dtype='d')
 		
 class ASCIIfileloader(spectrumFileLoader):
@@ -88,7 +88,6 @@ class PAScualfileLoader(spectrumFileLoader):
 		self.formatDescription='Pickled Spectrum from PAScual'
 		self.filenamefilter='*.ps1'
 	def getDiscretePals(self, fname):
-		from PAScual import discretepals
 		import pickle
 		dp=pickle.load(open(fname,'rb'))
 		return dp

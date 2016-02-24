@@ -17,14 +17,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-
-import sys
 import scipy as S
+import sys
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+
+import ui_AddCompsWidget
 from ROISelectorDlg import ROISelectorDialog
-import ui_AddCompsWidget 
-import PAScual_rc
+
 
 class AddCompsWidget(QWidget, ui_AddCompsWidget.Ui_AddCompsWidget):
 	def __init__(self, parent=None):

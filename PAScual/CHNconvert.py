@@ -17,10 +17,9 @@
 #     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ####################################################################################
 __version__="20071204"
-import CHNfiles, glob, sys
-
-
-
+import CHNfiles
+import glob
+import sys
 
 #############################################
 ## Change the following options to your needs
@@ -54,7 +53,7 @@ if __name__ == '__main__':
 	print "Converting %i files..."%len(filenames)
 	for f in filenames:
 		print "'%s' "%f,
-		spectrum=CHNfiles.CHN(f)
+		spectrum= CHNfiles.CHN(f)
 		ASCIIfile=f.rsplit('.',1)[0]+EXTENSION
 		if LTOUTPUT:
 			spectrum.toLT(ASCIIfile, description=LT_description, nsperchannel=LT_nsperchannel, key=LT_key, fwhm=LT_fwhm, ncol=COLUMNS, onError='w')

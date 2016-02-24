@@ -17,13 +17,15 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 import sys
-import scipy as S
+
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
+
 import ui_TEcalcGUI
 from pyTaoEldrup import *
 
-class TEcalcDialog(QDialog,ui_TEcalcGUI.Ui_TEcalcGUI):
+
+class TEcalcDialog(QDialog, ui_TEcalcGUI.Ui_TEcalcGUI):
 	def __init__(self, parent=None):
 		super(TEcalcDialog,self).__init__(parent)
 		self.setupUi(self)
