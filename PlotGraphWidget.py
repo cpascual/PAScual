@@ -24,7 +24,7 @@ PlotGraphWidget: Widget for plotting spectra. Originally based on an example cod
 import sys
 from PyQt4 import Qt
 import PyQt4.Qwt5 as Qwt
-from PyQt4.Qwt5.anynumpy import *
+from numpy import *
 
 
 plotcolors_bright=[Qt.Qt.black, Qt.Qt.red, Qt.Qt.blue, Qt.Qt.magenta, Qt.Qt.green, Qt.Qt.cyan, Qt.Qt.yellow, Qt.Qt.gray,]
