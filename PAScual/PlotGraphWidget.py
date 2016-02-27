@@ -97,20 +97,20 @@ class PALSplot(Qwt.QwtPlot):
         # replot
         self.replot()
         # set zoomer
-        self.zoomer = Qwt.QwtPlotZoomer(Qwt.QwtPlot.xBottom,
-                                        Qwt.QwtPlot.yLeft,
-                                        Qwt.QwtPicker.DragSelection,
-                                        Qwt.QwtPicker.AlwaysOff,
-                                        self.canvas())
-        self.zoomer.setRubberBandPen(Qt.QPen(Qt.Qt.green))
-        # set picker
-        self.picker = Qwt.QwtPlotPicker(Qwt.QwtPlot.xBottom,
-                                        Qwt.QwtPlot.yLeft,
-                                        Qwt.QwtPicker.PointSelection,
-                                        Qwt.QwtPlotPicker.CrossRubberBand,
-                                        Qwt.QwtPicker.AlwaysOn,
-                                        self.canvas())
-        self.picker.setTrackerPen(Qt.QPen(Qt.Qt.red))
+        # self.zoomer = Qwt.QwtPlotZoomer(Qwt.QwtPlot.xBottom,
+        #                                 Qwt.QwtPlot.yLeft,
+        #                                 Qwt.QwtPicker.DragSelection,
+        #                                 Qwt.QwtPicker.AlwaysOff,
+        #                                 self.canvas())
+        # self.zoomer.setRubberBandPen(Qt.QPen(Qt.Qt.green))
+        # # set picker
+        # self.picker = Qwt.QwtPlotPicker(Qwt.QwtPlot.xBottom,
+        #                                 Qwt.QwtPlot.yLeft,
+        #                                 Qwt.QwtPicker.PointSelection,
+        #                                 Qwt.QwtPlotPicker.CrossRubberBand,
+        #                                 Qwt.QwtPicker.AlwaysOn,
+        #                                 self.canvas())
+        # self.picker.setTrackerPen(Qt.QPen(Qt.Qt.red))
         self._plotdict = {}
         self.__clear = self.clear
         # 		self.connect(self.picker, Qt.SIGNAL('selected(const QwtDoublePoint&)'), pointselected)
@@ -152,7 +152,7 @@ class PALSplot(Qwt.QwtPlot):
         self.setAxisAutoScale(Qwt.QwtPlot.xBottom)
         self.setAxisScale(Qwt.QwtPlot.yLeft, self.YscaleMin, self.YscaleMax)
         self.replot()
-        self.zoomer.setZoomBase()
+        # self.zoomer.setZoomBase()
 
     def exportPdf(self, fileName=None):
         """Export the plot to a PDF. slot for the _exportPdfAction.
@@ -215,12 +215,12 @@ class ResPlot(Qwt.QwtPlot):
         # replot
         self.replot()
         # set zoomer
-        self.zoomer = Qwt.QwtPlotZoomer(Qwt.QwtPlot.xBottom,
-                                        Qwt.QwtPlot.yLeft,
-                                        Qwt.QwtPicker.DragSelection,
-                                        Qwt.QwtPicker.AlwaysOff,
-                                        self.canvas())
-        self.zoomer.setRubberBandPen(Qt.QPen(Qt.Qt.green))
+        # self.zoomer = Qwt.QwtPlotZoomer(Qwt.QwtPlot.xBottom,
+        #                                 Qwt.QwtPlot.yLeft,
+        #                                 Qwt.QwtPicker.DragSelection,
+        #                                 Qwt.QwtPicker.AlwaysOff,
+        #                                 self.canvas())
+        # self.zoomer.setRubberBandPen(Qt.QPen(Qt.Qt.green))
         # 		# set picker
         # 		self.picker = Qwt.QwtPlotPicker(Qwt.QwtPlot.xBottom,
         # 									Qwt.QwtPlot.yLeft,
@@ -269,7 +269,7 @@ class ResPlot(Qwt.QwtPlot):
         self.setAxisAutoScale(Qwt.QwtPlot.xBottom)
         self.setAxisScale(Qwt.QwtPlot.yLeft, self.YscaleMin, self.YscaleMax)
         self.replot()
-        self.zoomer.setZoomBase()
+        # self.zoomer.setZoomBase()
 
     def sizeHint(self):
         return Qt.QSize(300, 150)

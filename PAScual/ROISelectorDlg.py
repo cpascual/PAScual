@@ -98,7 +98,7 @@ class ROISelectorDialog(QDialog):
         self.buttonBox.accepted.connect(self.checkAndApply)
         self.lowerlimRelCB.stateChanged.connect(self.onlowerlimRelChange)
         self.upperlimRelCB.stateChanged.connect(self.onupperlimRelChange)
-        self.plotarea.picker.selected.connect(self.onselection)
+        # self.plotarea.picker.selected.connect(self.onselection)
 
         self.selectiondestination = self.upperlimRelCB
 
@@ -120,9 +120,6 @@ class ROISelectorDialog(QDialog):
             self.lowerlimSB.setMaximum(self.refspectrum.exp.size)
             self.upperlimSB.setMaximum(self.refspectrum.exp.size)
             self.upperlimSB.setValue(self.refspectrum.exp.size)
-
-
-        # 		QObject.connect(self.applyBT,SIGNAL("clicked()"),self.onApply)
 
     def onFocusChanged(self, old, new):
         if new is self.lowerlimSB or new is self.upperlimSB: self.selectiondestination = new
