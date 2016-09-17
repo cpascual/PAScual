@@ -34,6 +34,10 @@ import PAScual_rc
 
 # Spectra Table Model
 class PASspectraTableModel(QAbstractTableModel):
+
+    # this is a custom signal to warn that the 'hard' selection changed
+    selectionChanged = pyqtSignal(object, object)
+
     def __init__(self, spectra=[]):
         super(PASspectraTableModel, self).__init__()
         self.spectra = spectra
@@ -152,8 +156,7 @@ class PASspectraTableModel(QAbstractTableModel):
             column = index.column()
             if column == SEL:
                 dp.selected = not dp.selected
-                self.selectionChanged.emit(dp,
-                          index)  # this is a custom signal to warn that the 'hard' selection changed
+                self.selectionChanged.emit(dp, index)
             self.dataChanged.emit(index,
                       index)
             return True
