@@ -32,25 +32,22 @@ from scipy import optimize
 from scipy.special import erfc
 from shutil import copy2
 
-FWHM2SIGMA = 1. / (2 * S.sqrt(
-    2 * S.log(2)))  # FWHM = SIGMA*(2*sqrt(2*log(2))) = SIGMA*2.3548200450309493
-
-try:
-    # if qt is present, we will use it to emit signals
-    from PyQt4.QtCore import QObject, SIGNAL
-
-    emitter = QObject()
-except:
-    # if qt not present, we construct a dummy emitter class with a static emit method that does nothing
-    class dummyemitter():
-        def emit(*args): pass
+# FWHM = SIGMA*(2*sqrt(2*log(2))) = SIGMA*2.3548200450309493
+FWHM2SIGMA = 1. / (2 * S.sqrt(2 * S.log(2)))
 
 
-    def SIGNAL(*args):
-        pass
+from PyQt4.QtCore import QObject, pyqtSignal
 
 
-    emitter = dummyemitter()
+class _Emitter(QObject):
+    teeOutput = pyqtSignal(str)
+    commandPBarValue = pyqtSignal(int)
+    initCommandPBar = pyqtSignal(int,int)
+
+
+
+
+emitter = _Emitter()
 
 
 class aborthelper(object):
@@ -81,6 +78,8 @@ class newcolor(object):
 
 class tee(object):
     '''defines tee like object. Allows to print to various files simultaneously'''
+
+
 
     def __init__(self, *fileobjects):
         self.fileobjects = []
@@ -1267,8 +1266,7 @@ class palsset(fitable):
         if ireport is None: ireport = LM
         # do stabilisation
         if stabilisation > 0:
-            emitter.initCommandPBar.emit(0, int((
-                                                                    stabilisation + LM) * factor))  # signal for setting up the progress bar
+            emitter.initCommandPBar.emit(0, int((stabilisation + LM) * factor))  # signal for setting up the progress bar
             self.MCMC_generate(LM=stabilisation, T=2.,
                                ireport=min(ireport, stabilisation),
                                savehist=False, NNRLA='auto', direct=False,
