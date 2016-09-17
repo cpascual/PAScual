@@ -258,7 +258,6 @@ class PAScualGUI(QMainWindow):
         # 		self.resultsTable.addActions([self.actionCopy_Results_Selection,self.actionSave_results_as]) #context menu
         self.resultsTable.addActions(
             [self.actionCopy_Results_Selection, self.actionPlotFit])
-        self.outputFileName = None
         self.resultslist = []
         self.resultsdplist = []
         self.results_min_ncomp = 0
@@ -315,6 +314,7 @@ class PAScualGUI(QMainWindow):
         self.resultsTable.doubleClicked.connect(self.onPlotFit)
         self.resultsFileSelectBT.clicked[()].connect(self.onResultsFileSelectBT)
         self.previousOutputCB.currentIndexChanged['QString'].connect(self.onPreviousOutputCBChange)
+        self.outputFileSelectBT.clicked[()].connect(self.onOutputFileSelect)
         self.saveOutputBT.clicked[()].connect(self.onSaveOutput_as)
         self.saveFitmodeBT.clicked[()].connect(self.saveFitMode)
         self.loadParametersPB.clicked[()].connect(self.loadParameters)
@@ -449,27 +449,31 @@ class PAScualGUI(QMainWindow):
                                                QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog)
         if filename: self.resultsFileLE.setText(filename)
 
+    def onOutputFileSelect(self):
+        ofile = QFileDialog.getSaveFileName(self, "Output File Selection",
+                                            self.outputFileLE.text(),
+                                            "ASCII (*.txt)\nAll (*)",
+                                            '',
+                                            QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog)
+        if ofile:
+            self.outputFileLE.setText(ofile)
+        return ofile
+
     def onSaveOutput_as(self, ofile=None):
         # Make sure only finished outputs are saved
         if self.outputTE.isVisible():
             QMessageBox.warning(self, "Cannot save unfinished fit",
                                 "You can only save the output from finished fits. Output won't be written\n Select a different output from the list.")
             return
-        if ofile is None:  # if a file is not given, prompt the user for a file name
-            if self.outputFileName is None:
-                # set default file name
-                self.outputFileName = self.options.workDirectory + '/PASoutput.txt'
-            ofile = QFileDialog.getSaveFileName(self, "Output File Selection",
-                                                self.outputFileName,
-                                                "ASCII (*.txt)\nAll (*)",
-                                                '',
-                                                QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog)
-            if not ofile: return  # failed to get a valid filename
+        # if a file is not given, prompt the user for a file name
+        if ofile is None:
+            ofile = self.onOutputFileSelect()
+        if not ofile:
+            return  # failed to get a valid filename
 
         # Manage the file
         if not isinstance(ofile, file):
             ofile = unicode(ofile)
-            self.outputFileName = ofile  # store the file name for future use
             openmode = 'a'
             if os.path.exists(ofile):
                 answer = QMessageBox.question(self, "Append data?",
