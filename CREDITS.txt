@@ -2,7 +2,10 @@ CREDITS:
 
 PLEASE give credit: If you use PAScual, acknowledge it by citing, at least:
 
-C. Pascual-Izarra et al., Characterisation of Amphiphile Self-Assembly Materials using Positron Annihilation Lifetime Spectroscopy (PALS)-Part1: Advanced Fitting Algorithms for Data Analysis, Journal of Physical Chemistry B,  [in review], 2008. 
+C. Pascual-Izarra et al.,
+Advanced Fitting Algorithms for Analysing Positron Annihilation Lifetime Spectra,
+Nuclear Instruments and Methods A, 603, p456-466 (2009)
+(DOI: 10.1016/j.nima.2009.01.205)
 
 See http://pascual.sourceforge.net for the latest information
 

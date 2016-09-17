@@ -54,12 +54,10 @@ import SpectraTableMV as STMV
 from ui import UILoadable
 from PlotGraphWidget import PALSplot, ResPlot
 from ROISelectorDlg import ROISelectorDialog
+from release import __version__, __homepage__, __citation_html__
 
 # import AdvOpt as advopt
 
-__version__ = "1.5.0"
-__homepage__ = "http://pascual.sourceforge.net"
-__citation__ = 'C. Pascual-Izarra et al., <i>Advanced Fitting Algorithms for Analysing Positron Annihilation Lifetime Spectra</i>, Nuclear Instruments and Methods A, 603, p456-466 (2009) <p><a href="http://dx.doi.org/10.1016/j.nima.2009.01.205">(DOI: 10.1016/j.nima.2009.01.205)</a> <p>see %s for up-to-date information about citing</p>' % __homepage__
 
 defaultFitModesDict = {'LOCAL-connected': ('LOAD', 'LOCAL', 'SAVE'),
                        'LOCAL': ('LOCAL',),
@@ -1728,14 +1726,14 @@ class PAScualGUI(QMainWindow):
 							<p>Author: Carlos Pascual-Izarra. <cpascual [AT] users.sourceforge.net>
 							<p>Home page: <a href='%s'>%s</a>
 							<p>Copyright &copy; 2008 All rights reserved.
-							<p>See Credits.txt for acknowledgements
+							<p>See CREDITS.txt for acknowledgements
 							<p>
 							<p>If you use PAScual for your research, please cite:
 							<p>%s
 							<p>
 							<p>Python %s - Qt %s - PyQt %s on %s""" % (
                               __version__, __homepage__, __homepage__,
-                              __citation__, platform.python_version(),
+                              __citation_html__, platform.python_version(),
                               QT_VERSION_STR, PYQT_VERSION_STR,
                               platform.system()))
 
@@ -1764,17 +1762,8 @@ class PAScualGUI(QMainWindow):
 
 						    <p><b>Important:</b> If you use PAScual for your research, please cite:
 						    <p>%s
-							""" % (__version__, __citation__))
+							""" % (__version__, __citation_html__))
 
-
-# def getselectedkeys(self):
-#		if self.selectedChanged:
-#			self.selected=[unicode(item.text()) for item in self.listWidget.selectedItems()]
-#			self.selectedChanged=False
-#		if len(self.selected)==0:
-#			QMessageBox.warning(self, "Empty selection"," You must select at least one spectrum")
-#			return None
-#		else: return self.selected
 
 
 def main():

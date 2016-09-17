@@ -48,12 +48,17 @@ The text mode interface can be used by modifying and launching PAScual_input.py
 
 PLEASE give credit:
 If you use PAScual, acknowledge it by citing, at least:
-C. Pascual-Izarra et al., Characterisation of Amphiphile Self-Assembly Materials using Positron Annihilation Lifetime Spectroscopy (PALS)-Part1: Advanced Fitting Algorithms for Data Analysis, Journal of Physical Chemistry B,  [in review], 2008. 
+
+C. Pascual-Izarra et al.,
+Advanced Fitting Algorithms for Analysing Positron Annihilation Lifetime Spectra,
+Nuclear Instruments and Methods A, 603, p456-466 (2009)
+(DOI: 10.1016/j.nima.2009.01.205)
 
 See CREDITS.txt for acknowledgements to third parties.
 
 Also note its license:  PAScual is Free Software but certain conditions apply (see LICENSE.TXT).
 If you want to request modifications of PAScual, please contact the author.
-If you modify PAScual, please communicate the modifications to the author so that they can be incorporated in future versions.
+If you modify PAScual, please communicate the modifications to the author so
+that they can be incorporated in future versions.
 
 
