@@ -20,8 +20,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-import ui_Options
-
+from ui import UILoadable
 
 class Options(object):
     def __init__(self):
@@ -45,25 +44,23 @@ class Options(object):
         for opt, dflt in zip(self.optlist, self.dfltlist): setattr(self, opt,
                                                                    dflt)
 
-
-class OptionsDlg(QDialog, ui_Options.Ui_Options):
+@UILoadable
+class OptionsDlg(QDialog):
     '''Dialog containing options for PAScual. The options are members of this object.'''
 
     def __init__(self, parent=None):
         super(OptionsDlg, self).__init__(parent)
-        self.setupUi(self)
+        self.loadUi()
         # set validators
         self.BI_lengthLE.setValidator(QDoubleValidator(self))
         self.BI_stabLE.setValidator(QDoubleValidator(self))
         self.BI_reportLE.setValidator(QDoubleValidator(self))
         self.seedLE.setValidator(QIntValidator(self))
         # connections
-        self.connect(self.buttonBox, SIGNAL("clicked(QAbstractButton *)"),
-                     self.onclicked)
-        self.connect(self.manualFilePB, SIGNAL("clicked()"),
-                     self.onChangeManualFile)
-        self.connect(self.workDirectoryPB, SIGNAL("clicked()"),
-                     self.onChangeWorkDirectory)
+        self.buttonBox.clicked.connect(self.onclicked)
+        self.manualFilePB.clicked[()].connect(self.onChangeManualFile)
+        self.workDirectoryPB.clicked[()].connect(self.onChangeWorkDirectory)
+        self.BI_savehistPB.clicked[()].connect(self.onChangeHistoryFile)
 
         # set options
         self.reset()
@@ -79,6 +76,14 @@ class OptionsDlg(QDialog, ui_Options.Ui_Options):
                                                self.manualFileLE.text(),
                                                "(*.html *.htm)")
         if filename: self.manualFileLE.setText(filename)
+
+    def onChangeHistoryFile(self):
+        filename = QFileDialog.getSaveFileName(self, "BI history File Selection",
+                                               self.BI_savehistLE.text(),
+                                               "ASCII (*.txt)\nAll (*)",
+                                               '',
+                                               QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog)
+        if filename: self.BI_savehistLE.setText(filename)
 
     def onclicked(self, button):
         if self.buttonBox.buttonRole(button) == QDialogButtonBox.ResetRole:

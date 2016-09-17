@@ -23,22 +23,19 @@ import sys
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-import ui_AddCompsWidget
+
+from ui import UILoadable
 from ROISelectorDlg import ROISelectorDialog
 
-
-class AddCompsWidget(QWidget, ui_AddCompsWidget.Ui_AddCompsWidget):
+@UILoadable()
+class AddCompsWidget(QWidget):
     def __init__(self, parent=None):
         super(AddCompsWidget, self).__init__(parent)
-        self.setupUi(self)
-        self.connect(self.addpPsBT, SIGNAL('clicked()'),
-                     lambda: self.addComp(125))
-        self.connect(self.addDirectBT, SIGNAL('clicked()'),
-                     lambda: self.addComp(400))
-        self.connect(self.addoPsBT, SIGNAL('clicked()'),
-                     lambda: self.addComp(2000))
-        self.connect(self.addCustomBT, SIGNAL('clicked()'),
-                     lambda: self.addComp(self.customTauSB.value()))
+        self.loadUi()
+        self.addpPsBT.clicked[()].connect(lambda: self.addComp(125))
+        self.addDirectBT.clicked[()].connect(lambda: self.addComp(400))
+        self.addoPsBT.clicked[()].connect(lambda: self.addComp(2000))
+        self.addCustomBT.clicked[()].connect(lambda: self.addComp(self.customTauSB.value()))
 
     # 		self.connect(self.addCustomBT,SIGNAL('clicked()'), self.getComps)
     def addComp(self, tau):
@@ -101,9 +98,9 @@ class GainAndFWHMPage(QWizardPage):
 
         # register fields
         self.registerField("psperchannel", self.psperchannelSB, "value",
-                           SIGNAL("valueChanged()"))
+                           self.psperchannelSB.valueChanged["double"])
         self.registerField("FWHM", self.FWHMSB, "value",
-                           SIGNAL("valueChanged()"))
+                           self.FWHMSB.valueChanged["double"])
 
     def validatePage(self):
         w = self.wizard()
@@ -121,10 +118,12 @@ class ROIPage(QWizardPage):
             """Please set the required Region Of Interest for the spectra.""")
 
         self.ROIsel = ROISelectorDialog(selected=selected, widgetmode=True)
-        self.ROIsel.buttonBox.setVisible(
-            False)  # We don't want the OK|Cancel buttons of the ROI selector. We use the wizard ones instead
-        self.connect(self.ROIsel, SIGNAL('rejected()'), parent, SLOT(
-            "reject()"))  # if the user rejects the selector (e.g. ESC key pressed), the signal is passed to the wizard
+        # We don't want the OK|Cancel buttons of the ROI selector.
+        # We use the wizard ones instead
+        self.ROIsel.buttonBox.setVisible(False)
+        # if the user rejects the selector (e.g. ESC key pressed),
+        # the signal is passed to the wizard
+        self.ROIsel.rejected.connect(parent.reject)
 
         layout = QHBoxLayout()
         layout.addWidget(self.ROIsel)
@@ -136,14 +135,10 @@ class ROIPage(QWizardPage):
         self.ROIsel.lowerlimSB.setValue(-5)
 
         # register fields
-        self.registerField("lowerlimRel", self.ROIsel.lowerlimRelCB, "checked",
-                           SIGNAL("toggled()"))
-        self.registerField("lowerlim", self.ROIsel.lowerlimSB, "value",
-                           SIGNAL("valueChanged()"))
-        self.registerField("upperlimRel", self.ROIsel.upperlimRelCB, "checked",
-                           SIGNAL("toggled()"))
-        self.registerField("upperlim", self.ROIsel.upperlimSB, "value",
-                           SIGNAL("valueChanged()"))
+        self.registerField("lowerlimRel", self.ROIsel.lowerlimRelCB)
+        self.registerField("lowerlim", self.ROIsel.lowerlimSB)
+        self.registerField("upperlimRel", self.ROIsel.upperlimRelCB)
+        self.registerField("upperlim", self.ROIsel.upperlimSB)
 
     def validatePage(self):
         w = self.wizard()
@@ -168,7 +163,7 @@ class AddCompsPage(QWizardPage):
 
         # register fields
         self.registerField("comps", self.AddCompsWidget.selectionsTE, "text",
-                           SIGNAL("textChanged()"))
+                           self.AddCompsWidget.selectionsTE.textChanged)
 
     def validatePage(self):
         okflag = self.AddCompsWidget.getComps()
@@ -290,7 +285,6 @@ if __name__ == "__main__":
     #  	form2.show()
 
     form = ParamWizard(None, selected)
-    form.connect(app, SIGNAL('focusChanged(QWidget *, QWidget *)'),
-                 form.ROIPage.ROIsel.onFocusChanged)  # manage the focus events (needed for mouse selection in ROI)
+    app.focusChanged.connect(form.ROIPage.ROIsel.onFocusChanged)  # manage the focus events (needed for mouse selection in ROI)
     form.show()
     sys.exit(app.exec_())

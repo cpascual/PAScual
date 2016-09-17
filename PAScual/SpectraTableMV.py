@@ -17,7 +17,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 import copy
-import os
 import sys
 
 from PyQt4.QtCore import *
@@ -34,6 +33,10 @@ import PAScual_rc
 
 # Spectra Table Model
 class PASspectraTableModel(QAbstractTableModel):
+
+    # this is a custom signal to warn that the 'hard' selection changed
+    selectionChanged = pyqtSignal(object, object)
+
     def __init__(self, spectra=[]):
         super(PASspectraTableModel, self).__init__()
         self.spectra = spectra
@@ -152,9 +155,8 @@ class PASspectraTableModel(QAbstractTableModel):
             column = index.column()
             if column == SEL:
                 dp.selected = not dp.selected
-                self.emit(SIGNAL("selectionChanged"), dp,
-                          index)  # this is a custom signal to warn that the 'hard' selection changed
-            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"), index,
+                self.selectionChanged.emit(dp, index)
+            self.dataChanged.emit(index,
                       index)
             return True
         return False
@@ -168,7 +170,7 @@ class PASspectraTableModel(QAbstractTableModel):
         for row in range(rows):
             # 			dp=discretepals(name=u"new")
             self.spectra.insert(position + row, dps[row])
-            self.emit(SIGNAL("selectionChanged"), dps[row],
+            self.selectionChanged.emit(dps[row],
                       self.index(position + row, SEL))
         self.endInsertRows()
         return True
@@ -194,8 +196,8 @@ class PASspectraTableModel(QAbstractTableModel):
         for dp, idx in zip(self.spectra, indexlist):
             if dp.selected != value:
                 dp.selected = value
-                self.emit(SIGNAL("selectionChanged"), dp, idx)
-        self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"), indexlist[0],
+                self.selectionChanged.emit(dp, idx)
+        self.dataChanged.emit(indexlist[0],
                   indexlist[-1])
 
     def removeChecked(self):
@@ -203,7 +205,7 @@ class PASspectraTableModel(QAbstractTableModel):
         for dp in self.spectra:
             if dp.selected:
                 dp.selected = False
-                self.emit(SIGNAL("selectionChanged"), dp, None)
+                self.selectionChanged.emit(dp, None)
             else:
                 temp.append(dp)
         self.spectra = temp
@@ -275,10 +277,10 @@ class demo(QDialog):
         mainLayout.addWidget(self.allBT, 3, 1)
         self.setLayout(mainLayout)
 
-        QObject.connect(self.addBT, SIGNAL("clicked()"), self.onAdd)
-        QObject.connect(self.remBT, SIGNAL("clicked()"), self.onRem)
-        QObject.connect(self.dataBT, SIGNAL("clicked()"), self.onData)
-        QObject.connect(self.allBT, SIGNAL("clicked()"), self.model.checkAll)
+        self.addBT.clicked[()].connect(self.onAdd)
+        self.remBT.clicked[()].connect(self.onRem)
+        self.dataBT.clicked[()].connect(self.onData)
+        self.allBT.clicked[()].connect(self.model.checkAll)
         self.table.resizeColumnsToContents()
         # 		self.tree.resizeColumnsToContents()
         self.table.setShowGrid(False)

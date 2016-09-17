@@ -17,7 +17,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import os
 import sys
 
 from PyQt4.QtCore import *
@@ -176,13 +175,12 @@ class PAScomponentsTableModel(QAbstractTableModel):
                 fp.free = not fp.free
                 for i in [COMMON, MINVAL, MAXVAL]:
                     otherindex = QAbstractTableModel.index(self, index.row(), i)
-                    self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                              otherindex,
+                    self.dataChanged.emit(otherindex,
                               otherindex)  # note: a similar thing can be used to update the whole row
             elif column == COMMON:
                 fp.common = not fp.common
             # 			print fp.showreport()
-            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"), index,
+            self.dataChanged.emit(index,
                       index)
             return True
         return False
@@ -232,11 +230,10 @@ class demo(QDialog):
         mainLayout.addWidget(self.tauorityBT)
         self.setLayout(mainLayout)
 
-        QObject.connect(self.addBT, SIGNAL("clicked()"), self.onAdd)
-        QObject.connect(self.remBT, SIGNAL("clicked()"), self.onRem)
-        QObject.connect(self.tauorityBT, SIGNAL("toggled(bool)"),
-                        self.onTItoggled)
-        QObject.connect(self.dumpBT, SIGNAL("clicked()"), self.showreport)
+        self.addBT.clicked[()].connect(self.onAdd)
+        self.remBT.clicked[()].connect(self.onRem)
+        self.tauorityBT.toggled.connect(self.onTItoggled)
+        self.dumpBT.clicked[()].connect(self.showreport)
 
     def onAdd(self):
         self.model.insertRows(position=self.posSB.value(),

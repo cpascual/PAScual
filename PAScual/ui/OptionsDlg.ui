@@ -1,6 +1,6 @@
 <ui version="4.0" >
- <class>Options</class>
- <widget class="QDialog" name="Options" >
+ <class>OptionsDlg</class>
+ <widget class="QDialog" name="OptionsDlg" >
   <property name="windowModality" >
    <enum>Qt::ApplicationModal</enum>
   </property>
@@ -877,7 +877,7 @@ p, li { white-space: pre-wrap; }
   <connection>
    <sender>buttonBox</sender>
    <signal>accepted()</signal>
-   <receiver>Options</receiver>
+   <receiver>OptionsDlg</receiver>
    <slot>accept()</slot>
    <hints>
     <hint type="sourcelabel" >
@@ -893,7 +893,7 @@ p, li { white-space: pre-wrap; }
   <connection>
    <sender>buttonBox</sender>
    <signal>rejected()</signal>
-   <receiver>Options</receiver>
+   <receiver>OptionsDlg</receiver>
    <slot>reject()</slot>
    <hints>
     <hint type="sourcelabel" >

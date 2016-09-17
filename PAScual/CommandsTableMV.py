@@ -18,7 +18,6 @@
 '''
 
 import copy
-import os
 import sys
 
 from PyQt4.QtCore import *
@@ -121,7 +120,7 @@ class CommandTableModel(QAbstractTableModel):
                              value=QVariant(QString()))  # clear the args
             elif column == ARGS:
                 self.commands[row].args = value
-            self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"), index,
+            self.dataChanged.emit(index,
                       index)
             return True
         return False
@@ -239,9 +238,9 @@ class demo(QDialog):
         mainLayout.addWidget(self.allBT, 3, 1)
         self.setLayout(mainLayout)
 
-        QObject.connect(self.addBT, SIGNAL("clicked()"), self.onAdd)
-        QObject.connect(self.remBT, SIGNAL("clicked()"), self.onRem)
-        QObject.connect(self.dataBT, SIGNAL("clicked()"), self.onData)
+        self.addBT.clicked[()].connect(self.onAdd)
+        self.remBT.clicked[()].connect(self.onRem)
+        self.dataBT.clicked[()].connect(self.onData)
         # 		QObject.connect(self.allBT,SIGNAL("clicked()"),self.model.checkAll)
         self.table.resizeColumnsToContents()
         # 		self.tree.resizeColumnsToContents()

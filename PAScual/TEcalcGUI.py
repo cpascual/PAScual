@@ -21,14 +21,16 @@ import sys
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-import ui_TEcalcGUI
 from pyTaoEldrup import *
 
+from ui import UILoadable
 
-class TEcalcDialog(QDialog, ui_TEcalcGUI.Ui_TEcalcGUI):
+
+@UILoadable()
+class TEcalcDialog(QDialog):
     def __init__(self, parent=None):
         super(TEcalcDialog, self).__init__(parent)
-        self.setupUi(self)
+        self.loadUi()
         # 		self.resultsTable.clear()
 
         # Adding actions
@@ -36,9 +38,8 @@ class TEcalcDialog(QDialog, ui_TEcalcGUI.Ui_TEcalcGUI):
             [self.actionCopy_Results_Selection])  # context menu
 
         # connections
-        QObject.connect(self.CalculatePB, SIGNAL("clicked()"), self.onCalculate)
-        QObject.connect(self.actionCopy_Results_Selection,
-                        SIGNAL("triggered()"), self.copy_Results_Selection)
+        self.CalculatePB.clicked[()].connect(self.onCalculate)
+        self.actionCopy_Results_Selection.triggered.connect(self.copy_Results_Selection)
 
     def onCalculate(self):
         '''Launches the calculation'''

@@ -93,18 +93,12 @@ class ROISelectorDialog(QDialog):
         self.resetSelected(selected)
 
         # Connect signals to slots:
-        QObject.connect(self.refspectrumCB, SIGNAL("currentIndexChanged(int)"),
-                        self.onrefspectraChange)
-        self.connect(self.buttonBox, SIGNAL("rejected()"), self,
-                     SLOT("reject()"))
-        self.connect(self.buttonBox, SIGNAL("accepted()"), self.checkAndApply)
-        self.connect(self.lowerlimRelCB, SIGNAL("stateChanged(int)"),
-                     self.onlowerlimRelChange)
-        self.connect(self.upperlimRelCB, SIGNAL("stateChanged(int)"),
-                     self.onupperlimRelChange)
-        self.connect(self.plotarea.picker,
-                     SIGNAL('selected(const QwtDoublePoint&)'),
-                     self.onselection)
+        self.refspectrumCB.currentIndexChanged.connect(self.onrefspectraChange)
+        self.buttonBox.rejected.connect(self.reject)
+        self.buttonBox.accepted.connect(self.checkAndApply)
+        self.lowerlimRelCB.stateChanged.connect(self.onlowerlimRelChange)
+        self.upperlimRelCB.stateChanged.connect(self.onupperlimRelChange)
+        self.plotarea.picker.selected.connect(self.onselection)
 
         self.selectiondestination = self.upperlimRelCB
 
@@ -227,8 +221,7 @@ def make(app=None):
     selected = [dp2, dp3]
     # initialisation
     demo = ROISelectorDialog(selected=selected)
-    demo.connect(app, SIGNAL('focusChanged(QWidget *, QWidget *)'),
-                 demo.onFocusChanged)
+    app.focusChanged.connect(demo.onFocusChanged)
     demo.exec_()
     demo.resetSelected([dp3, dp4])
     demo.exec_()

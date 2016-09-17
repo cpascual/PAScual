@@ -33,13 +33,8 @@
 # TODO: (General) Incorporate plothistory.py to the GUI. It could also be used to display ellipses taken from the covariance matrix when no history has been stored
 # TODO: (General) make installer?
 
-import copy
-import os
-import pickle
+
 import platform
-import scipy as S
-import sys
-import time
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -51,16 +46,11 @@ import PASCommandProcess as PCP
 import PASoptions
 import SpecFiles
 import SpectraTableMV as STMV
-import ui_FitparWidget
-import ui_PAScualGUI
+from ui import UILoadable
 from PlotGraphWidget import PALSplot, ResPlot
 from ROISelectorDlg import ROISelectorDialog
+from release import __version__, __homepage__, __citation_html__
 
-# import AdvOpt as advopt
-
-__version__ = "1.5.0"
-__homepage__ = "http://pascual.sourceforge.net"
-__citation__ = 'C. Pascual-Izarra et al., <i>Advanced Fitting Algorithms for Analysing Positron Annihilation Lifetime Spectra</i>, Nuclear Instruments and Methods A, 603, p456-466 (2009) <p><a href="http://dx.doi.org/10.1016/j.nima.2009.01.205">(DOI: 10.1016/j.nima.2009.01.205)</a> <p>see %s for up-to-date information about citing</p>' % __homepage__
 
 defaultFitModesDict = {'LOCAL-connected': ('LOAD', 'LOCAL', 'SAVE'),
                        'LOCAL': ('LOCAL',),
@@ -75,8 +65,8 @@ defaultFitModesDict = {'LOCAL-connected': ('LOAD', 'LOCAL', 'SAVE'),
                        }
 defaultFitMode = 'LOCAL-connected'
 
-
-class FitparWidget(QWidget, ui_FitparWidget.Ui_FitparWidget):
+@UILoadable
+class FitparWidget(QWidget):
     '''A composite widget that defines fitpars.
 		It contains: a label, an "auto" button, a "value" edit box, "fixed" and "common" check boxes, minimum and maximum edits and an Apply button
 		'''
@@ -90,7 +80,7 @@ class FitparWidget(QWidget, ui_FitparWidget.Ui_FitparWidget):
 		The callback for the auto button (the button is disabled if this is None)
 		Note, the widget is not laid out. Use addtoGridLayout to stack various widgets of this type'''
         super(FitparWidget, self).__init__(parent)
-        self.setupUi(self)
+        self.loadUi()
         #		self.__close=self.close
         self._fpkey = fpkey
         self.label.setText(QString(label))
@@ -100,14 +90,12 @@ class FitparWidget(QWidget, ui_FitparWidget.Ui_FitparWidget):
         if callbackApply is None:
             self.BTApply.setDisabled(True)
         else:
-            QObject.connect(self.BTApply, SIGNAL("clicked()"),
-                            lambda: callbackApply(
-                                self))  # it returns self to the callback
+            # it returns self to the callback
+            self.BTApply.clicked[()].connect(lambda: callbackApply(self))  
         if callbackAuto is None:
             self.BTAutoFill.setDisabled(True)
         else:
-            QObject.connect(self.BTAutoFill, SIGNAL("clicked()"),
-                            lambda: callbackAuto(self))
+            self.BTAutoFill.clicked[()].connect(lambda: callbackAuto(self))
         # set up validators
         for widget in [self.LEValue, self.LEMin,
                        self.LEMax]: widget.setValidator(QDoubleValidator(self))
@@ -186,11 +174,15 @@ class FitparWidget(QWidget, ui_FitparWidget.Ui_FitparWidget):
         gridlayout.addWidget(hdrMin, row, 5)
         gridlayout.addWidget(hdrMax, row, 6)
 
+@UILoadable
+class PAScualGUI(QMainWindow):
 
-class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
+    regenerateSets = pyqtSignal(bool)
+    updateParamsView = pyqtSignal(object)
+
     def __init__(self, parent=None):
         super(PAScualGUI, self).__init__(parent)
-        self.setupUi(self)
+        self.loadUi()
 
         self.tauFPWlist = []
         self.ityFPWlist = []
@@ -225,8 +217,8 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
         # components
         self.compModel = CTMV.PAScomponentsTableModel()
         self.compTable.setModel(self.compModel)
-        for c in [CTMV.FIX, CTMV.COMMON]: self.compTable.resizeColumnToContents(
-            c)
+        for c in [CTMV.FIX, CTMV.COMMON]:
+            self.compTable.resizeColumnToContents(c)
 
         # spectraTable
         self.spectraModel = STMV.PASspectraTableModel()
@@ -266,121 +258,68 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
         # 		self.resultsTable.addActions([self.actionCopy_Results_Selection,self.actionSave_results_as]) #context menu
         self.resultsTable.addActions(
             [self.actionCopy_Results_Selection, self.actionPlotFit])
-        self.nextupdatechk = \
-        self.settings.value("nextupdatechk", QVariant(0)).toInt()[
-            0]  # TODO: include this in options menu
-        self.outputFileName = None
         self.resultslist = []
         self.resultsdplist = []
+        self.results_min_ncomp = 0
+        self.resultsHeader = []
 
         # Add connections here
-        QObject.connect(self.actionLoad_Spectra, SIGNAL("triggered()"),
-                        self.loadSpectra)
-        QObject.connect(self.actionAbout, SIGNAL("triggered()"), self.helpAbout)
-        QObject.connect(self.actionLicense, SIGNAL("triggered()"),
-                        self.showlicense)
-        QObject.connect(self.actionSum_Spectra, SIGNAL("triggered()"),
-                        self.sumspectra)
-        QObject.connect(self.actionTao_Eldrup_Calculator, SIGNAL("triggered()"),
-                        self.launchTEcalc)
-        QObject.connect(self.actionWhat_s_This, SIGNAL("triggered()"),
-                        lambda: QWhatsThis.enterWhatsThisMode())
-        QObject.connect(self.actionPlotFit, SIGNAL("triggered()"),
-                        self.onPlotFit)
-        QObject.connect(self.actionSimulate_spectrum, SIGNAL("triggered()"),
-                        self.createFakeSpectrum)
-        QObject.connect(self.actionCopy_Results_Selection,
-                        SIGNAL("triggered()"), self.copy_Results_Selection)
-        QObject.connect(self.actionShow_hide_Plot, SIGNAL("triggered()"),
-                        self.show_hidePlot)
-        QObject.connect(self.actionShowSpectraSel, SIGNAL("triggered()"),
-                        self.showSpectraList)
-        QObject.connect(self.actionManual, SIGNAL("triggered()"),
-                        self.showManual)
-        QObject.connect(self.actionSave_Output_as, SIGNAL("triggered()"),
-                        self.onSaveOutput_as)
-        QObject.connect(self.actionCheck_for_Updates, SIGNAL("triggered()"),
-                        lambda: self.check_for_Updates(force=True))
-        QObject.connect(self.actionParamWizard, SIGNAL("triggered()"),
-                        self.onParamWizard)
-        QObject.connect(self.actionOptions, SIGNAL("triggered()"),
-                        self.onOptions)
-        QObject.connect(self.actionSave_Spectra_as, SIGNAL("triggered()"),
-                        self.onSaveSpectra)
+        self.actionLoad_Spectra.triggered.connect(self.loadSpectra)
+        self.actionAbout.triggered.connect(self.helpAbout)
+        self.actionLicense.triggered.connect(self.showlicense)
+        self.actionSum_Spectra.triggered.connect(self.sumspectra)
+        self.actionTao_Eldrup_Calculator.triggered.connect(self.launchTEcalc)
+        self.actionWhat_s_This.triggered.connect(lambda: QWhatsThis.enterWhatsThisMode())
+        self.actionPlotFit.triggered.connect(self.onPlotFit)
+        self.actionSimulate_spectrum.triggered.connect(self.createFakeSpectrum)
+        self.actionCopy_Results_Selection.triggered.connect(self.copy_Results_Selection)
+        self.actionShow_hide_Plot.triggered.connect(self.show_hidePlot)
+        self.actionShowSpectraSel.triggered.connect(self.showSpectraList)
+        self.actionManual.triggered.connect(self.showManual)
+        self.actionSave_Output_as.triggered.connect(self.onSaveOutput_as)
+        self.actionParamWizard.triggered.connect(self.onParamWizard)
+        self.actionOptions.triggered.connect(self.onOptions)
+        self.actionSave_Spectra_as.triggered.connect(self.onSaveSpectra)
 
         #		QObject.connect(self.actionSaveResults,SIGNAL("triggered()"),self.onSaveResults)
-        QObject.connect(self.spectraTable, SIGNAL("doubleClicked(QModelIndex)"),
-                        self.onSpectraTableDoubleClick)
-        QObject.connect(self.spectraTable.selectionModel(), SIGNAL(
-            "selectionChanged(QItemSelection,QItemSelection)"),
-                        self.onspectraSelectionChanged)
-        QObject.connect(self.SBoxNcomp, SIGNAL("valueChanged(int)"),
-                        self.changeNcomp)
-        QObject.connect(self.roiPB, SIGNAL("clicked()"), self.setROI)
-        QObject.connect(self.BTpsperchannel, SIGNAL("clicked()"),
-                        self.setpsperchannel)
-        QObject.connect(self.showtauRB, SIGNAL("toggled(bool)"),
-                        self.onShowTauToggled)
-        QObject.connect(self.spectraModel, SIGNAL("selectionChanged"),
-                        self.changePPlot)
-        QObject.connect(self, SIGNAL("updateParamsView"),
-                        self.onUpdateParamsView)
-        QObject.connect(self.selectAllTB, SIGNAL("clicked()"),
-                        self.spectraModel.checkAll)
-        QObject.connect(self.selectNoneTB, SIGNAL("clicked()"),
-                        lambda: self.spectraModel.checkAll(False))
-        QObject.connect(self.selectMarkedTB, SIGNAL("clicked()"),
-                        self.onSelectMarked)
-        QObject.connect(self.removeSpectraTB, SIGNAL("clicked()"),
-                        self.onRemoveChecked)
-        QObject.connect(self.applycompsBT, SIGNAL("clicked()"),
-                        self.onApplyComps)
-        QObject.connect(self.applyAllParametersPB, SIGNAL("clicked()"),
-                        self.onApplyAllParameters)
-        QObject.connect(self.resetParametersPB, SIGNAL("clicked()"),
-                        self.onResetParameters)
-        QObject.connect(self.actionRegenerateSets, SIGNAL("triggered()"),
-                        lambda: self.onRegenerateSets(force=True))
-        QObject.connect(self.tabWidget, SIGNAL("currentChanged(int)"),
-                        self.onTabChanged)
-        QObject.connect(self, SIGNAL("regenerateSets"), self.onRegenerateSets)
-        QObject.connect(self.fitModeCB,
-                        SIGNAL("currentIndexChanged(const QString&)"),
-                        self.onFitModeCBChange)
-        QObject.connect(self.applyFitModeBT, SIGNAL("clicked()"),
-                        self.assignFitModes)
-        QObject.connect(self.goFitBT, SIGNAL("clicked()"), self.onGoFit)
-        QObject.connect(self.stopFitBT, SIGNAL("clicked()"), self.onStopFit)
-        QObject.connect(self.skipCommandBT, SIGNAL("clicked()"), self.onSkipFit)
-        QObject.connect(self.fitter, SIGNAL("endrun(bool)"),
-                        self.onFitterFinished)
-        QObject.connect(self.fitter, SIGNAL("command_done(int)"), self.setPBar,
-                        SLOT("setValue(int)"))
-        QObject.connect(self.commandsModel,
-                        SIGNAL("dataChanged(QModelIndex,QModelIndex)"),
-                        self.onFitModeEdit)
-        QObject.connect(self.hideResultsBT, SIGNAL("clicked()"),
-                        self.onHideResults)
-        QObject.connect(self.showResultsBT, SIGNAL("clicked()"),
-                        self.onShowResults)
-        QObject.connect(self.saveResultsBT, SIGNAL("clicked()"),
-                        self.onSaveResults)
-        QObject.connect(self.resultsTable, SIGNAL("doubleClicked(QModelIndex)"),
-                        self.onPlotFit)
-        QObject.connect(self.resultsFileSelectBT, SIGNAL("clicked()"),
-                        self.onResultsFileSelectBT)
-        QObject.connect(self.previousOutputCB,
-                        SIGNAL("currentIndexChanged(const QString&)"),
-                        self.onPreviousOutputCBChange)
-        QObject.connect(self.saveOutputBT, SIGNAL("clicked()"),
-                        self.onSaveOutput_as)
-        QObject.connect(self.saveFitmodeBT, SIGNAL("clicked()"),
-                        self.saveFitMode)
-        QObject.connect(self.loadParametersPB, SIGNAL("clicked()"),
-                        self.loadParameters)
-        QObject.connect(self.saveParametersPB, SIGNAL("clicked()"),
-                        self.saveParameters)
-        QObject.connect(self.plotFitBT, SIGNAL("clicked()"), self.onPlotFit)
+        self.spectraTable.doubleClicked.connect(self.onSpectraTableDoubleClick)
+        self.spectraTable.selectionModel().selectionChanged.connect(self.onspectraSelectionChanged)
+        self.SBoxNcomp.valueChanged[int].connect(self.changeNcomp)
+        self.roiPB.clicked[()].connect(self.setROI)
+        self.BTpsperchannel.clicked[()].connect(self.setpsperchannel)
+        self.showtauRB.toggled.connect(self.onShowTauToggled)
+        self.spectraModel.selectionChanged.connect(self.changePPlot)
+        self.updateParamsView.connect(self.onUpdateParamsView)
+        self.selectAllTB.clicked[()].connect(self.spectraModel.checkAll)
+        self.selectNoneTB.clicked[()].connect(lambda: self.spectraModel.checkAll(False))
+        self.selectMarkedTB.clicked[()].connect(self.onSelectMarked)
+        self.removeSpectraTB.clicked[()].connect(self.onRemoveChecked)
+        self.applycompsBT.clicked[()].connect(self.onApplyComps)
+        self.applyAllParametersPB.clicked[()].connect(self.onApplyAllParameters)
+        self.resetParametersPB.clicked[()].connect(self.onResetParameters)
+        self.actionRegenerateSets.triggered.connect(lambda: self.onRegenerateSets(force=True))
+        self.tabWidget.currentChanged.connect(self.onTabChanged)
+        self.regenerateSets.connect(self.onRegenerateSets)
+        self.fitModeCB.currentIndexChanged['QString'].connect(self.onFitModeCBChange)
+        self.applyFitModeBT.clicked[()].connect(self.assignFitModes)
+        self.goFitBT.clicked[()].connect(self.onGoFit)
+        self.stopFitBT.clicked[()].connect(self.onStopFit)
+        self.skipCommandBT.clicked[()].connect(self.onSkipFit)
+        self.fitter.endrun.connect(self.onFitterFinished)
+        self.fitter.command_done.connect(self.setPBar.setValue)
+        self.commandsModel.dataChanged.connect(self.onFitModeEdit)
+        self.hideResultsBT.clicked[()].connect(self.onHideResults)
+        self.showResultsBT.clicked[()].connect(self.onShowResults)
+        self.saveResultsBT.clicked[()].connect(self.onSaveResults)
+        self.resultsTable.doubleClicked.connect(self.onPlotFit)
+        self.resultsFileSelectBT.clicked[()].connect(self.onResultsFileSelectBT)
+        self.previousOutputCB.currentIndexChanged['QString'].connect(self.onPreviousOutputCBChange)
+        self.outputFileSelectBT.clicked[()].connect(self.onOutputFileSelect)
+        self.saveOutputBT.clicked[()].connect(self.onSaveOutput_as)
+        self.saveFitmodeBT.clicked[()].connect(self.saveFitMode)
+        self.loadParametersPB.clicked[()].connect(self.loadParameters)
+        self.saveParametersPB.clicked[()].connect(self.saveParameters)
+        self.plotFitBT.clicked[()].connect(self.onPlotFit)
 
         # Restore last session Window state
         size = self.settings.value("MainWindow/Size",
@@ -393,12 +332,9 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
         self.fitModeCB.setCurrentIndex(self.fitModeCB.findText(defaultFitMode))
 
         # Launch low-priority initializations (to speed up load time)
-        QTimer.singleShot(0,
-                          self.createParamWizard)  # create the parameters Wizard
+        QTimer.singleShot(0, self.createParamWizard)  # create the parameters Wizard
         QTimer.singleShot(0, self.loadOptions)  # create the Options dialog
-        QTimer.singleShot(0,
-                          self.createOpenFilesDlg)  # create the OpenFiles dialog
-        QTimer.singleShot(0, self.check_for_Updates)  # Manage autocheck updates
+        QTimer.singleShot(0, self.createOpenFilesDlg) # create the OpenFiles dialog
 
     def notImplementedWarning(self, featurename=None):
         if featurename is None: featurename = 'this function'
@@ -435,8 +371,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
     def createParamWizard(self):
         from ParamWizard import ParamWizard
         self.paramWizard = ParamWizard(None)
-        self.connect(app, SIGNAL('focusChanged(QWidget *, QWidget *)'),
-                     self.paramWizard.ROIPage.ROIsel.onFocusChanged)  # manage the focus events (needed for mouse selection in ROI)
+        app.focusChanged.connect(self.paramWizard.ROIPage.ROIsel.onFocusChanged)  # manage the focus events (needed for mouse selection in ROI)
 
     def createOpenFilesDlg(self):
         # General OpenFile Dialog (it is never closed, just hidden)
@@ -514,25 +449,31 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
                                                QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog)
         if filename: self.resultsFileLE.setText(filename)
 
+    def onOutputFileSelect(self):
+        ofile = QFileDialog.getSaveFileName(self, "Output File Selection",
+                                            self.outputFileLE.text(),
+                                            "ASCII (*.txt)\nAll (*)",
+                                            '',
+                                            QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog)
+        if ofile:
+            self.outputFileLE.setText(ofile)
+        return ofile
+
     def onSaveOutput_as(self, ofile=None):
         # Make sure only finished outputs are saved
         if self.outputTE.isVisible():
             QMessageBox.warning(self, "Cannot save unfinished fit",
                                 "You can only save the output from finished fits. Output won't be written\n Select a different output from the list.")
             return
-        if ofile is None:  # if a file is not given, prompt the user for a file name
-            if self.outputFileName is None: self.outputFileName = self.options.workDirectory + '/PASoutput.txt'  # set default file name
-            ofile = QFileDialog.getSaveFileName(self, "Output File Selection",
-                                                self.outputFileName,
-                                                "ASCII (*.txt)\nAll (*)",
-                                                '',
-                                                QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog)
-            if not ofile: return  # failed to get a valid filename
+        # if a file is not given, prompt the user for a file name
+        if ofile is None:
+            ofile = self.onOutputFileSelect()
+        if not ofile:
+            return  # failed to get a valid filename
 
         # Manage the file
         if not isinstance(ofile, file):
             ofile = unicode(ofile)
-            self.outputFileName = ofile  # store the file name for future use
             openmode = 'a'
             if os.path.exists(ofile):
                 answer = QMessageBox.question(self, "Append data?",
@@ -598,10 +539,8 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
             self.plotfitDlg.layout.addWidget(self.plotfitDlg.textTE)
             self.plotfitDlg.layout.addLayout(layout2)
             self.plotfitDlg.setLayout(self.plotfitDlg.layout)
-            QObject.connect(self.plotfitDlg.prevPB, SIGNAL("clicked()"),
-                            lambda: self.plotfit(self.dprow - 1))
-            QObject.connect(self.plotfitDlg.nextPB, SIGNAL("clicked()"),
-                            lambda: self.plotfit(self.dprow + 1))
+            self.plotfitDlg.prevPB.clicked[()].connect(lambda: self.plotfit(self.dprow - 1))
+            self.plotfitDlg.nextPB.clicked[()].connect(lambda: self.plotfit(self.dprow + 1))
         else:
             self.plotfitDlg.fitplot.reset()
             self.plotfitDlg.resplot.reset()
@@ -839,16 +778,11 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
         '''Restores a the self.fitter object and its connections (use in case of having terminated the fitter thread)
 		abortobject is the handler containing the abortRequested() to which we assign the fitter.isStopped()'''
         self.fitter = PCP.fitter(self)
-        QObject.connect(self.fitter, SIGNAL("endrun(bool)"),
-                        self.onFitterFinished)
-        QObject.connect(self.fitter, SIGNAL("command_done(int)"), self.setPBar,
-                        SLOT("setValue(int)"))
-        QObject.connect(emitter, SIGNAL("initCommandPBar(int,int)"),
-                        self.commandPBar.setRange)
-        QObject.connect(emitter, SIGNAL("commandPBarValue(int)"),
-                        self.commandPBar, SLOT("setValue(int)"))
-        QObject.connect(emitter, SIGNAL("teeOutput"),
-                        self.outputTE.insertPlainText)
+        self.fitter.endrun.connect(self.onFitterFinished)
+        self.fitter.connect(self.setPBar.setValue)
+        emitter.initCommandPBar.connect(self.commandPBar.setRange)
+        emitter.commandPBarValue.connect(self.commandPBar.setValue)
+        emitter.teeOutput.connect(self.outputTE.insertPlainText)
         abortobject.abortRequested = form.fitter.isStopped  # reassign the  abortRequested() method from the abort object defined in PAScual
 
     def onSkipFit(self):
@@ -1009,12 +943,11 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
         self.settings.setValue("MainWindow/State", QVariant(self.saveState()))
         self.settings.setValue("fitModeFileName",
                                QVariant(QString(self.fitModeFileName)))
-        self.settings.setValue("nextupdatechk", QVariant(self.nextupdatechk))
         self.settings.setValue("openfilefilter",
                                QVariant(self.openFilesDlg.selectedFilter()))
 
     def onTabChanged(self, tabindex):
-        if tabindex == 1: self.emit(SIGNAL("regenerateSets"), False)
+        if tabindex == 1: self.regenerateSets.emit(False)
 
     def onRegenerateSets(self, force=False):
         # only regenerate if there is a chance of change (or if we explicitely force it)
@@ -1056,21 +989,23 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
         indexes = self.spectraTable.selectionModel().selectedIndexes()
         if indexes == []: return
         for idx in indexes:
-            if not self.spectraModel.data(idx,
-                                          Qt.UserRole).selected: self.spectraModel.setData(
-                self.spectraModel.index(idx.row(), STMV.SEL))
+            if not self.spectraModel.data(idx, Qt.UserRole).selected:
+                self.spectraModel.setData(self.spectraModel.index(idx.row(),
+                                                                  STMV.SEL)
+                                          )
 
     def onRemoveChecked(self):
         answer = QMessageBox.question(self, "Removal confirmation",
                                       "The checked spectra will be removed from the list.\nProceed?",
                                       QMessageBox.Ok | QMessageBox.Cancel)
-        if answer == QMessageBox.Ok: self.spectraModel.removeChecked()
+        if answer == QMessageBox.Ok:
+            self.spectraModel.removeChecked()
         # Maybe the selection changed?
         self.onspectraSelectionChanged()
         # mark that the sets might be dirty now
         self.dirtysets = True
         # signal recalculation of sets
-        self.emit(SIGNAL("regenerateSets"), False)
+        self.regenerateSets.emit(False)
 
     def sumspectra(self):
         '''Sums the checked spectra and offers to save them. It inserts the sum in the list'''
@@ -1105,8 +1040,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
         self.spectraModel.insertRows(position=None, rows=1, dps=[dpsum])
         for idx in indexes:
             idx = self.spectraModel.index(idx.row(), STMV.PSPC)
-            self.spectraModel.emit(
-                SIGNAL("dataChanged(QModelIndex,QModelIndex)"), idx, idx)
+            self.spectraModel.dataChanged.emit(idx, idx)
         return True
 
     def onSpectraTableDoubleClick(self, index):
@@ -1121,12 +1055,11 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
         selrows = self.spectraTable.selectionModel().selectedRows()
         nselrows = len(selrows)
         if nselrows == 0:
-            self.emit(SIGNAL("updateParamsView"), discretepals())
+            self.updateParamsView.emit(discretepals())
         elif nselrows == 1:
-            self.emit(SIGNAL("updateParamsView"),
-                      self.spectraModel.data(selrows[0], role=Qt.UserRole))
+            self.updateParamsView.emit(self.spectraModel.data(selrows[0], role=Qt.UserRole))
         else:
-            self.emit(SIGNAL("updateParamsView"), None)
+            self.updateParamsView.emit(None)
 
     def onShowTauToggled(self, checked):
         self.compModel.showtau = checked
@@ -1151,8 +1084,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
             dp.psperchannel = float(self.LEpsperchannel.text())
         for idx in indexes:
             idx = self.spectraModel.index(idx.row(), STMV.PSPC)
-            self.spectraModel.emit(
-                SIGNAL("dataChanged(QModelIndex,QModelIndex)"), idx, idx)
+            self.spectraModel.dataChanged.emit(idx, idx)
         # mark that the sets might be dirty now
         self.dirtysets = True
         return True
@@ -1189,8 +1121,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
         selected, indexes = self.spectraModel.getselectedspectra()
         if selected == []: return
         ROIselector = ROISelectorDialog(self, selected, "ROI")
-        ROIselector.connect(app, SIGNAL('focusChanged(QWidget *, QWidget *)'),
-                            ROIselector.onFocusChanged)
+        app.focusChanged.connect(ROIselector.onFocusChanged)
         if ROIselector.exec_():
             for dp, bgroi in zip(selected, ROIselector.roilist): dp.roi = bgroi
             self.spectraTable.resizeColumnToContents(STMV.ROI)
@@ -1220,8 +1151,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
         for idx in indexes:
             idx1 = self.spectraModel.index(idx.row(), 0)
             idx2 = self.spectraModel.index(idx.row(), ncol)
-            self.spectraModel.emit(
-                SIGNAL("dataChanged(QModelIndex,QModelIndex)"), idx1, idx2)
+            self.spectraModel.dataChanged.emit(idx1, idx2)
         #		print "DEBUG:",fp.name, fp.val, fp.minval, fp.maxval, fp.free, type(fp), caller._fpkey
         # mark that the sets might be dirty now
         self.dirtysets = True
@@ -1292,8 +1222,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
         # notify of the changes
         for idx in indexes:
             idx = self.spectraModel.index(idx.row(), STMV.COMP)
-            self.spectraModel.emit(
-                SIGNAL("dataChanged(QModelIndex,QModelIndex)"), idx, idx)
+            self.spectraModel.dataChanged.emit(idx, idx)
         return True
 
     def onApplyAllParameters(self):
@@ -1361,8 +1290,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
         self.onUpdateParamsView(dp)  # update what is shown
         for idx in indexes:
             idx = self.spectraModel.index(idx.row(), STMV.C0)
-            self.spectraModel.emit(
-                SIGNAL("dataChanged(QModelIndex,QModelIndex)"), idx, idx)
+            self.spectraModel.dataChanged.emit(idx, idx)
         self.statusbar.showMessage(
             "AutoOffset Finished (with %i warnings)" % nerror, 0)
 
@@ -1382,8 +1310,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
                 return  # abort the autobackground
         # launch the dialog in modal mode and execute some code if accepted
         BGselector = ROISelectorDialog(self, selected, "Background")
-        BGselector.connect(app, SIGNAL('focusChanged(QWidget *, QWidget *)'),
-                           BGselector.onFocusChanged)
+        app.focusChanged.connect(BGselector.onFocusChanged)
         if BGselector.exec_():
             for dp, bgroi in zip(selected, BGselector.roilist):
                 val = dp.exp[bgroi].mean()
@@ -1396,8 +1323,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
             # Notify of the changes
             for idx in indexes:
                 idx = self.spectraModel.index(idx.row(), STMV.BG)
-                self.spectraModel.emit(
-                    SIGNAL("dataChanged(QModelIndex,QModelIndex)"), idx, idx)
+                self.spectraModel.dataChanged.emit(idx, idx)
             self.onUpdateParamsView(dp)
 
     def changePPlot(self, dp, index=None, replot=True):
@@ -1470,7 +1396,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
             # mark that the sets might be dirty now
             self.dirtysets = True
             # signal regeneration of sets
-            self.emit(SIGNAL("regenerateSets"), False)
+            self.regenerateSets.emit(False)
             self.statusbar.showMessage("Done", 0)
             # Launch Wizard
             if self.options.autoWizardOnLoad:
@@ -1656,18 +1582,6 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
         self.spectraDockWidget.setVisible(
             not (self.spectraDockWidget.isVisible()))
 
-    def check_for_Updates(self, force=False):
-        '''It shows a reminder for checking for updates.
-		It only does so if it is time for the next scheduled reminder (or if called with force=True)'''
-        if force or time.time() > self.nextupdatechk:
-            import ChkUpdt
-            self.updaterDlg = ChkUpdt.updater(self, 'PAScual-Autocheck Updates',
-                                              """Do you want to check for updated versions? """,
-                                              __version__,
-                                              __homepage__ + "/lastrls.txt")
-            self.updaterDlg.exec_()
-            self.nextupdatechk = self.updaterDlg.nextupdatechk  # retrieve the sggested time for next updates check
-
     def onParamWizard(self):
         '''Launches the wizard and applies changes afterwards'''
         selected, indexes = self.spectraModel.getselectedspectra()
@@ -1702,8 +1616,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
             dp.bg.forcelimits()
         for idx in indexes:
             idx = self.spectraModel.index(idx.row(), STMV.BG)
-            self.spectraModel.emit(
-                SIGNAL("dataChanged(QModelIndex,QModelIndex)"), idx, idx)
+            self.spectraModel.dataChanged.emit(idx, idx)
         self.onUpdateParamsView(dp)
         # c0
         self.autoc0(self.c0FitparWidget)
@@ -1726,15 +1639,14 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
         # notify of the changes
         for idx in indexes:
             idx = self.spectraModel.index(idx.row(), STMV.COMP)
-            self.spectraModel.emit(
-                SIGNAL("dataChanged(QModelIndex,QModelIndex)"), idx, idx)
+            self.spectraModel.dataChanged.emit(idx, idx)
         self.compModel.reset()
         # select the last of the checked spectra (so that the parameters are shown)
         self.spectraTable.clearSelection()
         self.spectraTable.selectRow(indexes[-1].row())
         # recalculate sets
         self.dirtysets = True
-        self.emit(SIGNAL("regenerateSets"), False)
+        self.regenerateSets.emit(False)
 
     def loadParameters(self):
         '''uses a dp to fill the parameters. If no spectra si given, it asks to load a file which is expected to contain a pickled discretepals'''
@@ -1815,14 +1727,14 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 							<p>Author: Carlos Pascual-Izarra. <cpascual [AT] users.sourceforge.net>
 							<p>Home page: <a href='%s'>%s</a>
 							<p>Copyright &copy; 2008 All rights reserved.
-							<p>See Credits.txt for acknowledgements
+							<p>See CREDITS.txt for acknowledgements
 							<p>
 							<p>If you use PAScual for your research, please cite:
 							<p>%s
 							<p>
 							<p>Python %s - Qt %s - PyQt %s on %s""" % (
                               __version__, __homepage__, __homepage__,
-                              __citation__, platform.python_version(),
+                              __citation_html__, platform.python_version(),
                               QT_VERSION_STR, PYQT_VERSION_STR,
                               platform.system()))
 
@@ -1851,17 +1763,8 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 
 						    <p><b>Important:</b> If you use PAScual for your research, please cite:
 						    <p>%s
-							""" % (__version__, __citation__))
+							""" % (__version__, __citation_html__))
 
-
-# def getselectedkeys(self):
-#		if self.selectedChanged:
-#			self.selected=[unicode(item.text()) for item in self.listWidget.selectedItems()]
-#			self.selectedChanged=False
-#		if len(self.selected)==0:
-#			QMessageBox.warning(self, "Empty selection"," You must select at least one spectrum")
-#			return None
-#		else: return self.selected
 
 
 def main():
@@ -1869,21 +1772,17 @@ def main():
     app = QApplication(sys.argv)
     app.setOrganizationName("CPI")
     app.setApplicationName("PAScual")
-    try:
-        app.setApplicationVersion(
-            __version__)  # This only works with pyQT v>=4.4 (but the rest works ok with pyQTv4.3)
-    except AttributeError:
-        print "DEBUG: setApplicationVersion() fails (nothing serious).\n Is pyQt version older than 4.4?"
-
+    app.setApplicationVersion(__version__)
     form = PAScualGUI()
     form.show()
 
-    QObject.connect(emitter, SIGNAL("initCommandPBar(int,int)"),
-                    form.commandPBar.setRange)
-    QObject.connect(emitter, SIGNAL("commandPBarValue(int)"), form.commandPBar,
-                    SLOT("setValue(int)"))
-    QObject.connect(emitter, SIGNAL("teeOutput"), form.outputTE.insertPlainText)
-    abort.abortRequested = form.fitter.isStopped  # reassign the  abortRequested() method from the abort object defined in PAScual
+    emitter.initCommandPBar.connect(form.commandPBar.setRange)
+    emitter.commandPBarValue.connect(form.commandPBar.setValue)
+    emitter.teeOutput.connect(form.outputTE.insertPlainText)
+
+    # reassign the  abortRequested() method from the abort object
+    # defined in PAScual
+    abort.abortRequested = form.fitter.isStopped
 
     sys.exit(app.exec_())
 
