@@ -264,9 +264,6 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
         # 		self.resultsTable.addActions([self.actionCopy_Results_Selection,self.actionSave_results_as]) #context menu
         self.resultsTable.addActions(
             [self.actionCopy_Results_Selection, self.actionPlotFit])
-        self.nextupdatechk = \
-        self.settings.value("nextupdatechk", QVariant(0)).toInt()[
-            0]  # TODO: include this in options menu
         self.outputFileName = None
         self.resultslist = []
         self.resultsdplist = []
@@ -285,7 +282,6 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
         self.actionShowSpectraSel.triggered.connect(self.showSpectraList)
         self.actionManual.triggered.connect(self.showManual)
         self.actionSave_Output_as.triggered.connect(self.onSaveOutput_as)
-        self.actionCheck_for_Updates.triggered.connect(lambda: self.check_for_Updates(force=True))
         self.actionParamWizard.triggered.connect(self.onParamWizard)
         self.actionOptions.triggered.connect(self.onOptions)
         self.actionSave_Spectra_as.triggered.connect(self.onSaveSpectra)
@@ -341,12 +337,9 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
         self.fitModeCB.setCurrentIndex(self.fitModeCB.findText(defaultFitMode))
 
         # Launch low-priority initializations (to speed up load time)
-        QTimer.singleShot(0,
-                          self.createParamWizard)  # create the parameters Wizard
+        QTimer.singleShot(0, self.createParamWizard)  # create the parameters Wizard
         QTimer.singleShot(0, self.loadOptions)  # create the Options dialog
-        QTimer.singleShot(0,
-                          self.createOpenFilesDlg)  # create the OpenFiles dialog
-        QTimer.singleShot(0, self.check_for_Updates)  # Manage autocheck updates
+        QTimer.singleShot(0, self.createOpenFilesDlg) # create the OpenFiles dialog
 
     def notImplementedWarning(self, featurename=None):
         if featurename is None: featurename = 'this function'
@@ -951,7 +944,6 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
         self.settings.setValue("MainWindow/State", QVariant(self.saveState()))
         self.settings.setValue("fitModeFileName",
                                QVariant(QString(self.fitModeFileName)))
-        self.settings.setValue("nextupdatechk", QVariant(self.nextupdatechk))
         self.settings.setValue("openfilefilter",
                                QVariant(self.openFilesDlg.selectedFilter()))
 
@@ -1588,18 +1580,6 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
     def showSpectraList(self):
         self.spectraDockWidget.setVisible(
             not (self.spectraDockWidget.isVisible()))
-
-    def check_for_Updates(self, force=False):
-        '''It shows a reminder for checking for updates.
-		It only does so if it is time for the next scheduled reminder (or if called with force=True)'''
-        if force or time.time() > self.nextupdatechk:
-            import ChkUpdt
-            self.updaterDlg = ChkUpdt.updater(self, 'PAScual-Autocheck Updates',
-                                              """Do you want to check for updated versions? """,
-                                              __version__,
-                                              __homepage__ + "/lastrls.txt")
-            self.updaterDlg.exec_()
-            self.nextupdatechk = self.updaterDlg.nextupdatechk  # retrieve the sggested time for next updates check
 
     def onParamWizard(self):
         '''Launches the wizard and applies changes afterwards'''
