@@ -20,8 +20,7 @@
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-import ui_Options
-
+from ui import UILoadable
 
 class Options(object):
     def __init__(self):
@@ -45,13 +44,13 @@ class Options(object):
         for opt, dflt in zip(self.optlist, self.dfltlist): setattr(self, opt,
                                                                    dflt)
 
-
-class OptionsDlg(QDialog, ui_Options.Ui_Options):
+@UILoadable
+class OptionsDlg(QDialog):
     '''Dialog containing options for PAScual. The options are members of this object.'''
 
     def __init__(self, parent=None):
         super(OptionsDlg, self).__init__(parent)
-        self.setupUi(self)
+        self.loadUi()
         # set validators
         self.BI_lengthLE.setValidator(QDoubleValidator(self))
         self.BI_stabLE.setValidator(QDoubleValidator(self))

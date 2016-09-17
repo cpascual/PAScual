@@ -1,6 +1,6 @@
 <ui version="4.0" >
- <class>TEcalcGUI</class>
- <widget class="QDialog" name="TEcalcGUI" >
+ <class>TEcalcDialog</class>
+ <widget class="QDialog" name="TEcalcDialog" >
   <property name="geometry" >
    <rect>
     <x>0</x>

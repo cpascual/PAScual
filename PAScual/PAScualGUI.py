@@ -51,8 +51,9 @@ import PASCommandProcess as PCP
 import PASoptions
 import SpecFiles
 import SpectraTableMV as STMV
-import ui_FitparWidget
+
 import ui_PAScualGUI
+from ui import UILoadable
 from PlotGraphWidget import PALSplot, ResPlot
 from ROISelectorDlg import ROISelectorDialog
 
@@ -75,8 +76,8 @@ defaultFitModesDict = {'LOCAL-connected': ('LOAD', 'LOCAL', 'SAVE'),
                        }
 defaultFitMode = 'LOCAL-connected'
 
-
-class FitparWidget(QWidget, ui_FitparWidget.Ui_FitparWidget):
+@UILoadable
+class FitparWidget(QWidget):
     '''A composite widget that defines fitpars.
 		It contains: a label, an "auto" button, a "value" edit box, "fixed" and "common" check boxes, minimum and maximum edits and an Apply button
 		'''
@@ -90,7 +91,7 @@ class FitparWidget(QWidget, ui_FitparWidget.Ui_FitparWidget):
 		The callback for the auto button (the button is disabled if this is None)
 		Note, the widget is not laid out. Use addtoGridLayout to stack various widgets of this type'''
         super(FitparWidget, self).__init__(parent)
-        self.setupUi(self)
+        self.loadUi()
         #		self.__close=self.close
         self._fpkey = fpkey
         self.label.setText(QString(label))
@@ -184,15 +185,15 @@ class FitparWidget(QWidget, ui_FitparWidget.Ui_FitparWidget):
         gridlayout.addWidget(hdrMin, row, 5)
         gridlayout.addWidget(hdrMax, row, 6)
 
-
-class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
+@UILoadable
+class PAScualGUI(QMainWindow):
 
     regenerateSets = pyqtSignal(bool)
     updateParamsView = pyqtSignal(object)
 
     def __init__(self, parent=None):
         super(PAScualGUI, self).__init__(parent)
-        self.setupUi(self)
+        self.loadUi()
 
         self.tauFPWlist = []
         self.ityFPWlist = []

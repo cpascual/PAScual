@@ -21,14 +21,16 @@ import sys
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-import ui_TEcalcGUI
 from pyTaoEldrup import *
 
+from ui import UILoadable
 
-class TEcalcDialog(QDialog, ui_TEcalcGUI.Ui_TEcalcGUI):
+
+@UILoadable()
+class TEcalcDialog(QDialog):
     def __init__(self, parent=None):
         super(TEcalcDialog, self).__init__(parent)
-        self.setupUi(self)
+        self.loadUi()
         # 		self.resultsTable.clear()
 
         # Adding actions

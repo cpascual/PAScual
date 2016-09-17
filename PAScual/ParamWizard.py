@@ -23,14 +23,15 @@ import sys
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
 
-import ui_AddCompsWidget
+
+from ui import UILoadable
 from ROISelectorDlg import ROISelectorDialog
 
-
-class AddCompsWidget(QWidget, ui_AddCompsWidget.Ui_AddCompsWidget):
+@UILoadable()
+class AddCompsWidget(QWidget):
     def __init__(self, parent=None):
         super(AddCompsWidget, self).__init__(parent)
-        self.setupUi(self)
+        self.loadUi()
         self.addpPsBT.clicked.connect(lambda: self.addComp(125))
         self.addDirectBT.clicked.connect(lambda: self.addComp(400))
         self.addoPsBT.clicked.connect(lambda: self.addComp(2000))
