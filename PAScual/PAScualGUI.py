@@ -311,8 +311,7 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
         self.stopFitBT.clicked.connect(self.onStopFit)
         self.skipCommandBT.clicked.connect(self.onSkipFit)
         self.fitter.endrun.connect(self.onFitterFinished)
-        QObject.connect(self.fitter, SIGNAL("command_done(int)"), self.setPBar,
-                        SLOT("setValue(int)"))
+        self.fitter.command_done.connect(self.setPBar.setValue)
         self.commandsModel.dataChanged.connect(self.onFitModeEdit)
         self.hideResultsBT.clicked.connect(self.onHideResults)
         self.showResultsBT.clicked.connect(self.onShowResults)
@@ -778,11 +777,9 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
 		abortobject is the handler containing the abortRequested() to which we assign the fitter.isStopped()'''
         self.fitter = PCP.fitter(self)
         self.fitter.endrun.connect(self.onFitterFinished)
-        QObject.connect(self.fitter, SIGNAL("command_done(int)"), self.setPBar,
-                        SLOT("setValue(int)"))
+        self.fitter.connect(self.setPBar.setValue)
         emitter.initCommandPBar.connect(self.commandPBar.setRange)
-        QObject.connect(emitter, SIGNAL("commandPBarValue(int)"),
-                        self.commandPBar, SLOT("setValue(int)"))
+        emitter.commandPBarValue.connect(self.commandPBar.setValue)
         emitter.teeOutput.connect(self.outputTE.insertPlainText)
         abortobject.abortRequested = form.fitter.isStopped  # reassign the  abortRequested() method from the abort object defined in PAScual
 
