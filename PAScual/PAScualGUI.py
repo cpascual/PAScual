@@ -186,6 +186,10 @@ class FitparWidget(QWidget, ui_FitparWidget.Ui_FitparWidget):
 
 
 class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
+
+    regenerateSets = pyqtSignal(bool)
+    updateParamsView = pyqtSignal(object)
+
     def __init__(self, parent=None):
         super(PAScualGUI, self).__init__(parent)
         self.setupUi(self)
@@ -223,8 +227,8 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
         # components
         self.compModel = CTMV.PAScomponentsTableModel()
         self.compTable.setModel(self.compModel)
-        for c in [CTMV.FIX, CTMV.COMMON]: self.compTable.resizeColumnToContents(
-            c)
+        for c in [CTMV.FIX, CTMV.COMMON]:
+            self.compTable.resizeColumnToContents(c)
 
         # spectraTable
         self.spectraModel = STMV.PASspectraTableModel()
@@ -987,15 +991,17 @@ class PAScualGUI(QMainWindow, ui_PAScualGUI.Ui_PAScual):
         indexes = self.spectraTable.selectionModel().selectedIndexes()
         if indexes == []: return
         for idx in indexes:
-            if not self.spectraModel.data(idx,
-                                          Qt.UserRole).selected: self.spectraModel.setData(
-                self.spectraModel.index(idx.row(), STMV.SEL))
+            if not self.spectraModel.data(idx, Qt.UserRole).selected:
+                self.spectraModel.setData(self.spectraModel.index(idx.row(),
+                                                                  STMV.SEL)
+                                          )
 
     def onRemoveChecked(self):
         answer = QMessageBox.question(self, "Removal confirmation",
                                       "The checked spectra will be removed from the list.\nProceed?",
                                       QMessageBox.Ok | QMessageBox.Cancel)
-        if answer == QMessageBox.Ok: self.spectraModel.removeChecked()
+        if answer == QMessageBox.Ok:
+            self.spectraModel.removeChecked()
         # Maybe the selection changed?
         self.onspectraSelectionChanged()
         # mark that the sets might be dirty now
