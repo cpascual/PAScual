@@ -238,9 +238,9 @@ class demo(QDialog):
         mainLayout.addWidget(self.allBT, 3, 1)
         self.setLayout(mainLayout)
 
-        self.addBT.clicked.connect(self.onAdd)
-        self.remBT.clicked.connect(self.onRem)
-        self.dataBT.clicked.connect(self.onData)
+        self.addBT.clicked[()].connect(self.onAdd)
+        self.remBT.clicked[()].connect(self.onRem)
+        self.dataBT.clicked[()].connect(self.onData)
         # 		QObject.connect(self.allBT,SIGNAL("clicked()"),self.model.checkAll)
         self.table.resizeColumnsToContents()
         # 		self.tree.resizeColumnsToContents()

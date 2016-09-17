@@ -90,12 +90,12 @@ class FitparWidget(QWidget):
         if callbackApply is None:
             self.BTApply.setDisabled(True)
         else:
-            self.BTApply.clicked.connect(lambda: callbackApply(
-                                self))  # it returns self to the callback
+            # it returns self to the callback
+            self.BTApply.clicked[()].connect(lambda: callbackApply(self))  
         if callbackAuto is None:
             self.BTAutoFill.setDisabled(True)
         else:
-            self.BTAutoFill.clicked.connect(lambda: callbackAuto(self))
+            self.BTAutoFill.clicked[()].connect(lambda: callbackAuto(self))
         # set up validators
         for widget in [self.LEValue, self.LEMin,
                        self.LEMax]: widget.setValidator(QDoubleValidator(self))
@@ -285,41 +285,41 @@ class PAScualGUI(QMainWindow):
         #		QObject.connect(self.actionSaveResults,SIGNAL("triggered()"),self.onSaveResults)
         self.spectraTable.doubleClicked.connect(self.onSpectraTableDoubleClick)
         self.spectraTable.selectionModel().selectionChanged.connect(self.onspectraSelectionChanged)
-        self.SBoxNcomp.valueChanged.connect(self.changeNcomp)
-        self.roiPB.clicked.connect(self.setROI)
-        self.BTpsperchannel.clicked.connect(self.setpsperchannel)
+        self.SBoxNcomp.valueChanged[int].connect(self.changeNcomp)
+        self.roiPB.clicked[()].connect(self.setROI)
+        self.BTpsperchannel.clicked[()].connect(self.setpsperchannel)
         self.showtauRB.toggled.connect(self.onShowTauToggled)
         self.spectraModel.selectionChanged.connect(self.changePPlot)
         self.updateParamsView.connect(self.onUpdateParamsView)
-        self.selectAllTB.clicked.connect(self.spectraModel.checkAll)
-        self.selectNoneTB.clicked.connect(lambda: self.spectraModel.checkAll(False))
-        self.selectMarkedTB.clicked.connect(self.onSelectMarked)
-        self.removeSpectraTB.clicked.connect(self.onRemoveChecked)
-        self.applycompsBT.clicked.connect(self.onApplyComps)
-        self.applyAllParametersPB.clicked.connect(self.onApplyAllParameters)
-        self.resetParametersPB.clicked.connect(self.onResetParameters)
+        self.selectAllTB.clicked[()].connect(self.spectraModel.checkAll)
+        self.selectNoneTB.clicked[()].connect(lambda: self.spectraModel.checkAll(False))
+        self.selectMarkedTB.clicked[()].connect(self.onSelectMarked)
+        self.removeSpectraTB.clicked[()].connect(self.onRemoveChecked)
+        self.applycompsBT.clicked[()].connect(self.onApplyComps)
+        self.applyAllParametersPB.clicked[()].connect(self.onApplyAllParameters)
+        self.resetParametersPB.clicked[()].connect(self.onResetParameters)
         self.actionRegenerateSets.triggered.connect(lambda: self.onRegenerateSets(force=True))
         self.tabWidget.currentChanged.connect(self.onTabChanged)
         self.regenerateSets.connect(self.onRegenerateSets)
         self.fitModeCB.currentIndexChanged['QString'].connect(self.onFitModeCBChange)
-        self.applyFitModeBT.clicked.connect(self.assignFitModes)
-        self.goFitBT.clicked.connect(self.onGoFit)
-        self.stopFitBT.clicked.connect(self.onStopFit)
-        self.skipCommandBT.clicked.connect(self.onSkipFit)
+        self.applyFitModeBT.clicked[()].connect(self.assignFitModes)
+        self.goFitBT.clicked[()].connect(self.onGoFit)
+        self.stopFitBT.clicked[()].connect(self.onStopFit)
+        self.skipCommandBT.clicked[()].connect(self.onSkipFit)
         self.fitter.endrun.connect(self.onFitterFinished)
         self.fitter.command_done.connect(self.setPBar.setValue)
         self.commandsModel.dataChanged.connect(self.onFitModeEdit)
-        self.hideResultsBT.clicked.connect(self.onHideResults)
-        self.showResultsBT.clicked.connect(self.onShowResults)
-        self.saveResultsBT.clicked.connect(self.onSaveResults)
+        self.hideResultsBT.clicked[()].connect(self.onHideResults)
+        self.showResultsBT.clicked[()].connect(self.onShowResults)
+        self.saveResultsBT.clicked[()].connect(self.onSaveResults)
         self.resultsTable.doubleClicked.connect(self.onPlotFit)
-        self.resultsFileSelectBT.clicked.connect(self.onResultsFileSelectBT)
+        self.resultsFileSelectBT.clicked[()].connect(self.onResultsFileSelectBT)
         self.previousOutputCB.currentIndexChanged['QString'].connect(self.onPreviousOutputCBChange)
-        self.saveOutputBT.clicked.connect(self.onSaveOutput_as)
-        self.saveFitmodeBT.clicked.connect(self.saveFitMode)
-        self.loadParametersPB.clicked.connect(self.loadParameters)
-        self.saveParametersPB.clicked.connect(self.saveParameters)
-        self.plotFitBT.clicked.connect(self.onPlotFit)
+        self.saveOutputBT.clicked[()].connect(self.onSaveOutput_as)
+        self.saveFitmodeBT.clicked[()].connect(self.saveFitMode)
+        self.loadParametersPB.clicked[()].connect(self.loadParameters)
+        self.saveParametersPB.clicked[()].connect(self.saveParameters)
+        self.plotFitBT.clicked[()].connect(self.onPlotFit)
 
         # Restore last session Window state
         size = self.settings.value("MainWindow/Size",
@@ -456,7 +456,9 @@ class PAScualGUI(QMainWindow):
                                 "You can only save the output from finished fits. Output won't be written\n Select a different output from the list.")
             return
         if ofile is None:  # if a file is not given, prompt the user for a file name
-            if self.outputFileName is None: self.outputFileName = self.options.workDirectory + '/PASoutput.txt'  # set default file name
+            if self.outputFileName is None:
+                # set default file name
+                self.outputFileName = self.options.workDirectory + '/PASoutput.txt'
             ofile = QFileDialog.getSaveFileName(self, "Output File Selection",
                                                 self.outputFileName,
                                                 "ASCII (*.txt)\nAll (*)",
@@ -533,8 +535,8 @@ class PAScualGUI(QMainWindow):
             self.plotfitDlg.layout.addWidget(self.plotfitDlg.textTE)
             self.plotfitDlg.layout.addLayout(layout2)
             self.plotfitDlg.setLayout(self.plotfitDlg.layout)
-            self.plotfitDlg.prevPB.clicked.connect(lambda: self.plotfit(self.dprow - 1))
-            self.plotfitDlg.nextPB.clicked.connect(lambda: self.plotfit(self.dprow + 1))
+            self.plotfitDlg.prevPB.clicked[()].connect(lambda: self.plotfit(self.dprow - 1))
+            self.plotfitDlg.nextPB.clicked[()].connect(lambda: self.plotfit(self.dprow + 1))
         else:
             self.plotfitDlg.fitplot.reset()
             self.plotfitDlg.resplot.reset()

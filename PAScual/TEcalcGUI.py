@@ -38,7 +38,7 @@ class TEcalcDialog(QDialog):
             [self.actionCopy_Results_Selection])  # context menu
 
         # connections
-        self.CalculatePB.clicked.connect(self.onCalculate)
+        self.CalculatePB.clicked[()].connect(self.onCalculate)
         self.actionCopy_Results_Selection.triggered.connect(self.copy_Results_Selection)
 
     def onCalculate(self):

@@ -58,8 +58,9 @@ class OptionsDlg(QDialog):
         self.seedLE.setValidator(QIntValidator(self))
         # connections
         self.buttonBox.clicked.connect(self.onclicked)
-        self.manualFilePB.clicked.connect(self.onChangeManualFile)
-        self.workDirectoryPB.clicked.connect(self.onChangeWorkDirectory)
+        self.manualFilePB.clicked[()].connect(self.onChangeManualFile)
+        self.workDirectoryPB.clicked[()].connect(self.onChangeWorkDirectory)
+        self.BI_savehistPB.clicked[()].connect(self.onChangeHistoryFile)
 
         # set options
         self.reset()
@@ -75,6 +76,14 @@ class OptionsDlg(QDialog):
                                                self.manualFileLE.text(),
                                                "(*.html *.htm)")
         if filename: self.manualFileLE.setText(filename)
+
+    def onChangeHistoryFile(self):
+        filename = QFileDialog.getSaveFileName(self, "BI history File Selection",
+                                               self.BI_savehistLE.text(),
+                                               "ASCII (*.txt)\nAll (*)",
+                                               '',
+                                               QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog)
+        if filename: self.BI_savehistLE.setText(filename)
 
     def onclicked(self, button):
         if self.buttonBox.buttonRole(button) == QDialogButtonBox.ResetRole:

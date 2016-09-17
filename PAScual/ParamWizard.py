@@ -32,10 +32,10 @@ class AddCompsWidget(QWidget):
     def __init__(self, parent=None):
         super(AddCompsWidget, self).__init__(parent)
         self.loadUi()
-        self.addpPsBT.clicked.connect(lambda: self.addComp(125))
-        self.addDirectBT.clicked.connect(lambda: self.addComp(400))
-        self.addoPsBT.clicked.connect(lambda: self.addComp(2000))
-        self.addCustomBT.clicked.connect(lambda: self.addComp(self.customTauSB.value()))
+        self.addpPsBT.clicked[()].connect(lambda: self.addComp(125))
+        self.addDirectBT.clicked[()].connect(lambda: self.addComp(400))
+        self.addoPsBT.clicked[()].connect(lambda: self.addComp(2000))
+        self.addCustomBT.clicked[()].connect(lambda: self.addComp(self.customTauSB.value()))
 
     # 		self.connect(self.addCustomBT,SIGNAL('clicked()'), self.getComps)
     def addComp(self, tau):

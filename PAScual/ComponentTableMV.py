@@ -230,10 +230,10 @@ class demo(QDialog):
         mainLayout.addWidget(self.tauorityBT)
         self.setLayout(mainLayout)
 
-        self.addBT.clicked.connect(self.onAdd)
-        self.remBT.clicked.connect(self.onRem)
+        self.addBT.clicked[()].connect(self.onAdd)
+        self.remBT.clicked[()].connect(self.onRem)
         self.tauorityBT.toggled.connect(self.onTItoggled)
-        self.dumpBT.clicked.connect(self.showreport)
+        self.dumpBT.clicked[()].connect(self.showreport)
 
     def onAdd(self):
         self.model.insertRows(position=self.posSB.value(),
