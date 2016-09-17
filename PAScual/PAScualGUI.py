@@ -261,6 +261,8 @@ class PAScualGUI(QMainWindow):
         self.outputFileName = None
         self.resultslist = []
         self.resultsdplist = []
+        self.results_min_ncomp = 0
+        self.resultsHeader = []
 
         # Add connections here
         self.actionLoad_Spectra.triggered.connect(self.loadSpectra)
