@@ -94,8 +94,7 @@ class ROISelectorDialog(QDialog):
 
         # Connect signals to slots:
         self.refspectrumCB.currentIndexChanged.connect(self.onrefspectraChange)
-        self.connect(self.buttonBox, SIGNAL("rejected()"), self,
-                     SLOT("reject()"))
+        self.buttonBox.rejected.connect(self.reject)
         self.buttonBox.accepted.connect(self.checkAndApply)
         self.lowerlimRelCB.stateChanged.connect(self.onlowerlimRelChange)
         self.upperlimRelCB.stateChanged.connect(self.onupperlimRelChange)
