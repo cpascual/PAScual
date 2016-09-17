@@ -1,0 +1,70 @@
+NEEDS_DECLARE:
+  CommandTableModel: self.dataChanged
+
+NEEDS_DECLARE:
+  PAScomponentsTableModel:                     self.dataChanged
+
+NEEDS_DECLARE:
+  PAScomponentsTableModel: self.dataChanged
+
+NEEDS_DECLARE:
+  fitter:         self.endrun
+
+NEEDS_DECLARE:
+  fitter:             # emit a signal of command done
+            self.command_done
+
+NEEDS_DECLARE:
+  tee:  emitter.teeOutput
+
+NEEDS_DECLARE:
+  palsset: emitter.commandPBarValue
+
+NEEDS_DECLARE:
+  palsset: emitter.initCommandPBar
+
+NEEDS_DECLARE:
+  palsset:             emitter.commandPBarValue
+
+NEEDS_DECLARE:
+  palsset:         # and do the proper BI
+        emitter.initCommandPBar
+
+NEEDS_DECLARE:
+  palsset:         emitter.initCommandPBar
+
+NEEDS_DECLARE:
+  palsset:         emitter.commandPBarValue
+
+NEEDS_DECLARE:
+  PAScualGUI:  self.regenerateSets
+
+NEEDS_DECLARE:
+  PAScualGUI:         # signal recalculation of sets
+        self.regenerateSets
+
+NEEDS_DECLARE:
+  PAScualGUI:             self.spectraModel.dataChanged
+
+NEEDS_DECLARE:
+  PAScualGUI: self.updateParamsView
+
+NEEDS_DECLARE:
+  PAScualGUI:                 self.spectraModel.dataChanged
+
+NEEDS_DECLARE:
+  PAScualGUI:             # signal regeneration of sets
+            self.regenerateSets
+
+NEEDS_DECLARE:
+  PAScualGUI:         self.regenerateSets
+
+NEEDS_DECLARE:
+  PASspectraTableModel:                 self.selectionChanged
+
+NEEDS_DECLARE:
+  PASspectraTableModel: self.dataChanged
+
+NEEDS_DECLARE:
+  PASspectraTableModel:             self.selectionChanged
+

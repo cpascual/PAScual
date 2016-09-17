@@ -31,14 +31,10 @@ class AddCompsWidget(QWidget, ui_AddCompsWidget.Ui_AddCompsWidget):
     def __init__(self, parent=None):
         super(AddCompsWidget, self).__init__(parent)
         self.setupUi(self)
-        self.connect(self.addpPsBT, SIGNAL('clicked()'),
-                     lambda: self.addComp(125))
-        self.connect(self.addDirectBT, SIGNAL('clicked()'),
-                     lambda: self.addComp(400))
-        self.connect(self.addoPsBT, SIGNAL('clicked()'),
-                     lambda: self.addComp(2000))
-        self.connect(self.addCustomBT, SIGNAL('clicked()'),
-                     lambda: self.addComp(self.customTauSB.value()))
+        self.addpPsBT.clicked.connect(lambda: self.addComp(125))
+        self.addDirectBT.clicked.connect(lambda: self.addComp(400))
+        self.addoPsBT.clicked.connect(lambda: self.addComp(2000))
+        self.addCustomBT.clicked.connect(lambda: self.addComp(self.customTauSB.value()))
 
     # 		self.connect(self.addCustomBT,SIGNAL('clicked()'), self.getComps)
     def addComp(self, tau):
@@ -290,7 +286,6 @@ if __name__ == "__main__":
     #  	form2.show()
 
     form = ParamWizard(None, selected)
-    form.connect(app, SIGNAL('focusChanged(QWidget *, QWidget *)'),
-                 form.ROIPage.ROIsel.onFocusChanged)  # manage the focus events (needed for mouse selection in ROI)
+    app.focusChanged.connect(form.ROIPage.ROIsel.onFocusChanged)  # manage the focus events (needed for mouse selection in ROI)
     form.show()
     sys.exit(app.exec_())

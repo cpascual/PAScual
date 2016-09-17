@@ -40,10 +40,9 @@ class updater(QDialog):
         self.daysSB.setValue(__DEFAULTCHECKINTERVAL__)
         self.buttonBox = QDialogButtonBox(
             QDialogButtonBox.Yes | QDialogButtonBox.No)
-        QObject.connect(self.buttonBox, SIGNAL("accepted()"),
-                        self.check_for_Updates)
-        QObject.connect(self.buttonBox, SIGNAL("rejected()"), self.reject)
-        QObject.connect(self, SIGNAL("finished(int)"), self.onClose)
+        self.buttonBox.accepted.connect(self.check_for_Updates)
+        self.buttonBox.rejected.connect(self.reject)
+        self.finished.connect(self.onClose)
         layout2 = QHBoxLayout()
         layout2.addWidget(QLabel("(you will be reminded again in "))
         layout2.addWidget(self.daysSB)

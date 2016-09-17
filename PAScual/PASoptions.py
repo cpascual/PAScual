@@ -58,12 +58,9 @@ class OptionsDlg(QDialog, ui_Options.Ui_Options):
         self.BI_reportLE.setValidator(QDoubleValidator(self))
         self.seedLE.setValidator(QIntValidator(self))
         # connections
-        self.connect(self.buttonBox, SIGNAL("clicked(QAbstractButton *)"),
-                     self.onclicked)
-        self.connect(self.manualFilePB, SIGNAL("clicked()"),
-                     self.onChangeManualFile)
-        self.connect(self.workDirectoryPB, SIGNAL("clicked()"),
-                     self.onChangeWorkDirectory)
+        self.buttonBox.clicked.connect(self.onclicked)
+        self.manualFilePB.clicked.connect(self.onChangeManualFile)
+        self.workDirectoryPB.clicked.connect(self.onChangeWorkDirectory)
 
         # set options
         self.reset()

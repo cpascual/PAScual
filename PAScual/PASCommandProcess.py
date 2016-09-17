@@ -63,7 +63,7 @@ class fitter(QThread):
     def run(self):
         self.launchFit(self.ps)
         self.stop()
-        self.emit(SIGNAL("endrun(bool)"), self.completed)
+        self.endrun.emit(self.completed)
 
     def launchFit(self, ps):
         '''This launches the fit (called via the run method). For the given palsset, it interpretes the commands and calls the appropriate functions'''
@@ -151,6 +151,6 @@ class fitter(QThread):
             # flush the output
             if self.outputfile: self.outputfile.flush()
             # emit a signal of command done
-            self.emit(SIGNAL("command_done(int)"), icmd + 1)
+            self.command_done.emit(icmd + 1)
         if self.isStopped(): return  # This makes possible to respond to a request of stopping the fit
         self.completed = True

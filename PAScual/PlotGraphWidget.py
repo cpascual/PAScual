@@ -94,9 +94,7 @@ class PALSplot(Qwt.QwtPlot):
         grid.attach(self)
         grid.setPen(Qt.QPen(Qt.Qt.black, 0, Qt.Qt.DotLine))
         # Connect clicks on toolbar to toggleVisibility
-        self.connect(self,
-                     Qt.SIGNAL("legendClicked(QwtPlotItem*)"),
-                     self.toggleVisibility)
+        self.legendClicked.connect(self.toggleVisibility)
         # replot
         self.replot()
         # set zoomer
@@ -119,8 +117,7 @@ class PALSplot(Qwt.QwtPlot):
         # 		self.connect(self.picker, Qt.SIGNAL('selected(const QwtDoublePoint&)'), pointselected)
         self.setContextMenuPolicy(Qt.Qt.ActionsContextMenu)
         self._exportPdfAction = Qt.QAction("Export plot to PDF...", self)
-        self.connect(self._exportPdfAction, Qt.SIGNAL("triggered()"),
-                     self.exportPdf)
+        self._exportPdfAction.triggered.connect(self.exportPdf)
         self.addAction(self._exportPdfAction)
 
     def attachCurve(self, x, y, name='', pen=None, style="Lines"):
@@ -238,8 +235,7 @@ class ResPlot(Qwt.QwtPlot):
         # 		self.connect(self.picker, Qt.SIGNAL('selected(const QwtDoublePoint&)'), pointselected)
         self.setContextMenuPolicy(Qt.Qt.ActionsContextMenu)
         self._exportPdfAction = Qt.QAction("Export plot to PDF...", self)
-        self.connect(self._exportPdfAction, Qt.SIGNAL("triggered()"),
-                     self.exportPdf)
+        self._exportPdfAction.triggered.connect(self.exportPdf)
         self.addAction(self._exportPdfAction)
 
     def attachCurve(self, x, y, name='', pen=None):

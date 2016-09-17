@@ -105,8 +105,7 @@ class tee(object):
 		That is, to redirect all stdout to a list of file objects'''
         for fileobject in self.fileobjects:
             fileobject.write(string)
-        if self.emitEnabled: emitter.emit(SIGNAL('teeOutput'),
-                                          copy.deepcopy(string))
+        if self.emitEnabled: emitter.teeOutput.emit(copy.deepcopy(string))
 
     def flush(self):
         for fileobject in self.fileobjects: fileobject.flush()
@@ -1124,8 +1123,7 @@ class palsset(fitable):
                     ireport = nreport  # reset count
                 #					self.graph_report()
                 if (iemit == 0):
-                    emitter.emit(SIGNAL("commandPBarValue(int)"),
-                                 acc)  # signal for updating the progress bar
+                    emitter.commandPBarValue.emit(acc)  # signal for updating the progress bar
                     iemit = nemit
             else:
                 self.undo()
@@ -1235,7 +1233,7 @@ class palsset(fitable):
             print 'SimAnn: initial acc. ratio too low. Increasing T to %.2g' % T
             if abort.abortRequested(): return  # check if we should abort
         # The SA loop
-        emitter.emit(SIGNAL("initCommandPBar(int,int)"), int(-S.log(T)), int(
+        emitter.initCommandPBar.emit(int(-S.log(T)), int(
             -S.log(stopT)))  # signal for setting up the progress bar
         while not endflag:
             self.MCMC_generate(LM=LM, T=T, ireport=LM, NNRLA='auto',
@@ -1243,8 +1241,7 @@ class palsset(fitable):
             if abort.abortRequested(): return  # check if we should abort
             T *= stepT
             iter += 1
-            emitter.emit(SIGNAL("commandPBarValue(int)"),
-                         int(-S.log(T)))  # signal for updating the progress bar
+            emitter.commandPBarValue.emit(int(-S.log(T)))  # signal for updating the progress bar
             # Check exit conditions
             if iter > maxiter:
                 print '\nMaximum number of iterations reached\n'
@@ -1270,7 +1267,7 @@ class palsset(fitable):
         if ireport is None: ireport = LM
         # do stabilisation
         if stabilisation > 0:
-            emitter.emit(SIGNAL("initCommandPBar(int,int)"), 0, int((
+            emitter.initCommandPBar.emit(0, int((
                                                                     stabilisation + LM) * factor))  # signal for setting up the progress bar
             self.MCMC_generate(LM=stabilisation, T=2.,
                                ireport=min(ireport, stabilisation),
@@ -1278,8 +1275,7 @@ class palsset(fitable):
                                factor=factor, iemit=iemit)
         if abort.abortRequested(): return  # check if we should abort
         # and do the proper BI
-        emitter.emit(SIGNAL("initCommandPBar(int,int)"),
-                     int(-stabilisation * factor), int(
+        emitter.initCommandPBar.emit(int(-stabilisation * factor), int(
                 LM * factor))  # signal for setting up the progress bar with an illusion of continuity
         self.MCMC_generate(LM=LM, T=2., ireport=ireport,
                            savehist=bool(savehist), NNRLA='auto', direct=False,
@@ -1365,7 +1361,7 @@ class palsset(fitable):
 				FORTRAN routines for large scale bound constrained optimization (1997),
 				ACM Transactions on Mathematical Software, Vol 23, Num. 4, pp. 550 - 560.
 		'''
-        emitter.emit(SIGNAL("initCommandPBar(int,int)"), 0,
+        emitter.initCommandPBar.emit(0,
                      5)  # signal for setting up the progress bar
         # start from a clean point
         self.confirm()
@@ -1391,8 +1387,7 @@ class palsset(fitable):
         itys = S.array(itys)
         # Try to do a (relatively fast) *unbounded* minimisation using a Levenberg-Marquardt algorithm
         if ireport: print "\nTrying a Levenberg-Marquardt (LMA) fit\n"
-        emitter.emit(SIGNAL("commandPBarValue(int)"),
-                     1)  # signal for updating the progress bar
+        emitter.commandPBarValue.emit(1)  # signal for updating the progress bar
         #		self.showreport(verbosity=1)
         if abort.abortRequested(): return  # check if we should abort
         myx, cov_x, infodict, mesg, ier = optimize.leastsq(
@@ -1435,8 +1430,7 @@ class palsset(fitable):
                                                          approx_grad=1,
                                                          bounds=minmax, m=10,
                                                          iprint=-1)
-            emitter.emit(SIGNAL("commandPBarValue(int)"),
-                         2)  # signal for updating the progress bar
+            emitter.commandPBarValue.emit(2)  # signal for updating the progress bar
             if ireport: print '#',
             # Do several runs of unbound simplex downhill till it converges
             warnflag, i = True, 0
@@ -1451,8 +1445,7 @@ class palsset(fitable):
                 warnflag = (ier != 1)
                 #				print mesg
                 if ireport: print '>',
-            emitter.emit(SIGNAL("commandPBarValue(int)"),
-                         3)  # signal for updating the progress bar
+            emitter.commandPBarValue.emit(3)  # signal for updating the progress bar
             # Do a second L-BFGS-B minimisation
             #			myx=S.where(myx<minmaxarray[:,0], minmaxarray[:,0], myx)
             #			myx=S.where(myx>minmaxarray[:,1], minmaxarray[:,1], myx)
@@ -1462,12 +1455,10 @@ class palsset(fitable):
                                                          approx_grad=1,
                                                          bounds=minmax, m=10,
                                                          iprint=-1)
-            emitter.emit(SIGNAL("commandPBarValue(int)"),
-                         4)  # signal for updating the progress bar
+            emitter.commandPBarValue.emit(4)  # signal for updating the progress bar
             if ireport: print '#\n'
         # Confirm and show the results
-        emitter.emit(SIGNAL("commandPBarValue(int)"),
-                     5)  # signal for updating the progress bar
+        emitter.commandPBarValue.emit(5)  # signal for updating the progress bar
         self.calculate_chi2(recalc=True)
         self.confirm()  # by doing this confirm, the .val of each parameter is copied to the .mean
         self.clearstats()
