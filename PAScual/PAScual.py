@@ -27,7 +27,6 @@ import scipy as S
 import string
 import sys
 import time
-from scipy import linalg
 from scipy import optimize
 from scipy.special import erfc
 from shutil import copy2

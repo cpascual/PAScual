@@ -33,13 +33,8 @@
 # TODO: (General) Incorporate plothistory.py to the GUI. It could also be used to display ellipses taken from the covariance matrix when no history has been stored
 # TODO: (General) make installer?
 
-import copy
-import os
-import pickle
+
 import platform
-import scipy as S
-import sys
-import time
 
 from PyQt4.QtCore import *
 from PyQt4.QtGui import *
@@ -55,8 +50,6 @@ from ui import UILoadable
 from PlotGraphWidget import PALSplot, ResPlot
 from ROISelectorDlg import ROISelectorDialog
 from release import __version__, __homepage__, __citation_html__
-
-# import AdvOpt as advopt
 
 
 defaultFitModesDict = {'LOCAL-connected': ('LOAD', 'LOCAL', 'SAVE'),
