@@ -51,8 +51,6 @@ import PASCommandProcess as PCP
 import PASoptions
 import SpecFiles
 import SpectraTableMV as STMV
-
-import ui_PAScualGUI
 from ui import UILoadable
 from PlotGraphWidget import PALSplot, ResPlot
 from ROISelectorDlg import ROISelectorDialog
@@ -1784,20 +1782,17 @@ def main():
     app = QApplication(sys.argv)
     app.setOrganizationName("CPI")
     app.setApplicationName("PAScual")
-    try:
-        app.setApplicationVersion(
-            __version__)  # This only works with pyQT v>=4.4 (but the rest works ok with pyQTv4.3)
-    except AttributeError:
-        print "DEBUG: setApplicationVersion() fails (nothing serious).\n Is pyQt version older than 4.4?"
-
+    app.setApplicationVersion(__version__)
     form = PAScualGUI()
     form.show()
 
     emitter.initCommandPBar.connect(form.commandPBar.setRange)
-    QObject.connect(emitter, SIGNAL("commandPBarValue(int)"), form.commandPBar,
-                    SLOT("setValue(int)"))
+    emitter.commandPBarValue.connect(form.commandPBar.setValue)
     emitter.teeOutput.connect(form.outputTE.insertPlainText)
-    abort.abortRequested = form.fitter.isStopped  # reassign the  abortRequested() method from the abort object defined in PAScual
+
+    # reassign the  abortRequested() method from the abort object
+    # defined in PAScual
+    abort.abortRequested = form.fitter.isStopped
 
     sys.exit(app.exec_())
 
