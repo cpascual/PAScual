@@ -29,7 +29,7 @@ class CHN(object):
 
     @staticmethod
     def readCHN(CHNfile):
-        if isinstance(CHNfile, (str, unicode)): CHNfile = open(CHNfile, 'rb')
+        if isinstance(CHNfile, (str, str)): CHNfile = open(CHNfile, 'rb')
         raw = CHNfile.read()
         CHNfile.close()
         # the header contains the following: (ftype,mca_num,segment,secs,realtime,livetime,acqtime,channoffset,nchann)

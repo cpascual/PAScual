@@ -52,27 +52,27 @@ class PASspectraTableModel(QAbstractTableModel):
 
     def data(self, index, role=Qt.DisplayRole):
         if not index.isValid() or not (0 <= index.row() < self.rowCount()):
-            return QVariant()
+            return None
         dp = self.spectra[index.row()]
         column = index.column()
         # Display Role
         if role == Qt.DisplayRole:
             if column == NAME:
-                return QVariant(QString(dp.name))
+                return dp.name
             elif column == ROI:
                 if dp.roi is None:
-                    return QVariant("-")
+                    return "-"
                 else:
-                    return QVariant(QString.number(dp.roi.size))
+                    return int(dp.roi.size)
             elif column == COMP:
                 if dp.taulist is None:
                     ncomp = 0
                 else:
                     ncomp = len(dp.taulist)
-                return QVariant(QString.number(ncomp))
+                return ncomp
         # CheckState Role
         elif role == Qt.CheckStateRole:
-            if column == SEL: return QVariant(dp.selected)
+            if column == SEL: return dp.selected
 
         elif role == Qt.DecorationRole:
             if column == PSPC:
@@ -84,59 +84,59 @@ class PASspectraTableModel(QAbstractTableModel):
             elif column == BG:
                 bad = (dp.bg is None)
             else:
-                return QVariant()
+                return None
             if bad:
-                return QVariant(self.redbulletIcon)
+                return self.redbulletIcon
             else:
-                return QVariant(self.greenbulletIcon)
+                return self.greenbulletIcon
         # Alignment
         # 		elif role == Qt.TextAlignmentRole:
-        # 			return QVariant(int(Qt.AlignHCenter|Qt.AlignVCenter))
+        # 			int(Qt.AlignHCenter|Qt.AlignVCenter)
         # Background Color
         elif role == Qt.TextColorRole:
             if column == NAME:
-                if dp.isready(): return QVariant(QColor(Qt.darkGreen))
+                if dp.isready(): return QColor(Qt.darkGreen)
             if column == COMP:
                 if dp.taulist is None:
-                    return QVariant(QColor(Qt.red))
+                    return QColor(Qt.red)
                 elif len(dp.taulist) == 0:
-                    return QVariant(QColor(Qt.red))
+                    return QColor(Qt.red)
                 else:
-                    return QVariant(QColor(Qt.green))
+                    return QColor(Qt.green)
         elif role == Qt.UserRole:
             return dp
-        return QVariant()
+        return None
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         if role == Qt.TextAlignmentRole:
             if orientation == Qt.Horizontal:
-                return QVariant(int(Qt.AlignLeft | Qt.AlignVCenter))
-            return QVariant(int(Qt.AlignRight | Qt.AlignVCenter))
+                return int(Qt.AlignLeft | Qt.AlignVCenter)
+            return int(Qt.AlignRight | Qt.AlignVCenter)
         # 		elif role == Qt.CheckStateRole :
-        # 			if not orientation == Qt.Horizontal: return QVariant(True)
+        # 			if not orientation == Qt.Horizontal: return True
         if role != Qt.DisplayRole:
-            return QVariant()
+            return None
         # So this is DisplayRole...
         if orientation == Qt.Horizontal:
             if section == SEL:
-                return QVariant("Sel")
+                return "Sel"
             elif section == NAME:
-                return QVariant("Spectrum Name")
+                return "Spectrum Name"
             elif section == ROI:
-                return QVariant("ROI")
+                return "ROI"
             elif section == PSPC:
-                return QVariant("CW")
+                return "CW"
             elif section == C0:
-                return QVariant("c0")
+                return "c0"
             elif section == BG:
-                return QVariant("Bg")
+                return "Bg"
             elif section == FWHM:
-                return QVariant("R")
+                return "R"
             elif section == COMP:
-                return QVariant("C")
-            return QVariant()
+                return "C"
+            return None
         else:
-            return QVariant()
+            return None
 
     def flags(self,
               index):  # use this to set the editable flag when fix is selected
@@ -166,9 +166,9 @@ class PASspectraTableModel(QAbstractTableModel):
         self.beginInsertRows(QModelIndex(), position, position + rows - 1)
         if dps is None:
             dps = []
-            for row in range(rows): dps.append(discretepals(name=u"new"))
+            for row in range(rows): dps.append(discretepals(name="new"))
         for row in range(rows):
-            # 			dp=discretepals(name=u"new")
+            # 			dp=discretepals(name="new")
             self.spectra.insert(position + row, dps[row])
             self.selectionChanged.emit(dps[row],
                       self.index(position + row, SEL))
@@ -197,8 +197,7 @@ class PASspectraTableModel(QAbstractTableModel):
             if dp.selected != value:
                 dp.selected = value
                 self.selectionChanged.emit(dp, idx)
-        self.dataChanged.emit(indexlist[0],
-                  indexlist[-1])
+        self.dataChanged.emit(indexlist[0], indexlist[-1])
 
     def removeChecked(self):
         temp = []
@@ -246,7 +245,7 @@ class demo(QDialog):
         super(demo, self).__init__(parent)
         # generate fake spectra
         spectra = []
-        for i in range(4): spectra.append(discretepals(name=u"spect%i" % i))
+        for i in range(4): spectra.append(discretepals(name="spect%i" % i))
 
         self.table = QTableView(self)
         self.model = PASspectraTableModel(spectra)
@@ -261,10 +260,10 @@ class demo(QDialog):
 
         self.posSB = QSpinBox()
         self.newSB = QSpinBox()
-        self.addBT = QPushButton(u"Add")
-        self.remBT = QPushButton(u"Rem")
-        self.dataBT = QPushButton(u"Data")
-        self.allBT = QPushButton(u"Check All")
+        self.addBT = QPushButton("Add")
+        self.remBT = QPushButton("Rem")
+        self.dataBT = QPushButton("Data")
+        self.allBT = QPushButton("Check All")
 
         mainLayout = QGridLayout()
         mainLayout.addWidget(self.table, 0, 0)

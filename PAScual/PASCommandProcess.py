@@ -28,7 +28,8 @@ from PAScual import printwarning
 
 
 class fitter(QThread):
-    '''The fitter is an object that will fit sets of spectra (one set at a time) in a different thread to that of the main program'''
+    """The fitter is an object that will fit sets of spectra (one set at a time)
+     in a different thread to that of the main program"""
 
     endrun = pyqtSignal(bool)
     command_done = pyqtSignal(int)

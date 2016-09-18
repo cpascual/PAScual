@@ -39,12 +39,13 @@ from PyQt4.QtCore import QObject, pyqtSignal
 
 
 class _Emitter(QObject):
-    teeOutput = pyqtSignal(str)
+
+    # signal for updating the progress bar
     commandPBarValue = pyqtSignal(int)
+    # signal for setting up the progress bar
     initCommandPBar = pyqtSignal(int,int)
-
-
-
+    # signal for writing in the tee
+    teeOutput = pyqtSignal(str)
 
 emitter = _Emitter()
 
@@ -77,8 +78,6 @@ class newcolor(object):
 
 class tee(object):
     '''defines tee like object. Allows to print to various files simultaneously'''
-
-
 
     def __init__(self, *fileobjects):
         self.fileobjects = []
@@ -144,7 +143,7 @@ def unique(s):
         return u
 
 
-class fitable:
+class fitable(object):
     def __init__(self, free=True, name=None, npertmin=1, npertmax=4):
         self.name = name
         self.free = free
@@ -660,11 +659,11 @@ class discretepals(fitable):
 
     def calculate_convoluted_decay_integCh(self, t, tau=1., intsty=1.,
                                            sigma=1.):
-        '''like calculate_convoluted_decay but it integrates time over the channel width instead of using just the given times.
+        """like calculate_convoluted_decay but it integrates time over the channel width instead of using just the given times.
 		In other words, eq.4 of Kirkegaard instead of eq.3
 		IMPORTANT: this function is optimized assuming that t is a vector of channel times from a compact and homogeneous ROI
 		           (i.e. no gaps between channels and  constant --or very slow varying-- channel width))
-		           If these premises are not fulfilled, this function wont work'''
+		           If these premises are not fulfilled, this function wont work"""
         # extend the t vector with one extra time using the channelwidth calculated from the same t (assumes constant channel width!)
         t_extd = S.concatenate((t, (
         2 * t[-1] - t[-2],)))  # the trick is that t_n+Deltat=2*t_n-t_(n-1)
@@ -1121,7 +1120,7 @@ class palsset(fitable):
                     ireport = nreport  # reset count
                 #					self.graph_report()
                 if (iemit == 0):
-                    emitter.commandPBarValue.emit(acc)  # signal for updating the progress bar
+                    emitter.commandPBarValue.emit(acc)
                     iemit = nemit
             else:
                 self.undo()
@@ -1231,15 +1230,14 @@ class palsset(fitable):
             print 'SimAnn: initial acc. ratio too low. Increasing T to %.2g' % T
             if abort.abortRequested(): return  # check if we should abort
         # The SA loop
-        emitter.initCommandPBar.emit(int(-S.log(T)), int(
-            -S.log(stopT)))  # signal for setting up the progress bar
+        emitter.initCommandPBar.emit(int(-S.log(T)), int(-S.log(stopT)))
         while not endflag:
             self.MCMC_generate(LM=LM, T=T, ireport=LM, NNRLA='auto',
                                direct=(direct and iter > 4))
             if abort.abortRequested(): return  # check if we should abort
             T *= stepT
             iter += 1
-            emitter.commandPBarValue.emit(int(-S.log(T)))  # signal for updating the progress bar
+            emitter.commandPBarValue.emit(int(-S.log(T)))
             # Check exit conditions
             if iter > maxiter:
                 print '\nMaximum number of iterations reached\n'
@@ -1265,15 +1263,15 @@ class palsset(fitable):
         if ireport is None: ireport = LM
         # do stabilisation
         if stabilisation > 0:
-            emitter.initCommandPBar.emit(0, int((stabilisation + LM) * factor))  # signal for setting up the progress bar
+            emitter.initCommandPBar.emit(0, int((stabilisation + LM) * factor))
             self.MCMC_generate(LM=stabilisation, T=2.,
                                ireport=min(ireport, stabilisation),
                                savehist=False, NNRLA='auto', direct=False,
                                factor=factor, iemit=iemit)
         if abort.abortRequested(): return  # check if we should abort
         # and do the proper BI
-        emitter.initCommandPBar.emit(int(-stabilisation * factor), int(
-                LM * factor))  # signal for setting up the progress bar with an illusion of continuity
+        emitter.initCommandPBar.emit(int(-stabilisation * factor),
+                                     int(LM * factor))
         self.MCMC_generate(LM=LM, T=2., ireport=ireport,
                            savehist=bool(savehist), NNRLA='auto', direct=False,
                            factor=factor, iemit=iemit)
@@ -1294,7 +1292,7 @@ class palsset(fitable):
 
         # Save the history of the parameters (with a header)
         if savehist:
-            if isinstance(savehist, (str, unicode)):
+            if isinstance(savehist, (str, str)):
                 histfile = open(savehist, 'w')
             else:
                 histfile = savehist
@@ -1358,8 +1356,7 @@ class palsset(fitable):
 				FORTRAN routines for large scale bound constrained optimization (1997),
 				ACM Transactions on Mathematical Software, Vol 23, Num. 4, pp. 550 - 560.
 		'''
-        emitter.initCommandPBar.emit(0,
-                     5)  # signal for setting up the progress bar
+        emitter.initCommandPBar.emit(0, 5)
         # start from a clean point
         self.confirm()
         self.clearstats()
@@ -1384,7 +1381,7 @@ class palsset(fitable):
         itys = S.array(itys)
         # Try to do a (relatively fast) *unbounded* minimisation using a Levenberg-Marquardt algorithm
         if ireport: print "\nTrying a Levenberg-Marquardt (LMA) fit\n"
-        emitter.commandPBarValue.emit(1)  # signal for updating the progress bar
+        emitter.commandPBarValue.emit(1)
         #		self.showreport(verbosity=1)
         if abort.abortRequested(): return  # check if we should abort
         myx, cov_x, infodict, mesg, ier = optimize.leastsq(
@@ -1427,7 +1424,7 @@ class palsset(fitable):
                                                          approx_grad=1,
                                                          bounds=minmax, m=10,
                                                          iprint=-1)
-            emitter.commandPBarValue.emit(2)  # signal for updating the progress bar
+            emitter.commandPBarValue.emit(2)
             if ireport: print '#',
             # Do several runs of unbound simplex downhill till it converges
             warnflag, i = True, 0
@@ -1442,7 +1439,7 @@ class palsset(fitable):
                 warnflag = (ier != 1)
                 #				print mesg
                 if ireport: print '>',
-            emitter.commandPBarValue.emit(3)  # signal for updating the progress bar
+            emitter.commandPBarValue.emit(3)
             # Do a second L-BFGS-B minimisation
             #			myx=S.where(myx<minmaxarray[:,0], minmaxarray[:,0], myx)
             #			myx=S.where(myx>minmaxarray[:,1], minmaxarray[:,1], myx)
@@ -1452,10 +1449,10 @@ class palsset(fitable):
                                                          approx_grad=1,
                                                          bounds=minmax, m=10,
                                                          iprint=-1)
-            emitter.commandPBarValue.emit(4)  # signal for updating the progress bar
+            emitter.commandPBarValue.emit(4)
             if ireport: print '#\n'
         # Confirm and show the results
-        emitter.commandPBarValue.emit(5)  # signal for updating the progress bar
+        emitter.commandPBarValue.emit(5)
         self.calculate_chi2(recalc=True)
         self.confirm()  # by doing this confirm, the .val of each parameter is copied to the .mean
         self.clearstats()

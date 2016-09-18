@@ -44,10 +44,8 @@ class TEcalcDialog(QDialog):
     def onCalculate(self):
         '''Launches the calculation'''
         # read the input
-        tau = unicode(self.tauTE.toPlainText()).replace(';',
-                                                        ' ').split()  # semicolons are also valid separators (apart from blank space)
-        T = unicode(self.TempTE.toPlainText()).replace(';',
-                                                       ' ').split()  # semicolons are also valid separators (apart from blank space)
+        tau = str(self.tauTE.toPlainText()).replace(';', ' ').split()  # semicolons are also valid separators (apart from blank space)
+        T = str(self.TempTE.toPlainText()).replace(';', ' ').split()  # semicolons are also valid separators (apart from blank space)
         try:
             tau = S.array([float(elem) for elem in tau], dtype='d')
             T = S.array([float(elem) for elem in T], dtype='d')

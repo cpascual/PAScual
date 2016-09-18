@@ -35,7 +35,7 @@ class Options(object):
         self.dfltlist = [0,
                          0.0, 0.0, 0.1, 0, 0.97, True,
                          5e3, 5e4, 5e2, '',
-                         unicode(QDir.currentPath()), unicode(
+                         str(QDir.currentPath()), str(
                 QDir.currentPath()) + '/html/User Manual.html', 12345, 0.6,
                          1.4, True]
         self.reset()
@@ -96,7 +96,7 @@ class OptionsDlg(QDialog):
         '''returns an options object filled with values from the dialog'''
         options = Options()
         # LOCAL
-        options.LOCAL_maxUnbound = self.LOCAL_maxUnboundSB.value()  # Max number of unbound LMA runs between L-BFGS-B optimisations (this only takes place if first LMA is outside bounds)
+        options.LOCAL_maxUnbound = int(self.LOCAL_maxUnboundSB.value())  # Max number of unbound LMA runs between L-BFGS-B optimisations (this only takes place if first LMA is outside bounds)
         # SA
         options.SA_minaccratio = self.SA_minaccratioSB.value()  # If the acceptance ratio drps below this value, the SA stops.
         options.SA_tol = self.SA_tolSB.value()  # Tolerance for stopping the SA
@@ -105,20 +105,20 @@ class OptionsDlg(QDialog):
         options.SA_meltratio = self.SA_meltratioSB.value()  # The "melting" phase of the SA will stop when this acceptance ratio is reached
         options.SA_direct = self.SA_directCB.isChecked()  # Whether to use the direct mode in NNRLA for SA (asymetrical transit prob).
         # BI
-        options.BI_stab, ok = self.BI_stabLE.text().toDouble()  # This many steps (multiplied by the order of the searching space!) of BI will be done and not considered for statistical purposes. Put this to 0 to skip stabilisation.
-        options.BI_length, ok = self.BI_lengthLE.text().toDouble()  # This many steps (multiplied by the order of the searching space) will be calculated by BI.
-        options.BI_report, ok = self.BI_reportLE.text().toDouble()  # A report will be shown every this steps during BI (put to -1 for no reports). Be Careful: too much reports may slow down the calc.
+        options.BI_stab = float(self.BI_stabLE.text()) # This many steps (multiplied by the order of the searching space!) of BI will be done and not considered for statistical purposes. Put this to 0 to skip stabilisation.
+        options.BI_length = float(self.BI_lengthLE.text())  # This many steps (multiplied by the order of the searching space) will be calculated by BI.
+        options.BI_report = float(self.BI_reportLE.text())  # A report will be shown every this steps during BI (put to -1 for no reports). Be Careful: too much reports may slow down the calc.
         # This controls wheter the fitpar history should be saved (=FileName) or not (=False).
         # Caution!: this will increase the RAM requeriments. Approximately by 11Bytes*BI_length*(3+2*NC)^2 , where NC is the number of components!
         if self.BI_savehistCB.isChecked():
-            options.BI_savehist = unicode(self.BI_savehistLE.text())
+            options.BI_savehist = str(self.BI_savehistLE.text())
         else:
             options.BI_savehist = ''
         # PATHS
-        options.workDirectory = unicode(self.workDirectoryLE.text())
-        options.manualFile = unicode(self.manualFileLE.text())
+        options.workDirectory = str(self.workDirectoryLE.text())
+        options.manualFile = str(self.manualFileLE.text())
         # MISC
-        options.seed, ok = self.seedLE.text().toInt()  # Seed for pseudorandom generator
+        options.seed = int(self.seedLE.text()) # Seed for pseudorandom generator
         options.warning_chi2_low = self.warning_chi2_lowSB.value()
         options.warning_chi2_high = self.warning_chi2_highSB.value()
         options.autoWizardOnLoad = self.autoWizardOnLoadCB.isChecked()
@@ -144,12 +144,12 @@ class OptionsDlg(QDialog):
             self.BI_savehistLE.setText(options.BI_savehist)
         else:
             self.BI_savehistCB.setChecked(False)
-            self.BI_savehistLE.setText(u'')
+            self.BI_savehistLE.setText('')
         # PATHS
         self.workDirectoryLE.setText(options.workDirectory)
         self.manualFileLE.setText(options.manualFile)
         # MISC
-        self.seedLE.setText(unicode(options.seed))
+        self.seedLE.setText(str(options.seed))
         self.warning_chi2_lowSB.setValue(options.warning_chi2_low)
         self.warning_chi2_highSB.setValue(options.warning_chi2_high)
         self.autoWizardOnLoadCB.setChecked(options.autoWizardOnLoad)

@@ -30,9 +30,9 @@ knowncommands = ['END', 'LOCAL', 'SA', 'BI', 'LOG', 'LOAD', 'SAVE']
 
 
 class command(object):
-    def __init__(self, cmd=u'', args=u''):
-        self.cmd = unicode(cmd).strip().upper()
-        self.args = unicode(args)
+    def __init__(self, cmd='', args=''):
+        self.cmd = str(cmd).strip().upper()
+        self.args = str(args)
         if self.cmd not in knowncommands: raise KeyError(
             'Unknown fitting command (%s)' % cmd)
 
@@ -64,39 +64,39 @@ class CommandTableModel(QAbstractTableModel):
 
     def data(self, index, role=Qt.DisplayRole):
         if not index.isValid() or not (0 <= index.row() < self.rowCount()):
-            return QVariant()
+            return None
         row = index.row()
         column = index.column()
         # Display Role
         if role == Qt.DisplayRole:
             if column == CMD:
-                return QVariant(QString(self.commands[row].cmd))
+                return self.commands[row].cmd
             elif column == ARGS:
-                return QVariant(QString(self.commands[row].args))
+                return self.commands[row].args
         # Alignment
         # 		elif role == Qt.TextAlignmentRole:
-        # 			return QVariant(int(Qt.AlignHCenter|Qt.AlignVCenter))
+        # 			return int(Qt.AlignHCenter|Qt.AlignVCenter)
         # Background Color
         elif role == Qt.TextColorRole:
-            if column == ARGS: return QVariant(QColor(Qt.darkGray))
-        return QVariant()
+            if column == ARGS: return QColor(Qt.darkGray)
+        return None
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         if role == Qt.TextAlignmentRole:
             if orientation == Qt.Horizontal:
-                return QVariant(int(Qt.AlignLeft | Qt.AlignVCenter))
-            return QVariant(int(Qt.AlignRight | Qt.AlignVCenter))
+                return int(Qt.AlignLeft | Qt.AlignVCenter)
+            return int(Qt.AlignRight | Qt.AlignVCenter)
         if role != Qt.DisplayRole:
-            return QVariant()
+            return None
         # So this is DisplayRole...
         if orientation == Qt.Horizontal:
             if section == CMD:
-                return QVariant("Command")
+                return "Command"
             elif section == ARGS:
-                return QVariant("Args")
-            return QVariant()
+                return "Args"
+            return None
         else:
-            return QVariant(QString.number(section + 1))
+            return int(section + 1)
 
     def flags(self,
               index):  # use this to set the editable flag when fix is selected
@@ -109,19 +109,17 @@ class CommandTableModel(QAbstractTableModel):
         if index.isValid() and (0 <= index.row() < self.rowCount()):
             row = index.row()
             column = index.column()
-            value = unicode(value.toString())
+            value = str(value)
             if column == CMD:
                 self.commands[row].cmd = value
-                if value == u"END":
+                if value == "END":
                     self.removeRows(row + 1, rows=self.rowCount() - row)
                 elif row == (self.rowCount() - 1):
                     self.insertRows(position=self.rowCount(), rows=1)
-                self.setData(self.index(row, ARGS),
-                             value=QVariant(QString()))  # clear the args
+                self.setData(self.index(row, ARGS), value='') # clear the args
             elif column == ARGS:
                 self.commands[row].args = value
-            self.dataChanged.emit(index,
-                      index)
+            self.dataChanged.emit(index, index)
             return True
         return False
 
@@ -196,7 +194,7 @@ class commandDelegate(QItemDelegate):
             return QItemDelegate.createEditor(self, parent, option, index)
 
     def setEditorData(self, editor, index):
-        text = index.model().data(index, Qt.DisplayRole).toString()
+        text = index.model().data(index, Qt.DisplayRole)
         if index.column() == CMD:
             i = editor.findText(text)
             if i == -1:    i = 0
@@ -206,7 +204,7 @@ class commandDelegate(QItemDelegate):
 
     def setModelData(self, editor, model, index):
         if index.column() == CMD:
-            model.setData(index, QVariant(editor.currentText()))
+            model.setData(index, editor.currentText())
         else:
             QItemDelegate.setModelData(self, editor, model, index)
 
@@ -223,10 +221,10 @@ class demo(QDialog):
 
         self.posSB = QSpinBox()
         self.newSB = QSpinBox()
-        self.addBT = QPushButton(u"Add")
-        self.remBT = QPushButton(u"Rem")
-        self.dataBT = QPushButton(u"Data")
-        self.allBT = QPushButton(u"Check All")
+        self.addBT = QPushButton("Add")
+        self.remBT = QPushButton("Rem")
+        self.dataBT = QPushButton("Data")
+        self.allBT = QPushButton("Check All")
 
         mainLayout = QGridLayout()
         mainLayout.addWidget(self.table, 0, 0, 1, 2)
