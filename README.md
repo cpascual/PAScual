@@ -51,6 +51,18 @@ temporary directory, change to it and run:
 python setup.py install
 ```
 
+Running PAScual
+---------------
+
+Once installed, just run the following command to get the graphical application:
+
+```
+pascual
+```
+
+And I recommend to try the tutorial from the User Manual (some example spectra
+are provided in the examples dir)
+
 
 Important:
 ==========
