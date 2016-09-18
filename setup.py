@@ -41,7 +41,7 @@ setup(
     author_email='cpascual@users.sourceforge.net',
     description='Positron Annihilation Spectroscopy data analysis',
     long_description=open(os.path.join(os.path.dirname(__file__),
-                                       'README.txt')).read(),
+                                       'README.md')).read(),
     keywords = "science PALS PAS positron annihilation fit",
 
     packages=find_packages(),

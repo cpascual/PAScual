@@ -3,7 +3,7 @@ graft examples
 graft doc
 include LICENSE.txt
 include CREDITS.txt
-include README.txt
+include README.md
 include MANIFEST.in
 global-exclude *.pyc
 global-exclude .directory
