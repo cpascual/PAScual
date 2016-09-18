@@ -19,8 +19,8 @@
 
 import sys
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from qwt.qt.QtCore import *
+from qwt.qt.QtGui import *
 
 from PAScual import fitpar
 
@@ -73,68 +73,65 @@ class PAScomponentsTableModel(QAbstractTableModel):
 
     def data(self, index, role=Qt.DisplayRole):
         if not index.isValid() or not (0 <= index.row() < self.rowCount()):
-            return QVariant()
+            return None
         cp = self.components[index.row()]
         fp = cp.tauority(self.showtau)
         column = index.column()
         # Display Role
         if role == Qt.DisplayRole:
             if column == VAL:
-                if self.showtau: return QVariant(QString.number(fp.val))
-                return QVariant(QString.number(100. * fp.val))
+                if self.showtau: return float(fp.val)
+                return float(100. * fp.val)
             elif column == MINVAL:
-                if self.showtau: return QVariant(QString.number(fp.minval))
-                return QVariant(QString.number(
-                    100. * fp.minval))  # since we don't allow to change the ity limits, this will always be 0
+                if self.showtau: return float(fp.minval)
+                return float(100. * fp.minval)  # since we don't allow to change the ity limits, this will always be 0
             elif column == MAXVAL:
-                if self.showtau: return QVariant(QString.number(fp.maxval))
-                # 				return QVariant(QString.number(100.*fp.maxval))
-                return QVariant(QString.number(
-                    100))  # Showing "100" is just aesthetics. Since the itys are normalised, the real maxval is None.
+                if self.showtau: return float(fp.maxval)
+                return float(100)  # Showing "100" is just aesthetics. Since the itys are normalised, the real maxval is None.
         # CheckState Role
         elif role == Qt.CheckStateRole:
             if column == FIX:
-                return QVariant(not (fp.free))
+                return not fp.free
             elif column == COMMON:
-                return QVariant(fp.common)
+                return fp.common
         # Alignment
         elif role == Qt.TextAlignmentRole:
-            return QVariant(int(Qt.AlignHCenter | Qt.AlignVCenter))
+            return int(Qt.AlignHCenter | Qt.AlignVCenter)
         # Background Color
         elif role == Qt.TextColorRole:
             if column == MINVAL or column == MAXVAL:
-                if not fp.free:    return QVariant(QColor(Qt.gray))
+                if not fp.free: return QColor(Qt.gray)
         elif role == Qt.UserRole:
             return self.components[index.row()]
-        return QVariant()
+        return None
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         if role == Qt.TextAlignmentRole:
             if orientation == Qt.Horizontal:
-                return QVariant(int(Qt.AlignLeft | Qt.AlignVCenter))
-            return QVariant(int(Qt.AlignRight | Qt.AlignVCenter))
+                return int(Qt.AlignLeft | Qt.AlignVCenter)
+            return int(Qt.AlignRight | Qt.AlignVCenter)
         if role != Qt.DisplayRole:
-            return QVariant()
+            return None
         # So this is DisplayRole...
         if orientation == Qt.Horizontal:
             if section == VAL:
                 if self.showtau:
-                    return QVariant("Value (ps)")
+                    return "Value (ps)"
                 else:
-                    return QVariant("Value (%)")
+                    return "Value (%)"
             elif section == FIX:
-                return QVariant("F")
+                return "F"
             elif section == COMMON:
-                return QVariant("C")
+                return "C"
             elif section == MINVAL:
-                return QVariant("Min")
+                return "Min"
             elif section == MAXVAL:
-                return QVariant("Max")
+                return "Max"
         else:
             if self.showtau:
-                return QVariant(u"Tau%i" % (section + 1))
+                return "Tau%i" % (section + 1)
             else:
-                return QVariant(u"Ity%i" % (section + 1))
+                return "Ity%i" % (section + 1)
 
     def flags(self,
               index):  # use this to set the editable flag when fix is selected
@@ -157,31 +154,23 @@ class PAScomponentsTableModel(QAbstractTableModel):
             fp = cp.tauority(self.showtau)
             column = index.column()
             if column == VAL:
-                value, ok = value.toDouble()
-                if ok:
-                    fp.val = value
-                    if not self.showtau: fp.val *= .01
+                fp.val = float(value)
+                if not self.showtau: fp.val *= .01
             if column == MINVAL:
-                value, ok = value.toDouble()
-                if ok:
-                    fp.minval = value
-                    if not self.showtau: fp.minval *= .01
+                fp.minval = float(value)
+                if not self.showtau: fp.minval *= .01
             if column == MAXVAL:
-                value, ok = value.toDouble()
-                if ok:
-                    fp.maxval = value
+                    fp.maxval = float(value)
                     if not self.showtau: fp.maxval *= .01
             elif column == FIX:
                 fp.free = not fp.free
                 for i in [COMMON, MINVAL, MAXVAL]:
                     otherindex = QAbstractTableModel.index(self, index.row(), i)
-                    self.dataChanged.emit(otherindex,
-                              otherindex)  # note: a similar thing can be used to update the whole row
+                    self.dataChanged.emit(otherindex, otherindex)  # note: a similar thing can be used to update the whole row
             elif column == COMMON:
                 fp.common = not fp.common
             # 			print fp.showreport()
-            self.dataChanged.emit(index,
-                      index)
+            self.dataChanged.emit(index, index)
             return True
         return False
 
@@ -214,10 +203,10 @@ class demo(QDialog):
 
         self.posSB = QSpinBox()
         self.newSB = QSpinBox()
-        self.addBT = QPushButton(u"Add")
-        self.remBT = QPushButton(u"Rem")
-        self.dumpBT = QPushButton(u"Dump")
-        self.tauorityBT = QPushButton(u"Swtich to Ity")
+        self.addBT = QPushButton("Add")
+        self.remBT = QPushButton("Rem")
+        self.dumpBT = QPushButton("Dump")
+        self.tauorityBT = QPushButton("Swtich to Ity")
         self.tauorityBT.setCheckable(True)
 
         mainLayout = QVBoxLayout()
@@ -247,9 +236,9 @@ class demo(QDialog):
         self.model.showtau = not (toggled)
         self.model.reset()
         if toggled:
-            self.tauorityBT.setText(u"Swtich to Tau")
+            self.tauorityBT.setText("Swtich to Tau")
         else:
-            self.tauorityBT.setText(u"Swtich to Ity")
+            self.tauorityBT.setText("Swtich to Ity")
 
     def showreport(self):
         print '-------------------------------'

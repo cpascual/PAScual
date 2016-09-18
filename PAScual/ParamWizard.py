@@ -20,8 +20,8 @@
 import scipy as S
 import sys
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from qwt.qt.QtCore import *
+from qwt.qt.QtGui import *
 
 
 from ui import UILoadable
@@ -43,7 +43,7 @@ class AddCompsWidget(QWidget):
 
     def getComps(self):
         '''parses the text in the selectionsTE and extract an array of lifetimes and of min and max values'''
-        self.comps = unicode(self.selectionsTE.toPlainText()).strip().split(
+        self.comps = str(self.selectionsTE.toPlainText()).strip().split(
             '\n')
         self.taus = []
         self.mintaus = []
@@ -211,8 +211,8 @@ class SummaryPage(QWizardPage):
         summary = "According to your selections, the following parameters will be set:<ul>"
         for i in xrange(len(w.selected)):
             summary += "<li><b>%s</b>: %.1f ps/ch  ; FWHM=%.1f; ROI: %i-%i  ; bg=%.0f  ; %i comps</li>" % (
-            w.selected[i].name, w.psperchannel.toDouble()[0],
-            w.FWHM.toDouble()[0], w.roilist[i][0], w.roilist[i][-1], w.bg[i],
+            w.selected[i].name, float(w.psperchannel),
+            float(w.FWHM), w.roilist[i][0], w.roilist[i][-1], w.bg[i],
             w.taus.size)
         summary += "</ul>"
         summary += "<p>The components to be used are (tau [min,max]):<ul>"

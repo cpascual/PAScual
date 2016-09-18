@@ -21,15 +21,18 @@ PlotGraphWidget: Widget for plotting spectra. Originally based on an example cod
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-import PyQt4.Qwt5 as Qwt
-from PyQt4 import Qt
+# import qwt.qt.Qwt5 as Qwt
+import qwt as Qwt
+import sys
+# from PyQt4 import Qt
+from qwt.qt import QtCore, QtGui
 from numpy import *
 
-plotcolors_bright = [Qt.Qt.black, Qt.Qt.red, Qt.Qt.blue, Qt.Qt.magenta,
-                     Qt.Qt.green, Qt.Qt.cyan, Qt.Qt.yellow, Qt.Qt.gray, ]
-plotcolors_dark = [Qt.Qt.darkRed, Qt.Qt.darkBlue, Qt.Qt.darkMagenta,
-                   Qt.Qt.darkGreen, Qt.Qt.darkCyan, Qt.Qt.darkYellow,
-                   Qt.Qt.darkGray]
+plotcolors_bright = [QtCore.Qt.black, QtCore.Qt.red, QtCore.Qt.blue, QtCore.Qt.magenta,
+                     QtCore.Qt.green, QtCore.Qt.cyan, QtCore.Qt.yellow, QtCore.Qt.gray, ]
+plotcolors_dark = [QtCore.Qt.darkRed, QtCore.Qt.darkBlue, QtCore.Qt.darkMagenta,
+                   QtCore.Qt.darkGreen, QtCore.Qt.darkCyan, QtCore.Qt.darkYellow,
+                   QtCore.Qt.darkGray]
 
 
 class cycliclist(object):
@@ -75,15 +78,15 @@ class PALSplot(Qwt.QwtPlot):
         Qwt.QwtPlot.__init__(self, *args)
         self.YscaleMax = 0
         self.YscaleMin = inf
-        self.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLog10ScaleEngine())
-        self.plotLayout().setMargin(0)
+        self.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLogScaleEngine())
+        # self.plotLayout().setMargin(0)
         self.plotLayout().setCanvasMargin(0)
         self.plotLayout().setAlignCanvasToScales(True)
         # set a cyclic list of colors to be used for plotting
         self.autocolor = cycliclist(plotcolors_bright)
         # set legend
         legend = Qwt.QwtLegend()
-        legend.setItemMode(Qwt.QwtLegend.ClickableItem)
+        # legend.setItemMode(Qwt.QwtLegend.ClickableItem)
         self.insertLegend(legend, Qwt.QwtPlot.RightLegend)
         # set axis titles
         self.setAxisTitle(Qwt.QwtPlot.xBottom, 'Channel #')
@@ -91,36 +94,36 @@ class PALSplot(Qwt.QwtPlot):
         # attach a grid
         grid = Qwt.QwtPlotGrid()
         grid.attach(self)
-        grid.setPen(Qt.QPen(Qt.Qt.black, 0, Qt.Qt.DotLine))
+        grid.setPen(QtGui.QPen(QtCore.Qt.black, 0, QtCore.Qt.DotLine))
         # Connect clicks on toolbar to toggleVisibility
-        self.legendClicked.connect(self.toggleVisibility)
+        #self.legendClicked.connect(self.toggleVisibility)
         # replot
         self.replot()
         # set zoomer
-        self.zoomer = Qwt.QwtPlotZoomer(Qwt.QwtPlot.xBottom,
-                                        Qwt.QwtPlot.yLeft,
-                                        Qwt.QwtPicker.DragSelection,
-                                        Qwt.QwtPicker.AlwaysOff,
-                                        self.canvas())
-        self.zoomer.setRubberBandPen(Qt.QPen(Qt.Qt.green))
-        # set picker
-        self.picker = Qwt.QwtPlotPicker(Qwt.QwtPlot.xBottom,
-                                        Qwt.QwtPlot.yLeft,
-                                        Qwt.QwtPicker.PointSelection,
-                                        Qwt.QwtPlotPicker.CrossRubberBand,
-                                        Qwt.QwtPicker.AlwaysOn,
-                                        self.canvas())
-        self.picker.setTrackerPen(Qt.QPen(Qt.Qt.red))
+        # self.zoomer = Qwt.QwtPlotZoomer(Qwt.QwtPlot.xBottom,
+        #                                 Qwt.QwtPlot.yLeft,
+        #                                 Qwt.QwtPicker.DragSelection,
+        #                                 Qwt.QwtPicker.AlwaysOff,
+        #                                 self.canvas())
+        # self.zoomer.setRubberBandPen(QtGui.QPen(QtCore.Qt.green))
+        # # set picker
+        # self.picker = Qwt.QwtPlotPicker(Qwt.QwtPlot.xBottom,
+        #                                 Qwt.QwtPlot.yLeft,
+        #                                 Qwt.QwtPicker.PointSelection,
+        #                                 Qwt.QwtPlotPicker.CrossRubberBand,
+        #                                 Qwt.QwtPicker.AlwaysOn,
+        #                                 self.canvas())
+        # self.picker.setTrackerPen(QtGui.QPen(QtCore.Qt.red))
         self._plotdict = {}
-        self.__clear = self.clear
-        # 		self.connect(self.picker, Qt.SIGNAL('selected(const QwtDoublePoint&)'), pointselected)
-        self.setContextMenuPolicy(Qt.Qt.ActionsContextMenu)
-        self._exportPdfAction = Qt.QAction("Export plot to PDF...", self)
-        self._exportPdfAction.triggered.connect(self.exportPdf)
+        # 		self.picker.selected.connect( pointselected)
+        self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
+        self._exportPdfAction = QtGui.QAction("Export plot to PDF...", self)
+        self._exportPdfAction.triggered.connect(
+                     self.exportPdf)
         self.addAction(self._exportPdfAction)
 
     def attachCurve(self, x, y, name='', pen=None, style="Lines"):
-        if pen is None: pen = Qt.QPen(self.autocolor.next())
+        if pen is None: pen = QtGui.QPen(self.autocolor.next())
         self.YscaleMax = max(self.YscaleMax, 1.2 * max(y))
         self.YscaleMin = min(self.YscaleMin, max(1, 0.5 * min(y)))
         curve = Qwt.QwtPlotCurve(name)
@@ -137,7 +140,6 @@ class PALSplot(Qwt.QwtPlot):
 
     def reset(self, *args):
         self._plotdict = {}
-        self.__clear()
         self.autocolor.setItemIndex(-1)
 
     def toggleVisibility(self, plotItem):
@@ -152,7 +154,7 @@ class PALSplot(Qwt.QwtPlot):
         self.setAxisAutoScale(Qwt.QwtPlot.xBottom)
         self.setAxisScale(Qwt.QwtPlot.yLeft, self.YscaleMin, self.YscaleMax)
         self.replot()
-        self.zoomer.setZoomBase()
+        # self.zoomer.setZoomBase()
 
     def exportPdf(self, fileName=None):
         """Export the plot to a PDF. slot for the _exportPdfAction.
@@ -162,11 +164,11 @@ class PALSplot(Qwt.QwtPlot):
                          a file name.
         """
         if fileName is None:
-            fileName = Qt.QFileDialog.getSaveFileName(self, 'Export File Name',
+            fileName = QtGui.QFileDialog.getSaveFileName(self, 'Export File Name',
                                                       'plot.pdf',
                                                       'PDF Documents (*.pdf)',
                                                       '',
-                                                      Qt.QFileDialog.DontUseNativeDialog)
+                                                      QtGui.QFileDialog.DontUseNativeDialog)
         fileName = str(fileName)
         if fileName:
             try:  # check if the file is actually writable
@@ -174,13 +176,13 @@ class PALSplot(Qwt.QwtPlot):
                 f.close()
             except:
                 self.error("Can't write to '%s'" % fileName)
-                Qt.QMessageBox.warning(self, "File Error",
+                QtGui.QMessageBox.warning(self, "File Error",
                                        "Can't write to\n'%s'" % fileName,
-                                       Qt.QMessageBox.Ok)
+                                       QtGui.QMessageBox.Ok)
                 return
-            printer = Qt.QPrinter()
-            printer.setOutputFormat(Qt.QPrinter.PdfFormat)
-            printer.setOrientation(Qt.QPrinter.Landscape)
+            printer = QtGui.QPrinter()
+            printer.setOutputFormat(QtGui.QPrinter.PdfFormat)
+            printer.setOrientation(QtGui.QPrinter.Landscape)
             printer.setOutputFileName(fileName)
             printer.setCreator('PAScual')
             self.print_(printer)
@@ -192,7 +194,7 @@ class ResPlot(Qwt.QwtPlot):
         self.YscaleMax = 2
         self.YscaleMin = -2
         self.setAxisScale(Qwt.QwtPlot.yLeft, self.YscaleMin, self.YscaleMax)
-        self.plotLayout().setMargin(0)
+        # self.plotLayout().setMargin(0)
         self.plotLayout().setCanvasMargin(0)
         self.plotLayout().setAlignCanvasToScales(True)
         # set a cyclic list of colors to be used for plotting
@@ -207,7 +209,7 @@ class ResPlot(Qwt.QwtPlot):
         # attach a grid
         grid = Qwt.QwtPlotGrid()
         grid.attach(self)
-        grid.setPen(Qt.QPen(Qt.Qt.black, 0, Qt.Qt.DotLine))
+        grid.setPen(QtGui.QPen(QtCore.Qt.black, 0, QtCore.Qt.DotLine))
         # 		# Connect clicks on toolbar to toggleVisibility
         # 		self.connect(self,
         # 		             Qt.SIGNAL("legendClicked(QwtPlotItem*)"),
@@ -215,12 +217,12 @@ class ResPlot(Qwt.QwtPlot):
         # replot
         self.replot()
         # set zoomer
-        self.zoomer = Qwt.QwtPlotZoomer(Qwt.QwtPlot.xBottom,
-                                        Qwt.QwtPlot.yLeft,
-                                        Qwt.QwtPicker.DragSelection,
-                                        Qwt.QwtPicker.AlwaysOff,
-                                        self.canvas())
-        self.zoomer.setRubberBandPen(Qt.QPen(Qt.Qt.green))
+        # self.zoomer = Qwt.QwtPlotZoomer(Qwt.QwtPlot.xBottom,
+        #                                 Qwt.QwtPlot.yLeft,
+        #                                 Qwt.QwtPicker.DragSelection,
+        #                                 Qwt.QwtPicker.AlwaysOff,
+        #                                 self.canvas())
+        # self.zoomer.setRubberBandPen(QtGui.QPen(QtCore.Qt.green))
         # 		# set picker
         # 		self.picker = Qwt.QwtPlotPicker(Qwt.QwtPlot.xBottom,
         # 									Qwt.QwtPlot.yLeft,
@@ -228,17 +230,17 @@ class ResPlot(Qwt.QwtPlot):
         # 									Qwt.QwtPlotPicker.CrossRubberBand,
         # 									Qwt.QwtPicker.AlwaysOn,
         # 									self.canvas())
-        # 		self.picker.setTrackerPen(Qt.QPen(Qt.Qt.red))
+        # 		self.picker.setTrackerPen(QtGui.QPen(QtCore.Qt.red))
         self._plotdict = {}
-        self.__clear = self.clear
-        # 		self.connect(self.picker, Qt.SIGNAL('selected(const QwtDoublePoint&)'), pointselected)
-        self.setContextMenuPolicy(Qt.Qt.ActionsContextMenu)
-        self._exportPdfAction = Qt.QAction("Export plot to PDF...", self)
-        self._exportPdfAction.triggered.connect(self.exportPdf)
+        # 		self.picker.selected.connect( pointselected)
+        self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
+        self._exportPdfAction = QtGui.QAction("Export plot to PDF...", self)
+        self._exportPdfAction.triggered.connect(
+                     self.exportPdf)
         self.addAction(self._exportPdfAction)
 
     def attachCurve(self, x, y, name='', pen=None):
-        if pen is None: pen = Qt.QPen(self.autocolor.next(), 2)
+        if pen is None: pen = QtGui.QPen(self.autocolor.next(), 2)
         self.YscaleMax = min(10, 1.2 * max(y))
         self.YscaleMin = max(-10, 1.2 * min(y))
         curve = Qwt.QwtPlotCurve(name)
@@ -255,7 +257,6 @@ class ResPlot(Qwt.QwtPlot):
 
     def reset(self, *args):
         self._plotdict = {}
-        self.__clear()
         self.autocolor.setItemIndex(-1)
 
     # 	def toggleVisibility(self, plotItem):
@@ -269,10 +270,10 @@ class ResPlot(Qwt.QwtPlot):
         self.setAxisAutoScale(Qwt.QwtPlot.xBottom)
         self.setAxisScale(Qwt.QwtPlot.yLeft, self.YscaleMin, self.YscaleMax)
         self.replot()
-        self.zoomer.setZoomBase()
+        # self.zoomer.setZoomBase()
 
     def sizeHint(self):
-        return Qt.QSize(300, 150)
+        return QtCore.QSize(300, 150)
 
     def exportPdf(self, fileName=None):
         """Export the plot to a PDF. slot for the _exportPdfAction.
@@ -282,11 +283,11 @@ class ResPlot(Qwt.QwtPlot):
                          a file name.
         """
         if fileName is None:
-            fileName = Qt.QFileDialog.getSaveFileName(self, 'Export File Name',
+            fileName = QtGui.QFileDialog.getSaveFileName(self, 'Export File Name',
                                                       'plot.pdf',
                                                       'PDF Documents (*.pdf)',
                                                       '',
-                                                      Qt.QFileDialog.DontUseNativeDialog)
+                                                      QtGui.QFileDialog.DontUseNativeDialog)
         fileName = str(fileName)
         if fileName:
             try:  # check if the file is actually writable
@@ -294,13 +295,13 @@ class ResPlot(Qwt.QwtPlot):
                 f.close()
             except:
                 self.error("Can't write to '%s'" % fileName)
-                Qt.QMessageBox.warning(self, "File Error",
+                QtGui.QMessageBox.warning(self, "File Error",
                                        "Can't write to\n'%s'" % fileName,
-                                       Qt.QMessageBox.Ok)
+                                       QtGui.QMessageBox.Ok)
                 return
-            printer = Qt.QPrinter()
-            printer.setOutputFormat(Qt.QPrinter.PdfFormat)
-            printer.setOrientation(Qt.QPrinter.Landscape)
+            printer = QtGui.QPrinter()
+            printer.setOutputFormat(QtGui.QPrinter.PdfFormat)
+            printer.setOrientation(QtGui.QPrinter.Landscape)
             printer.setOutputFileName(fileName)
             printer.setCreator('PAScual')
             self.print_(printer)
@@ -315,7 +316,7 @@ def make():
     y[-1] = 0  # to check the log
     z = 10 + 4 * pi * cos(x) * cos(x) * sin(x)
     demo.attachCurve(x, z, name='y = 10+4*pi*sin(x)*cos(x)**2',
-                     pen=Qt.QPen(Qt.Qt.black, 2), style='Dots')
+                     pen=QtGui.QPen(QtCore.Qt.black, 2), style='Dots')
     demo.attachCurve(x, y, name='y = 10+pi*sin(x)')
     demo.attachCurve(x, 2 * z, name='y = 20+8*pi*sin(x)*cos(x)**2')
     demo.show()
@@ -335,7 +336,7 @@ def pointselected(pos):
 
 
 def main(args):
-    app = Qt.QApplication(args)
+    app = QtGui.QApplication(args)
     demo = make()
     sys.exit(app.exec_())
 

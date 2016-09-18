@@ -36,8 +36,10 @@
 
 import platform
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+import sip
+sip.setdestroyonexit(False)  # to avoid segfaults on exit
+from qwt.qt.QtCore import *
+from qwt.qt.QtGui import *
 
 from PAScual import *
 import CommandsTableMV as CMDTMV
@@ -83,7 +85,7 @@ class FitparWidget(QWidget):
         self.loadUi()
         #		self.__close=self.close
         self._fpkey = fpkey
-        self.label.setText(QString(label))
+        self.label.setText(label)
         self.setMinimumHeight(1.5 * self.LEValue.minimumHeight())
         #		self.setSizePolicy ( QSizePolicy.Preferred,QSizePolicy.Minimum)
         # connect the Apply and auto buttons to their respective callbacks (or disable them)
@@ -122,12 +124,12 @@ class FitparWidget(QWidget):
     def getFitpar(self):
         '''returns a fitpar object based on the widgets selections'''
         # TODO: validate input
-        name = unicode(self.label.text()).split('[')[0]
+        name = str(self.label.text()).split('[')[0]
         try:
-            val = float(unicode(self.LEValue.text()))
+            val = float(str(self.LEValue.text()))
             free = not self.CBFix.isChecked()
-            minval = unicode(self.LEMin.text())
-            maxval = unicode(self.LEMax.text())
+            minval = str(self.LEMin.text())
+            maxval = str(self.LEMax.text())
             if len(minval) == 0:
                 minval = None
             else:
@@ -144,21 +146,21 @@ class FitparWidget(QWidget):
     def showFitpar(self, fp):
         '''returns a fitpar object based on the widgets selections'''
         if fp is None:
-            self.LEValue.setText(QString())
-            self.LEMin.setText(QString())
-            self.LEMax.setText(QString())
+            self.LEValue.setText('')
+            self.LEMin.setText('')
+            self.LEMax.setText('')
             self.CBFix.setChecked(False)
             return
-        self.LEValue.setText(QString.number(fp.val))
+        self.LEValue.setText(str(fp.val))
         self.CBFix.setChecked(not (fp.free))
         if fp.minval is None:
-            self.LEMin.setText(QString())
+            self.LEMin.setText('')
         else:
-            self.LEMin.setText(QString.number(fp.minval))
+            self.LEMin.setText(str(fp.minval))
         if fp.maxval is None:
-            self.LEMax.setText(QString())
+            self.LEMax.setText('')
         else:
-            self.LEMax.setText(QString.number(fp.maxval))
+            self.LEMax.setText(str(fp.maxval))
 
     @staticmethod
     def addHeader(gridlayout, row=None):
@@ -234,9 +236,8 @@ class PAScualGUI(QMainWindow):
         # fitmodes
         self.fitmodesdict = copy.deepcopy(
             defaultFitModesDict)  # global dict storing hardcoded default FitModes
-        self.fitModeFileName = unicode(self.settings.value("fitModeFileName",
-                                                           QVariant(QString(
-                                                               "CustomFitmodes.pck"))).toString())
+        self.fitModeFileName = str(self.settings.value("fitModeFileName",
+                                                       "CustomFitmodes.pck"))
         self.fitmodesdict.update(self.loadCustomFitModes(self.fitModeFileName))
         self.fitModeCB.insertItems(0, sorted(self.fitmodesdict.keys()))
         self.commandsModel = CMDTMV.CommandTableModel()
@@ -281,7 +282,6 @@ class PAScualGUI(QMainWindow):
         self.actionOptions.triggered.connect(self.onOptions)
         self.actionSave_Spectra_as.triggered.connect(self.onSaveSpectra)
 
-        #		QObject.connect(self.actionSaveResults,SIGNAL("triggered()"),self.onSaveResults)
         self.spectraTable.doubleClicked.connect(self.onSpectraTableDoubleClick)
         self.spectraTable.selectionModel().selectionChanged.connect(self.onspectraSelectionChanged)
         self.SBoxNcomp.valueChanged[int].connect(self.changeNcomp)
@@ -300,7 +300,7 @@ class PAScualGUI(QMainWindow):
         self.actionRegenerateSets.triggered.connect(lambda: self.onRegenerateSets(force=True))
         self.tabWidget.currentChanged.connect(self.onTabChanged)
         self.regenerateSets.connect(self.onRegenerateSets)
-        self.fitModeCB.currentIndexChanged['QString'].connect(self.onFitModeCBChange)
+        self.fitModeCB.currentIndexChanged[str].connect(self.onFitModeCBChange)
         self.applyFitModeBT.clicked[()].connect(self.assignFitModes)
         self.goFitBT.clicked[()].connect(self.onGoFit)
         self.stopFitBT.clicked[()].connect(self.onStopFit)
@@ -313,7 +313,7 @@ class PAScualGUI(QMainWindow):
         self.saveResultsBT.clicked[()].connect(self.onSaveResults)
         self.resultsTable.doubleClicked.connect(self.onPlotFit)
         self.resultsFileSelectBT.clicked[()].connect(self.onResultsFileSelectBT)
-        self.previousOutputCB.currentIndexChanged['QString'].connect(self.onPreviousOutputCBChange)
+        self.previousOutputCB.currentIndexChanged[str].connect(self.onPreviousOutputCBChange)
         self.outputFileSelectBT.clicked[()].connect(self.onOutputFileSelect)
         self.saveOutputBT.clicked[()].connect(self.onSaveOutput_as)
         self.saveFitmodeBT.clicked[()].connect(self.saveFitMode)
@@ -322,13 +322,11 @@ class PAScualGUI(QMainWindow):
         self.plotFitBT.clicked[()].connect(self.onPlotFit)
 
         # Restore last session Window state
-        size = self.settings.value("MainWindow/Size",
-                                   QVariant(QSize(800, 600))).toSize()
+        size = self.settings.value("MainWindow/Size", QSize(800, 600))
         self.resize(size)
-        position = self.settings.value("MainWindow/Position",
-                                       QVariant(QPoint(0, 0))).toPoint()
+        position = self.settings.value("MainWindow/Position", QPoint(0, 0))
         self.move(position)
-        self.restoreState(self.settings.value("MainWindow/State").toByteArray())
+        self.restoreState(self.settings.value("MainWindow/State", QByteArray()))
         self.fitModeCB.setCurrentIndex(self.fitModeCB.findText(defaultFitMode))
 
         # Launch low-priority initializations (to speed up load time)
@@ -345,28 +343,15 @@ class PAScualGUI(QMainWindow):
         '''create the self.options object from values stored in the settings'''
         self.options = PASoptions.Options()
         for opt, dflt in zip(self.options.optlist, self.options.dfltlist):
-            if isinstance(dflt, (str, unicode)):
-                setattr(self.options, opt, unicode(
-                    self.settings.value('Options/' + opt,
-                                        QVariant(QString(dflt))).toString()))
-            elif isinstance(dflt, float):
-                setattr(self.options, opt, self.settings.value('Options/' + opt,
-                                                               QVariant(
-                                                                   dflt)).toDouble()[
-                    0])
-            elif isinstance(dflt, bool):
-                setattr(self.options, opt, self.settings.value('Options/' + opt,
-                                                               QVariant(
-                                                                   dflt)).toBool())
-            elif isinstance(dflt, int):
-                setattr(self.options, opt, self.settings.value('Options/' + opt,
-                                                               QVariant(
-                                                                   dflt)).toInt()[
-                    0])
+            _type = type(dflt)
+            v = self.settings.value('Options/' + opt, dflt)
+            if _type == bool:
+                v = (v.lower() == 'true')
             else:
-                raise ValueError('unsupported type in option "%s"' % dflt)
-            # 			print 'DEBUG:',opt,dflt,getattr(self.options,opt),type(dflt),type(getattr(self.options,opt))
-        S.random.seed(self.options.seed)  # Seeding the random generators.
+                v = _type(v)  # cast to same type as dflt
+            setattr(self.options, opt, v)
+        # self.options._pprint()
+        S.random.seed(int(self.options.seed))  # Seeding the random generators.
 
     def createParamWizard(self):
         from ParamWizard import ParamWizard
@@ -402,29 +387,34 @@ class PAScualGUI(QMainWindow):
         self.openFilesDlg.setViewMode(QFileDialog.Detail)
         self.openFilesDlg.setFilters(filefilters)
         self.openFilesDlg.setDirectory(self.options.workDirectory)
-        selectedfilter = self.settings.value("openfilefilter", QVariant(QString(
-            self.openFilesDlg.specFileLoaderDict['ASCII'].name))).toString()
+        selectedfilter = self.settings.value("openfilefilter",
+            self.openFilesDlg.specFileLoaderDict['ASCII'].name)
         self.openFilesDlg.selectFilter(selectedfilter)
         self.openFilesDlg.setOption(
             self.openFilesDlg.DontUseNativeDialog)  # needed as a workaround to a bug in selectedNameFilter in the linux dialog
 
     def onOptions(self):
         '''Shows the options dialog and saves any changes if accepted'''
-        if self.optionsDlg is None: self.optionsDlg = PASoptions.OptionsDlg(
-            self)  # create the dialog if not already done
+        if self.optionsDlg is None:
+            # create the dialog if not already done
+            self.optionsDlg = PASoptions.OptionsDlg(self)
         # make sure that the Dlg is in sync with the options
         self.optionsDlg.setOptions(self.options)
         # launch the options dialog
         if self.optionsDlg.exec_():
-            self.options = self.optionsDlg.getOptions()  # get the options from the dialog
-            for opt in self.options.optlist:  # store the option as settings
-                val = getattr(self.options, opt)
-                if isinstance(val, (str, unicode)): val = QString(
-                    val)  # convert python strings to QStrings
-                self.settings.setValue("Options/" + opt, QVariant(val))
+            # get the options from the dialog
+            self.options = self.optionsDlg.getOptions()
         else:
-            self.optionsDlg.setOptions(
-                self.options)  # reset previous options
+            # reset previous options
+            self.optionsDlg.setOptions(self.options)
+        self.saveOptions()
+
+    def saveOptions(self):
+        # store the option as settings
+        for opt in self.options.optlist:
+            val = getattr(self.options, opt)
+            self.settings.setValue("Options/" + opt, val)
+        self.settings.sync()
 
     def copy_Results_Selection(self):
         '''copies the selected results to the clipboard'''
@@ -445,7 +435,6 @@ class PAScualGUI(QMainWindow):
         filename = QFileDialog.getSaveFileName(self, "Results File Selection",
                                                self.options.workDirectory + '/PASresults.txt',
                                                "ASCII (*.txt)\nAll (*)",
-                                               '',
                                                QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog)
         if filename: self.resultsFileLE.setText(filename)
 
@@ -453,7 +442,6 @@ class PAScualGUI(QMainWindow):
         ofile = QFileDialog.getSaveFileName(self, "Output File Selection",
                                             self.outputFileLE.text(),
                                             "ASCII (*.txt)\nAll (*)",
-                                            '',
                                             QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog)
         if ofile:
             self.outputFileLE.setText(ofile)
@@ -473,7 +461,7 @@ class PAScualGUI(QMainWindow):
 
         # Manage the file
         if not isinstance(ofile, file):
-            ofile = unicode(ofile)
+            ofile = str(ofile)
             openmode = 'a'
             if os.path.exists(ofile):
                 answer = QMessageBox.question(self, "Append data?",
@@ -493,7 +481,7 @@ class PAScualGUI(QMainWindow):
                                     "Error opening file. Output won't be written")
                 return
         # Write the output to the file
-        print >> ofile, "\n" + unicode(
+        print >> ofile, "\n" + str(
             self.previousOutputTE.toPlainText()) + "\n"
         ofile.close()
 
@@ -628,9 +616,9 @@ class PAScualGUI(QMainWindow):
         self.assignFitModes()
 
     def saveFitMode(self):
-        fmname = unicode(
+        fmname = str(
             QInputDialog.getText(self, "Name?", "Name of custom Fit Mode:",
-                                 QLineEdit.Normal, u"", Qt.Dialog)[0])
+                                 QLineEdit.Normal, "", Qt.Dialog)[0])
         self.fitModeCB.addItem(fmname)
         # copy the <user> entry under a different name and restore the original value of the <user> fit mode
         self.fitmodesdict[fmname] = copy.deepcopy(self.fitmodesdict['<user>'])
@@ -662,8 +650,7 @@ class PAScualGUI(QMainWindow):
                 rowitems = (
                 dp.showreport_1row(file=None, min_ncomp=self.results_min_ncomp,
                                    silent=True)).split()
-                if (
-                        self.options.warning_chi2_low < dp.chi2 / dp.dof < self.options.warning_chi2_high):
+                if (self.options.warning_chi2_low < dp.chi2 / dp.dof < self.options.warning_chi2_high):
                     bgbrush = QBrush(Qt.white)  # is chi2 value ok?
                 else:
                     bgbrush = QBrush(
@@ -678,8 +665,9 @@ class PAScualGUI(QMainWindow):
         self.advanceFitQueue()
         return completed
 
+    @pyqtSlot(str)
     def onFitModeCBChange(self, fitmodename):
-        fitmodename = unicode(fitmodename)
+        fitmodename = str(fitmodename)
         fitmode = self.fitmodesdict[fitmodename]
         self.commandsModel.loadData(fitmode, None)
         self.commandsTable.resizeColumnsToContents()
@@ -691,7 +679,7 @@ class PAScualGUI(QMainWindow):
         if self.selectedSetsOnlyCB.isChecked():  # Assign only to the selected sets if the box is checked
             selectedSets = self.setsTree.selectedItems()
             for item in selectedSets:
-                key = unicode(item.text(0))
+                key = str(item.text(0))
                 self.palssetsdict[key].commands = commands
         else:  # if the box is not checked, assign the current fitmode to all the sets
             for ps in self.palssetsdict.values(): ps.commands = commands
@@ -858,13 +846,13 @@ class PAScualGUI(QMainWindow):
         self.goFitBT.setEnabled(False)
         # initialise a tee for output
         if self.autosaveOutputCB.isChecked():
-            self.outputfile = open(unicode(self.outputFileLE.text()), 'a')
+            self.outputfile = open(str(self.outputFileLE.text()), 'a')
         else:
             self.outputfile = None
         mytee = tee(sys.__stdout__, self.outputfile)
         mytee.setEmitEnabled(True)
         # Update the current Output key
-        self.currentOutputKey = unicode(time.strftime('%Y/%m/%d %H:%M:%S'))
+        self.currentOutputKey = str(time.strftime('%Y/%m/%d %H:%M:%S'))
         # show the current output
         self.previousOutputCB.setCurrentIndex(
             self.previousOutputCB.findText("Current",
@@ -907,7 +895,7 @@ class PAScualGUI(QMainWindow):
 
     def onPreviousOutputCBChange(self, key):
         '''prints the previous output in a pop up window)'''
-        key = unicode(key)
+        key = str(key)
         if key == "All":
             self.previousOutputTE.clear()
             for k in sorted(self.previousOutputDict.keys()):
@@ -938,13 +926,12 @@ class PAScualGUI(QMainWindow):
     def closeEvent(self, event):
         '''This event handler receives widget close events'''
         # save current window state before closing
-        self.settings.setValue("MainWindow/Size", QVariant(self.size()))
-        self.settings.setValue("MainWindow/Position", QVariant(self.pos()))
-        self.settings.setValue("MainWindow/State", QVariant(self.saveState()))
-        self.settings.setValue("fitModeFileName",
-                               QVariant(QString(self.fitModeFileName)))
-        self.settings.setValue("openfilefilter",
-                               QVariant(self.openFilesDlg.selectedFilter()))
+        self.settings.setValue("MainWindow/Size", self.size())
+        self.settings.setValue("MainWindow/Position", self.pos())
+        self.settings.setValue("MainWindow/State", self.saveState())
+        self.settings.setValue("fitModeFileName", self.fitModeFileName)
+        self.settings.setValue("openfilefilter", self.openFilesDlg.selectedFilter())
+        self.saveOptions()
 
     def onTabChanged(self, tabindex):
         if tabindex == 1: self.regenerateSets.emit(False)
@@ -971,12 +958,12 @@ class PAScualGUI(QMainWindow):
         # Populate the sets TreeWidget
         self.setsTree.clear()
         for ps in palssetslist:
-            item = QTreeWidgetItem(self.setsTree, [ps.name, QString.number(
+            item = QTreeWidgetItem(self.setsTree, [ps.name, str(
                 len(ps.spectralist))])
             item.addChildren(
                 [QTreeWidgetItem([dp.name]) for dp in ps.spectralist])
         # Show the number of failed (unasigned) spectra
-        self.unasignedLE.setText(QString.number(len(failed)))
+        self.unasignedLE.setText(str(len(failed)))
         # readjust columns in TreeWidget
         self.setsTree.setColumnWidth(0,
                                      max(40, int(0.7 * self.setsTree.width())))
@@ -1057,7 +1044,9 @@ class PAScualGUI(QMainWindow):
         if nselrows == 0:
             self.updateParamsView.emit(discretepals())
         elif nselrows == 1:
-            self.updateParamsView.emit(self.spectraModel.data(selrows[0], role=Qt.UserRole))
+            self.updateParamsView.emit(self.spectraModel.data(selrows[0],
+                                                              role=Qt.UserRole)
+                                       )
         else:
             self.updateParamsView.emit(None)
 
@@ -1077,7 +1066,7 @@ class PAScualGUI(QMainWindow):
         selected, indexes = self.spectraModel.getselectedspectra()
         if selected == []: return
         for dp in selected:
-            if len(unicode(self.LEpsperchannel.text())) == 0:
+            if len(str(self.LEpsperchannel.text())) == 0:
                 QMessageBox.warning(self, "Invalid input",
                                     " The channel width must be a positive number""")
                 return False
@@ -1096,9 +1085,9 @@ class PAScualGUI(QMainWindow):
         self.c0FitparWidget.showFitpar(dp.c0)
         self.fwhmFitparWidget.showFitpar(dp.fwhm)
         if dp.psperchannel is None:
-            self.LEpsperchannel.setText(QString())
+            self.LEpsperchannel.setText('')
         else:
-            self.LEpsperchannel.setText(QString.number(dp.psperchannel))
+            self.LEpsperchannel.setText(str(dp.psperchannel))
         if dp.taulist is None:
             self.SBoxNcomp.setValue(0)
             return
@@ -1247,7 +1236,7 @@ class PAScualGUI(QMainWindow):
         self.statusbar.showMessage("AutoOffset working...", 0)
         if caller.CBCommon.isChecked():
             answer = QMessageBox.warning(self, "Incompatible input",
-                                         unicode(
+                                         str(
                                              "The AutoOffset function is not compatible with a common Offset parameter\n"
                                              "If you continue, the 'common' option will be unchecked."),
                                          QMessageBox.Ok | QMessageBox.Cancel)
@@ -1300,7 +1289,7 @@ class PAScualGUI(QMainWindow):
         # Check if the 'common' option is checked
         if caller.CBCommon.isChecked():
             answer = QMessageBox.warning(self, "Incompatible input",
-                                         unicode(
+                                         str(
                                              "The Auto Background function is not compatible with a common background parameter\n"
                                              "If you continue, the 'common' option will be unchecked."),
                                          QMessageBox.Ok | QMessageBox.Cancel)
@@ -1316,7 +1305,7 @@ class PAScualGUI(QMainWindow):
                 val = dp.exp[bgroi].mean()
                 std10 = 10 * max(10, S.sqrt(val), dp.exp[bgroi].std())
                 # The bg is directly updated!
-                dp.bg = fitpar(val=val, name=u'Bg(auto)',
+                dp.bg = fitpar(val=val, name='Bg(auto)',
                                minval=max(0, val - std10), maxval=val + std10,
                                free=not (caller.CBFix.isChecked()))
                 dp.bg.forcelimits()
@@ -1339,9 +1328,8 @@ class PAScualGUI(QMainWindow):
         self.openFilesDlg.setDirectory(self.options.workDirectory)
         if not self.openFilesDlg.exec_(): return
         self.options.workDirectory = self.openFilesDlg.directory().path()  # update the working directory
-        self.settings.setValue("Options/workDirectory", QVariant(
-            self.options.workDirectory))  # save the new working directory
-        fileNames = [unicode(item) for item in
+        self.settings.setValue("Options/workDirectory", self.options.workDirectory)  # save the new working directory
+        fileNames = [str(item) for item in
                      self.openFilesDlg.selectedFiles()]
         dps = []
         answer = None
@@ -1358,7 +1346,7 @@ class PAScualGUI(QMainWindow):
             if progress.wasCanceled(): break
             # read data
             selectedfilter = \
-            unicode(self.openFilesDlg.selectedFilter()).split('(')[0].strip()
+            str(self.openFilesDlg.selectedFilter()).split('(')[0].strip()
             fileloader = self.openFilesDlg.specFileLoaderDict[selectedfilter]
             try:
                 tempdp = fileloader.getDiscretePals(fname)
@@ -1430,14 +1418,14 @@ class PAScualGUI(QMainWindow):
             self.saveFilesDlg.setViewMode(QFileDialog.Detail)
             if not self.saveFilesDlg.exec_():
                 return None
-            filename = unicode(self.saveFilesDlg.selectedFiles()[0])
+            filename = str(self.saveFilesDlg.selectedFiles()[0])
             selectedfilter = \
-            unicode(self.saveFilesDlg.selectedFilter()).split('(')[0].strip()
+            str(self.saveFilesDlg.selectedFilter()).split('(')[0].strip()
         if selectedfilter is None:
             if filename.endswith(".ps1"):
-                selectedfilter = u"PAScual"
+                selectedfilter = "PAScual"
             else:
-                selectedfilter = u"ASCII"
+                selectedfilter = "ASCII"
         try:
             if selectedfilter.startswith("ASCII"):
                 spectrum.saveAs_ASCII(filename)
@@ -1466,9 +1454,9 @@ class PAScualGUI(QMainWindow):
 
     def onSaveResults(self, ofile=None):
         # Manage the file
-        if ofile is None: ofile = unicode(self.resultsFileLE.text())
+        if ofile is None: ofile = str(self.resultsFileLE.text())
         if not isinstance(ofile, file):
-            ofile = unicode(ofile)
+            ofile = str(ofile)
             openmode = 'a'
             if os.path.exists(ofile):
                 answer = QMessageBox.question(self, "Append data?",
@@ -1504,9 +1492,9 @@ class PAScualGUI(QMainWindow):
         # prompt for a description of the results
         (customdescription, ok) = QInputDialog.getText(self, "Description?",
                                                        "Description:",
-                                                       QLineEdit.Normal, u"",
+                                                       QLineEdit.Normal, "",
                                                        Qt.Dialog)
-        #		customdescription,ok= QInputDialog.getText( const QString & title, const QString & label, QLineEdit::EchoMode echo = QLineEdit::Normal, const QString & text = QString(), bool * ok = 0, QWidget * parent = 0, const char * name = 0, Qt::WindowFlags f = 0 )
+        #		customdescription,ok= QInputDialog.getText( const QString & title, const QString & label, QLineEdit::EchoMode echo = QLineEdit::Normal, const QString & text = '', bool * ok = 0, QWidget * parent = 0, const char * name = 0, Qt::WindowFlags f = 0 )
         # Write the results to the file
         widths = [20, 14, 14, 9, 6, 6, 6, 14, 9, 9, 9, 9, 9,
                   9] + 4 * self.results_min_ncomp * [9]
@@ -1523,7 +1511,7 @@ class PAScualGUI(QMainWindow):
                 if saveall or not self.resultsTable.isColumnHidden(col):
                     fmt = "%%%is\t" % widths[col]
                     ofile.write(
-                        fmt % unicode(self.resultsTable.item(row, col).text()))
+                        fmt % str(self.resultsTable.item(row, col).text()))
         ofile.close()
         self.dirtyresults = False
 
@@ -1603,14 +1591,14 @@ class PAScualGUI(QMainWindow):
         for dp, bgroi in zip(selected, w.roilist): dp.roi = bgroi
         self.spectraTable.resizeColumnToContents(STMV.ROI)
         # psperchannel
-        self.LEpsperchannel.setText(w.psperchannel.toString())
+        self.LEpsperchannel.setText(str(w.psperchannel))
         self.setpsperchannel()
         # FWHM
-        self.fwhmFitparWidget.LEValue.setText(w.FWHM.toString())
+        self.fwhmFitparWidget.LEValue.setText(str(w.FWHM))
         self.fwhmFitparWidget.BTApply.click()
         # Bg
         for dp, val, std10 in zip(selected, w.bg, w.deltabg):
-            dp.bg = fitpar(val=val, name=u'Bg(auto)',
+            dp.bg = fitpar(val=val, name='Bg(auto)',
                            minval=max(0, val - std10), maxval=val + std10,
                            free=not (self.bgFitparWidget.CBFix.isChecked()))
             dp.bg.forcelimits()
@@ -1664,7 +1652,7 @@ class PAScualGUI(QMainWindow):
 
     def saveParameters(self, filename=None):
         if filename is None:
-            filename = unicode(
+            filename = str(
                 QFileDialog.getSaveFileName(self, "Save parameters in...",
                                             self.options.workDirectory + '/PASparams.par',
                                             "Parameters File (*.par)", '',

@@ -90,7 +90,7 @@ class ASCIIfileloader(spectrumFileLoader):
             okflag = True
         if self.askmode == 'qt':
             # Asks via a qt dialog. This assumes that Qt is installed. You must provide a parent for the dialog
-            from PyQt4.QtGui import QInputDialog
+            from qwt.qt.QtGui import QInputDialog
             if self.hdrlns is None:
                 dflt = 0
             else:

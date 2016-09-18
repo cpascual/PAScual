@@ -1022,8 +1022,6 @@ p, li { white-space: pre-wrap; }
     <addaction name="actionTao_Eldrup_Calculator" />
     <addaction name="actionParamWizard" />
     <addaction name="separator" />
-    <addaction name="actionCheck_for_Updates" />
-    <addaction name="separator" />
     <addaction name="actionOptions" />
    </widget>
    <addaction name="menuFile" />
@@ -1454,15 +1452,6 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="text" >
     <string>show/hide spectra selector</string>
-   </property>
-  </action>
-  <action name="actionCheck_for_Updates" >
-   <property name="icon" >
-    <iconset resource="PAScual.qrc" >
-     <normaloff>:/Icons/icons/mine/agt_update_recommended.png</normaloff>:/Icons/icons/mine/agt_update_recommended.png</iconset>
-   </property>
-   <property name="text" >
-    <string>Check for Updates</string>
    </property>
   </action>
   <action name="actionParamWizard" >
