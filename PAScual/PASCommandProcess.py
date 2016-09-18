@@ -21,8 +21,8 @@
 import cPickle as pickle
 import copy
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from qwt.qt.QtCore import *
+from qwt.qt.QtGui import *
 
 from PAScual import printwarning
 
@@ -103,10 +103,11 @@ class fitter(QThread):
             # BI command
             elif cmd == 'BI':
                 print '\n********* Performing Bayesian Inference **************\n'
+                savehist = self.options.BI_savehist and self.options.BI_histFile
                 ps.BI(LM=self.options.BI_length,
                       stabilisation=self.options.BI_stab,
                       ireport=self.options.BI_report, iemit=1,
-                      savehist=self.options.BI_savehist)
+                      savehist=savehist)
             # LOAD command
             elif cmd == 'LOAD':
                 print '\n********* Loading previous results **************\n'

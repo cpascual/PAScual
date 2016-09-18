@@ -35,8 +35,8 @@ from shutil import copy2
 FWHM2SIGMA = 1. / (2 * S.sqrt(2 * S.log(2)))
 
 
-from PyQt4.QtCore import QObject, pyqtSignal
-
+# if qt is present, we will use it to emit signals
+from qwt.qt.QtCore import QObject, pyqtSignal
 
 class _Emitter(QObject):
 
@@ -1292,7 +1292,7 @@ class palsset(fitable):
 
         # Save the history of the parameters (with a header)
         if savehist:
-            if isinstance(savehist, (str, str)):
+            if isinstance(savehist, str):
                 histfile = open(savehist, 'w')
             else:
                 histfile = savehist
@@ -1376,8 +1376,8 @@ class palsset(fitable):
                 nonfreeitys += 1
         itys = temp
         nitys = len(itys)
-        for i in range(nitys): itys[i] = objectindex(itys[i],
-                                                     myargs)  # itys now contains the indexes for the parameters that are intensities in myargs
+        for i in range(nitys): itys[i] = objectindex(itys[i], myargs)
+        # itys now contains the indexes for the parameters that are intensities in myargs
         itys = S.array(itys)
         # Try to do a (relatively fast) *unbounded* minimisation using a Levenberg-Marquardt algorithm
         if ireport: print "\nTrying a Levenberg-Marquardt (LMA) fit\n"
@@ -1420,7 +1420,7 @@ class palsset(fitable):
             # Do a  L-BFGS-B minimisation (slow but bounded)
             if abort.abortRequested(): return  # check if we should abort
             myx, chi2, infodict = optimize.fmin_l_bfgs_b(self.interfacefunction,
-                                                         myx, args=myargs,
+                                                         myx, args=tuple(myargs),
                                                          approx_grad=1,
                                                          bounds=minmax, m=10,
                                                          iprint=-1)
@@ -1445,7 +1445,7 @@ class palsset(fitable):
             #			myx=S.where(myx>minmaxarray[:,1], minmaxarray[:,1], myx)
             if abort.abortRequested(): return  # check if we should abort
             myx, chi2, infodict = optimize.fmin_l_bfgs_b(self.interfacefunction,
-                                                         myx, args=myargs,
+                                                         myx, args=tuple(myargs),
                                                          approx_grad=1,
                                                          bounds=minmax, m=10,
                                                          iprint=-1)
@@ -1465,13 +1465,12 @@ class palsset(fitable):
                 # find the indexes for the free intensities for this spectrum
                 aindexes = S.zeros(dp.freeityindexes.size, dtype='i')
                 for i, j in zip(dp.freeityindexes, xrange(aindexes.size)):
-                    aindexes[j] = objectindex(dp.itylist[i],
-                                              myargs)  # aindexes contains the indexes (in myargs) of the free intensities for this spectrum
+                    # aindexes contains the indexes (in myargs) of the free intensities for this spectrum
+                    aindexes[j] = objectindex(dp.itylist[i], myargs)
                 a = myx[aindexes]
                 asum = a.sum()
                 # find the jacobian of the parameters transformation:
-                Jac = S.identity(len(
-                    myargs))  # for most of the parameters, there is no transformation
+                Jac = S.identity(len(myargs))  # for most of the parameters, there is no transformation
                 for i in aindexes:
                     Jac[i, aindexes] = myx[
                         i]  # the row corresponding to the intensity a_i is all equal to a_i...

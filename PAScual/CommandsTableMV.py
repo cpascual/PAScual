@@ -20,8 +20,8 @@
 import copy
 import sys
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from qwt.qt.QtCore import *
+from qwt.qt.QtGui import *
 
 # set names for column numbers
 _ncolumns = 2

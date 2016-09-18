@@ -51,20 +51,20 @@ else:
 
 print '\nPyQt...',
 try:
-    import PyQt4.QtCore as t4
-    import PyQt4.QtGui as t4b
+    import qwt.qt.QtCore as t4
+    import qwt.qt.QtGui as t4b
 except:
     print "Failed"
 else:
     print 'ok, version:', t4.PYQT_VERSION_STR
 
-print '\nPyQwt...',
+print '\nPythonQwt...',
 try:
-    import PyQt4.Qwt5 as t5
+    import qwt as t5
 except:
     print "Failed"
 else:
-    print 'ok, version:', t5.QWT_VERSION_STR
+    print 'ok, version:', t5.__version__
 
 print '\n\nTesting PAScual.py',
 try:

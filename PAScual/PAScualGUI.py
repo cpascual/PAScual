@@ -36,8 +36,10 @@
 
 import platform
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+import sip
+sip.setdestroyonexit(False)  # to avoid segfaults on exit
+from qwt.qt.QtCore import *
+from qwt.qt.QtGui import *
 
 from PAScual import *
 import CommandsTableMV as CMDTMV
@@ -324,7 +326,7 @@ class PAScualGUI(QMainWindow):
         self.resize(size)
         position = self.settings.value("MainWindow/Position", QPoint(0, 0))
         self.move(position)
-        self.restoreState(self.settings.value("MainWindow/State"))
+        self.restoreState(self.settings.value("MainWindow/State", QByteArray()))
         self.fitModeCB.setCurrentIndex(self.fitModeCB.findText(defaultFitMode))
 
         # Launch low-priority initializations (to speed up load time)
@@ -341,21 +343,14 @@ class PAScualGUI(QMainWindow):
         '''create the self.options object from values stored in the settings'''
         self.options = PASoptions.Options()
         for opt, dflt in zip(self.options.optlist, self.options.dfltlist):
-            if isinstance(dflt, str):
-                setattr(self.options, opt,
-                        str(self.settings.value('Options/' + opt, dflt)))
-            elif isinstance(dflt, float):
-                setattr(self.options, opt,
-                        self.settings.value('Options/' + opt, dflt))
-            elif isinstance(dflt, bool):
-                setattr(self.options, opt,
-                        self.settings.value('Options/' + opt, dflt))
-            elif isinstance(dflt, int):
-                setattr(self.options, opt,
-                        self.settings.value('Options/' + opt, dflt))
+            _type = type(dflt)
+            v = self.settings.value('Options/' + opt, dflt)
+            if _type == bool:
+                v = (v.lower() == 'true')
             else:
-                raise ValueError('unsupported type in option "%s"' % dflt)
-            # 			print 'DEBUG:',opt,dflt,getattr(self.options,opt),type(dflt),type(getattr(self.options,opt))
+                v = _type(v)  # cast to same type as dflt
+            setattr(self.options, opt, v)
+        # self.options._pprint()
         S.random.seed(int(self.options.seed))  # Seeding the random generators.
 
     def createParamWizard(self):
@@ -400,20 +395,26 @@ class PAScualGUI(QMainWindow):
 
     def onOptions(self):
         '''Shows the options dialog and saves any changes if accepted'''
-        if self.optionsDlg is None: self.optionsDlg = PASoptions.OptionsDlg(
-            self)  # create the dialog if not already done
+        if self.optionsDlg is None:
+            # create the dialog if not already done
+            self.optionsDlg = PASoptions.OptionsDlg(self)
         # make sure that the Dlg is in sync with the options
         self.optionsDlg.setOptions(self.options)
         # launch the options dialog
         if self.optionsDlg.exec_():
-            self.options = self.optionsDlg.getOptions()  # get the options from the dialog
-            for opt in self.options.optlist:  # store the option as settings
-                val = getattr(self.options, opt)
-                if isinstance(val, str): val = val
-                self.settings.setValue("Options/" + opt, val)
+            # get the options from the dialog
+            self.options = self.optionsDlg.getOptions()
         else:
-            self.optionsDlg.setOptions(
-                self.options)  # reset previous options
+            # reset previous options
+            self.optionsDlg.setOptions(self.options)
+        self.saveOptions()
+
+    def saveOptions(self):
+        # store the option as settings
+        for opt in self.options.optlist:
+            val = getattr(self.options, opt)
+            self.settings.setValue("Options/" + opt, val)
+        self.settings.sync()
 
     def copy_Results_Selection(self):
         '''copies the selected results to the clipboard'''
@@ -434,7 +435,6 @@ class PAScualGUI(QMainWindow):
         filename = QFileDialog.getSaveFileName(self, "Results File Selection",
                                                self.options.workDirectory + '/PASresults.txt',
                                                "ASCII (*.txt)\nAll (*)",
-                                               '',
                                                QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog)
         if filename: self.resultsFileLE.setText(filename)
 
@@ -442,7 +442,6 @@ class PAScualGUI(QMainWindow):
         ofile = QFileDialog.getSaveFileName(self, "Output File Selection",
                                             self.outputFileLE.text(),
                                             "ASCII (*.txt)\nAll (*)",
-                                            '',
                                             QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog)
         if ofile:
             self.outputFileLE.setText(ofile)
@@ -651,8 +650,7 @@ class PAScualGUI(QMainWindow):
                 rowitems = (
                 dp.showreport_1row(file=None, min_ncomp=self.results_min_ncomp,
                                    silent=True)).split()
-                if (
-                        self.options.warning_chi2_low < dp.chi2 / dp.dof < self.options.warning_chi2_high):
+                if (self.options.warning_chi2_low < dp.chi2 / dp.dof < self.options.warning_chi2_high):
                     bgbrush = QBrush(Qt.white)  # is chi2 value ok?
                 else:
                     bgbrush = QBrush(
@@ -932,8 +930,8 @@ class PAScualGUI(QMainWindow):
         self.settings.setValue("MainWindow/Position", self.pos())
         self.settings.setValue("MainWindow/State", self.saveState())
         self.settings.setValue("fitModeFileName", self.fitModeFileName)
-        self.settings.setValue("nextupdatechk", self.nextupdatechk)
         self.settings.setValue("openfilefilter", self.openFilesDlg.selectedFilter())
+        self.saveOptions()
 
     def onTabChanged(self, tabindex):
         if tabindex == 1: self.regenerateSets.emit(False)

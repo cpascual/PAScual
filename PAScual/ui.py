@@ -34,8 +34,7 @@ import os
 import sys
 import functools
 
-from PyQt4 import Qt
-from PyQt4 import uic
+from qwt.qt import uic
 
 
 class __UI(object):
@@ -50,8 +49,8 @@ def loadUi(obj, filename=None, path=None, with_ui=None):
     widget class is called MyWidget it tries to find a MyWidget.ui).
     If path is not given it uses the directory where the python file which
     defines the widget is located plus a *ui* directory (example: if your widget
-    is defined in a file /home/homer/workspace/taurusgui/my_widget.py then it uses
-    the path /home/homer/workspace/taurusgui/ui)
+    is defined in a file /home/homer/foo/my_widget.py then it uses
+    the path /home/homer/foo/ui)
 
     :param filename: the QtDesigner .ui file name [default: None, meaning
                       calculate file name with the algorithm explained before]
@@ -91,7 +90,7 @@ def loadUi(obj, filename=None, path=None, with_ui=None):
 
 def UILoadable(klass=None, with_ui=None):
     """
-    A class decorator intended to be used in a Qt.QWidget to make its UI
+    A class decorator intended to be used in a QWidget to make its UI
     loadable from a predefined QtDesigner UI file.
     This decorator will add a :func:`loadUi` method to the decorated class and
     optionaly a property with a name given by *with_ui* parameter.
@@ -100,14 +99,14 @@ def UILoadable(klass=None, with_ui=None):
     :file:`<my_widget_dir>/ui/MyWidget.ui` which is a QWidget panel with *at
     least* a QPushButton with objectName *my_button* ::
 
-        from taurus.external.qt import Qt
-        from taurus.qt.qtgui.util.ui import UILoadable
+        from qwt.qt import QtGui
+        from ui import UILoadable
 
         @UILoadable
-        class MyWidget(Qt.QWidget):
+        class MyWidget(QWidget):
 
             def __init__(self, parent=None):
-                Qt.QWidget.__init__(self, parent)
+                QWidget.__init__(self, parent)
                 self.loadUi()
                 self.my_button.setText("This is MY button")
 
@@ -117,14 +116,14 @@ def UILoadable(klass=None, with_ui=None):
 
         import os.path
 
-        from taurus.external.qt import Qt
-        from taurus.qt.qtgui.util.ui import UILoadable
+        from qwt.qt import QtGui
+        from ui import UILoadable
 
         @UILoadable(with_ui="_ui")
-        class MyWidget(Qt.QWidget):
+        class MyWidget(QWidget):
 
             def __init__(self, parent=None):
-                Qt.QWidget.__init__(self, parent)
+                QWidget.__init__(self, parent)
                 self.loadUi(filename="superUI.ui", path=os.path.dirname(__file__))
                 self._ui.my_button.setText("This is MY button")
 
@@ -141,17 +140,15 @@ def UILoadable(klass=None, with_ui=None):
         *my_button*::
 
             @UILoadable(with_ui="_ui")
-            class MyWidget(Qt.QWidget):
+            class MyWidget(QWidget):
 
                 def __init__(self, parent=None):
-                    Qt.QWidget.__init__(self, parent)
+                    QWidget.__init__(self, parent)
                     self.my_button = "hello"
                     self.loadUi()
             widget = MyWidget()
             print widget.my_button
             <PyQt4.QtGui.QPushButton object at 0x159e2f8>
-
-        This little problem should be solved in the next taurus version.
     """
     if klass is None:
         return functools.partial(UILoadable, with_ui=with_ui)
@@ -169,25 +166,3 @@ def UILoadable(klass=None, with_ui=None):
 
     klass.loadUi = _loadUi
     return klass
-
-
-def main():
-    from taurus.qt.qtgui.application import TaurusApplication
-
-    app = TaurusApplication([])
-
-    @UILoadable(with_ui="ui")
-    class A(Qt.QWidget):
-
-        def __init__(self, parent=None):
-            Qt.QWidget.__init__(self, parent)
-            import taurus.qt.qtgui.panel.ui
-            path = os.path.dirname(taurus.qt.qtgui.panel.ui.__file__)
-            self.loadUi(filename='TaurusMessagePanel.ui', path=path)
-
-    gui = A()
-    gui.show()
-    app.exec_()
-
-if __name__ == "__main__":
-    main()

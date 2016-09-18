@@ -19,8 +19,8 @@
 import copy
 import sys
 
-from PyQt4.QtCore import *
-from PyQt4.QtGui import *
+from qwt.qt.QtCore import *
+from qwt.qt.QtGui import *
 
 from PAScual import discretepals, palsset
 
