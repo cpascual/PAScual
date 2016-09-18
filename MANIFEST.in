@@ -1,0 +1,10 @@
+graft PAScual
+graft examples
+graft doc
+include LICENSE.txt
+include CREDITS.txt
+include README.txt
+include MANIFEST.in
+global-exclude *.pyc
+global-exclude .directory
+exclude PAScual.egg-info
