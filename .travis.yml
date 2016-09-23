@@ -1,0 +1,15 @@
+language: python
+
+script:
+  - python setup.py sdist
+  - export ARTIFACT_SDIST=`ls dist/*tar.gz`
+
+deploy:
+  provider: releases
+  api_key:
+    secure: EHQiRlnBoPZuTe8+Zdtl3rISzgDOtCJ9VhsY8ML3NgUsj5CVs5T3183T8XVkAFXMwvKUrcAvKwNWsTvX53+7/R0CwHoo15D8B6LFwmnhPSjKMUDhYPIOZa9SPyN0JcAoqvhpUU2ynsbmVWcqgMGeHRBKWJlOxQioGFcEFtvF8bBjQ7O+d5Cqu8lvCoayDfqW9FT4qBcenIDv+wkUf/e6e1QPWJ5F0AdH8VNhKz3gsJ6H8pMiX84vt4Etvtu0uxTZPLJtPr4hPXwNKLALgQ6qgXoQPmyx76sWOTuD+r6mRsB+SQVEMgdpse7IilfjaACpD3YMe4LKpqqStJGE/t9Ps5fV4J/41kcr3OR3O8zn9PE6/qA2qoTsijJn2BHmGujJ4PFKyoM1nCG9cS8yFUIM7xHuciMyg+TyA/At/SwWitiYZXGh3fOts5q/3IDiOTmq6I5T71yxT8AzhoF/ElUOD5AiYuxyHyYpVE1S0SogZH19OskfOyZzujNjnQptJw1TMjXCE2rfNmiD+WxxMwBsvq/ebgEFSIQrSIhpA/q/Bn6yrZ6vVx5YQoC4CeiVWlqHu66vDp8LEO7JOB3Fx503Av46FNM4IOqNL4Gx5YXSb4qP0kWmeWLNJvmvmAIu9yN8GqOA4PvbRDSTJxiGiYw/xhpAE1xyjEVdHN2P/SXaRLc=
+  file: "$ARTIFACT_SDIST"
+  skip_cleanup: true
+  on:
+    repo: cpascual/PAScual
+    tags: true
