@@ -6,8 +6,11 @@ environment:
         VENV_BUILD_DIR: "venv_build"
 
     matrix:
-        # Python 2.7
+        # Python 2.7 (64)
         - PYTHON_DIR: "C:\\Python27-x64"
+        # Python 2.7
+        - PYTHON_DIR: "C:\\Python27"
+
 
 install:
 
