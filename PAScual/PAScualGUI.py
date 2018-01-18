@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 	PAScualGUI: Graphical User Interface for PAScual
     PAScual: Positron Annihilation Spectroscopy data analysis
     Copyright (C) 2007  Carlos Pascual-Izarra < cpascual [AT] users.sourceforge.net >
@@ -16,7 +16,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+"""
 
 # TODO: Add a reverse selection button to the Spectra selection list
 # TODO: (General) save queue to file before starting and delete file when finished. Check for existence of old files indicating unfinished calcs and offer resume.
@@ -69,18 +69,18 @@ defaultFitMode = 'LOCAL-connected'
 
 @UILoadable
 class FitparWidget(QWidget):
-    '''A composite widget that defines fitpars.
+    """A composite widget that defines fitpars.
 		It contains: a label, an "auto" button, a "value" edit box, "fixed" and "common" check boxes, minimum and maximum edits and an Apply button
-		'''
+		"""
 
     def __init__(self, fpkey, parent=None, label="", callbackApply=None,
                  callbackAuto=None):
-        '''The parameters for initialisation are:
+        """The parameters for initialisation are:
 		the fpkey is the key for the __dict__ of the spectrum that will contain this fitpar: e.g. spectrum.__dict__[fpkey]=...
 		the label to be shown
 		The callback for the apply button (the button is disabled if this is None)
 		The callback for the auto button (the button is disabled if this is None)
-		Note, the widget is not laid out. Use addtoGridLayout to stack various widgets of this type'''
+		Note, the widget is not laid out. Use addtoGridLayout to stack various widgets of this type"""
         super(FitparWidget, self).__init__(parent)
         self.loadUi()
         #		self.__close=self.close
@@ -93,7 +93,7 @@ class FitparWidget(QWidget):
             self.BTApply.setDisabled(True)
         else:
             # it returns self to the callback
-            self.BTApply.clicked[()].connect(lambda: callbackApply(self))  
+            self.BTApply.clicked[()].connect(lambda: callbackApply(self))
         if callbackAuto is None:
             self.BTAutoFill.setDisabled(True)
         else:
@@ -103,8 +103,8 @@ class FitparWidget(QWidget):
                        self.LEMax]: widget.setValidator(QDoubleValidator(self))
 
     def addtoGridLayout(self, gridlayout=None, row=None):
-        '''gridlayout is used for stacking several FitParWidgets,
-		row is the row at which we want the widget to be set. If it is None, it defaults to the last'''
+        """gridlayout is used for stacking several FitParWidgets,
+		row is the row at which we want the widget to be set. If it is None, it defaults to the last"""
         if gridlayout is None: gridlayout = QGridLayout()
         if row is None: row = gridlayout.rowCount()
         for widget, col in zip(
@@ -122,7 +122,7 @@ class FitparWidget(QWidget):
             widget.close()
 
     def getFitpar(self):
-        '''returns a fitpar object based on the widgets selections'''
+        """returns a fitpar object based on the widgets selections"""
         # TODO: validate input
         name = str(self.label.text()).split('[')[0]
         try:
@@ -144,7 +144,7 @@ class FitparWidget(QWidget):
                       free=free)
 
     def showFitpar(self, fp):
-        '''returns a fitpar object based on the widgets selections'''
+        """returns a fitpar object based on the widgets selections"""
         if fp is None:
             self.LEValue.setText('')
             self.LEMin.setText('')
@@ -340,7 +340,7 @@ class PAScualGUI(QMainWindow):
                                    "Sorry, %s is not yet implemented" % featurename)
 
     def loadOptions(self):
-        '''create the self.options object from values stored in the settings'''
+        """create the self.options object from values stored in the settings"""
         self.options = PASoptions.Options()
         for opt, dflt in zip(self.options.optlist, self.options.dfltlist):
             _type = type(dflt)
@@ -394,7 +394,7 @@ class PAScualGUI(QMainWindow):
             self.openFilesDlg.DontUseNativeDialog)  # needed as a workaround to a bug in selectedNameFilter in the linux dialog
 
     def onOptions(self):
-        '''Shows the options dialog and saves any changes if accepted'''
+        """Shows the options dialog and saves any changes if accepted"""
         if self.optionsDlg is None:
             # create the dialog if not already done
             self.optionsDlg = PASoptions.OptionsDlg(self)
@@ -417,7 +417,7 @@ class PAScualGUI(QMainWindow):
         self.settings.sync()
 
     def copy_Results_Selection(self):
-        '''copies the selected results to the clipboard'''
+        """copies the selected results to the clipboard"""
         string = ''
         selecteditems = self.resultsTable.selectedItems()
         for i in range(self.resultsTable.rowCount()):
@@ -493,9 +493,9 @@ class PAScualGUI(QMainWindow):
         self.plotfit(row)
 
     def plotfit(self, dprow=0, dplist=None):
-        '''Shows a dialog containing: the spectrum, the fit (with separated components), the residuals and the text report.
+        """Shows a dialog containing: the spectrum, the fit (with separated components), the residuals and the text report.
 		It does this for a list of discretepals objects that can be browsed in order.
-		dplist is the list of discretepals objects. dprow is the index of that list that is to be reported.'''
+		dplist is the list of discretepals objects. dprow is the index of that list that is to be reported."""
         # TODO: This function has grown too much. It should be encapsulated  in a class (suggested name: reportDlg).
         if dplist is None: dplist = self.resultsdplist
         self.dprow = dprow
@@ -566,11 +566,11 @@ class PAScualGUI(QMainWindow):
         self.plotfitDlg.textTE.setPlainText(dp.showreport(silent=True))
 
     def saveFitCurves(self, globalprefix=''):
-        '''
+        """
 		Write the fit data as ASCII tables. For each spectrum, a file
 		ended in _fit.dat is created containing the total fit,
 		the background, the components and the residuals
-		'''
+		"""
 
         for dp in self.resultsdplist:
             prefix, _ = os.path.splitext(os.path.basename(dp.name))
@@ -734,7 +734,7 @@ class PAScualGUI(QMainWindow):
         return accepted, rejected  # returns both dictionaries. IMPORTANT: they contain references to the palssets in palssetsdict, not copies!
 
     def stopFitter(self, timeout=10000, offerForce=False):
-        '''Tries to stop the fitter nicely. If offerforce==True, it also offers to send a terminate signal to the fitter'''
+        """Tries to stop the fitter nicely. If offerforce==True, it also offers to send a terminate signal to the fitter"""
         # Ask the fitter thread to stop and wait till it does stop
         self.fitter.stop()
         self.statusbar.showMessage(
@@ -763,8 +763,8 @@ class PAScualGUI(QMainWindow):
         return False
 
     def regenerateFitter(self, abortobject):
-        '''Restores a the self.fitter object and its connections (use in case of having terminated the fitter thread)
-		abortobject is the handler containing the abortRequested() to which we assign the fitter.isStopped()'''
+        """Restores a the self.fitter object and its connections (use in case of having terminated the fitter thread)
+		abortobject is the handler containing the abortRequested() to which we assign the fitter.isStopped()"""
         self.fitter = PCP.fitter(self)
         self.fitter.endrun.connect(self.onFitterFinished)
         self.fitter.connect(self.setPBar.setValue)
@@ -774,7 +774,7 @@ class PAScualGUI(QMainWindow):
         abortobject.abortRequested = form.fitter.isStopped  # reassign the  abortRequested() method from the abort object defined in PAScual
 
     def onSkipFit(self):
-        '''Skips the current fit'''
+        """Skips the current fit"""
         skipped = self.stopFitter(offerForce=False)
         while not skipped:
             answer = QMessageBox.warning(self, "Fit not responding",
@@ -787,7 +787,7 @@ class PAScualGUI(QMainWindow):
         print "\nCurrent fit skipped\n"
 
     def onStopFit(self):
-        '''Stops the current fit'''
+        """Stops the current fit"""
         # delete the queue
         self.fitqueuedict = {}
         self.fitqueuekeys = []
@@ -807,7 +807,7 @@ class PAScualGUI(QMainWindow):
                     0)  # switch the view to thelast to the last
 
     def onGoFit(self):
-        '''launches the fit'''
+        """launches the fit"""
         # populate the queue (generates self.fitqueuedict )
         self.generatequeue()
         if len(self.fitqueuedict) == 0:
@@ -894,7 +894,7 @@ class PAScualGUI(QMainWindow):
         self.advanceFitQueue()
 
     def onPreviousOutputCBChange(self, key):
-        '''prints the previous output in a pop up window)'''
+        """prints the previous output in a pop up window)"""
         key = str(key)
         if key == "All":
             self.previousOutputTE.clear()
@@ -924,7 +924,7 @@ class PAScualGUI(QMainWindow):
         return customFitModesdict
 
     def closeEvent(self, event):
-        '''This event handler receives widget close events'''
+        """This event handler receives widget close events"""
         # save current window state before closing
         self.settings.setValue("MainWindow/Size", self.size())
         self.settings.setValue("MainWindow/Position", self.pos())
@@ -995,7 +995,7 @@ class PAScualGUI(QMainWindow):
         self.regenerateSets.emit(False)
 
     def sumspectra(self):
-        '''Sums the checked spectra and offers to save them. It inserts the sum in the list'''
+        """Sums the checked spectra and offers to save them. It inserts the sum in the list"""
         # TODO: needs more work on interface
         # Todo: implement Duplatre's suggestion on fitting with non-poisson noise from splitted spectra:
         #	Introduce take into account non-poisson noise
@@ -1443,7 +1443,7 @@ class PAScualGUI(QMainWindow):
         return filename
 
     def onSaveSpectra(self):
-        '''saves all selected spectra'''
+        """saves all selected spectra"""
         selected, indexes = self.spectraModel.getselectedspectra()
         if selected == []:
             QMessageBox.warning(self, "No spectrum selected",
@@ -1571,7 +1571,7 @@ class PAScualGUI(QMainWindow):
             not (self.spectraDockWidget.isVisible()))
 
     def onParamWizard(self):
-        '''Launches the wizard and applies changes afterwards'''
+        """Launches the wizard and applies changes afterwards"""
         selected, indexes = self.spectraModel.getselectedspectra()
         if selected == []:
             QMessageBox.warning(self, "No spectrum selected",
@@ -1637,7 +1637,7 @@ class PAScualGUI(QMainWindow):
         self.regenerateSets.emit(False)
 
     def loadParameters(self):
-        '''uses a dp to fill the parameters. If no spectra si given, it asks to load a file which is expected to contain a pickled discretepals'''
+        """uses a dp to fill the parameters. If no spectra si given, it asks to load a file which is expected to contain a pickled discretepals"""
         filename = QFileDialog.getOpenFileName(self, "Load parameters from...",
                                                self.options.workDirectory,
                                                "(*.par *.ps1)", '',
@@ -1684,7 +1684,7 @@ class PAScualGUI(QMainWindow):
         return None
 
     def showManual(self):
-        '''Shows the User Manual in a window'''
+        """Shows the User Manual in a window"""
         onlinecopy = "http://pascual.wiki.sourceforge.net/User+Manual"
         localcopy = "file:" + self.options.manualFile
         self.manualBrowser = QDialog()
