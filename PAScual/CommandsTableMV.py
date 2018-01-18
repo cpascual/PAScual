@@ -46,11 +46,13 @@ class CommandTableModel(QAbstractTableModel):
 
     def loadData(self, commandlist, argslist=None):
         '''commands must be a list of strings! (not a string)'''
-        if argslist is None: argslist = [''] * len(commandlist)
-        if len(commandlist) != len(argslist): raise ValueError(
-            'CommandTableModel.loadData: commands and args must be the same len')
+        if argslist is None:
+            argslist = [''] * len(commandlist)
+        if len(commandlist) != len(argslist):
+            raise ValueError('CommandTableModel.loadData: commands and args must be the same len')
+        self.beginResetModel()
         self.commands = [command(c, a) for c, a in zip(commandlist, argslist)]
-        self.reset()
+        self.endResetModel()
 
     def dumpData(self):
         # 		for c in self.commands: print 'DEBUG:',c.cmd
