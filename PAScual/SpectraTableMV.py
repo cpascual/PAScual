@@ -199,6 +199,9 @@ class PASspectraTableModel(QAbstractTableModel):
                 self.selectionChanged.emit(dp, idx)
         self.dataChanged.emit(indexlist[0], indexlist[-1])
 
+    def uncheckAll(self):
+        self.checkAll(False)
+
     def removeChecked(self):
         temp = []
         for dp in self.spectra:

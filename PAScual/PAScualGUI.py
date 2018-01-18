@@ -73,41 +73,52 @@ defaultFitMode = 'LOCAL-connected'
 @UILoadable
 class FitparWidget(QWidget):
     """A composite widget that defines fitpars.
-		It contains: a label, an "auto" button, a "value" edit box, "fixed" and "common" check boxes, minimum and maximum edits and an Apply button
-		"""
+    It contains: a label, an "auto" button, a "value" edit box, "fixed" and "common" check boxes, minimum and maximum edits and an Apply button
+    """
 
     def __init__(self, fpkey, parent=None, label="", callbackApply=None,
                  callbackAuto=None):
         """The parameters for initialisation are:
-		the fpkey is the key for the __dict__ of the spectrum that will contain this fitpar: e.g. spectrum.__dict__[fpkey]=...
-		the label to be shown
-		The callback for the apply button (the button is disabled if this is None)
-		The callback for the auto button (the button is disabled if this is None)
-		Note, the widget is not laid out. Use addtoGridLayout to stack various widgets of this type"""
+        the fpkey is the key for the __dict__ of the spectrum that will contain this fitpar: e.g. spectrum.__dict__[fpkey]=...
+        the label to be shown
+        The callback for the apply button (the button is disabled if this is None)
+        The callback for the auto button (the button is disabled if this is None)
+        Note, the widget is not laid out. Use addtoGridLayout to stack various widgets of this type
+        """
         super(FitparWidget, self).__init__(parent)
         self.loadUi()
-        #		self.__close=self.close
         self._fpkey = fpkey
         self.label.setText(label)
         self.setMinimumHeight(1.5 * self.LEValue.minimumHeight())
-        #		self.setSizePolicy ( QSizePolicy.Preferred,QSizePolicy.Minimum)
-        # connect the Apply and auto buttons to their respective callbacks (or disable them)
+        # connect the Apply and auto buttons to their respective callbacks
+        # (or disable them)
+        self._callbackApply = callbackApply
+        self._callbackAuto = callbackAuto
+
         if callbackApply is None:
             self.BTApply.setDisabled(True)
         else:
             # it returns self to the callback
-            self.BTApply.clicked[()].connect(lambda: callbackApply(self))
+            self.BTApply.clicked.connect(self._onApply)
         if callbackAuto is None:
             self.BTAutoFill.setDisabled(True)
         else:
-            self.BTAutoFill.clicked[()].connect(lambda: callbackAuto(self))
+            self.BTAutoFill.clicked.connect(self._onAuto)
         # set up validators
-        for widget in [self.LEValue, self.LEMin,
-                       self.LEMax]: widget.setValidator(QDoubleValidator(self))
+        for widget in [self.LEValue, self.LEMin, self.LEMax]:
+            widget.setValidator(QDoubleValidator(self))
+
+    def _onApply(self):
+        self._callbackApply(self)
+
+    def _onAuto(self):
+        self._callbackAuto(self)
 
     def addtoGridLayout(self, gridlayout=None, row=None):
         """gridlayout is used for stacking several FitParWidgets,
-		row is the row at which we want the widget to be set. If it is None, it defaults to the last"""
+        row is the row at which we want the widget to be set. If it is None,
+        it defaults to the last
+        """
         if gridlayout is None: gridlayout = QGridLayout()
         if row is None: row = gridlayout.rowCount()
         for widget, col in zip(
@@ -273,7 +284,7 @@ class PAScualGUI(QMainWindow):
         self.actionLicense.triggered.connect(self.showlicense)
         self.actionSum_Spectra.triggered.connect(self.sumspectra)
         self.actionTao_Eldrup_Calculator.triggered.connect(self.launchTEcalc)
-        self.actionWhat_s_This.triggered.connect(lambda: QWhatsThis.enterWhatsThisMode())
+        self.actionWhat_s_This.triggered.connect(QWhatsThis.enterWhatsThisMode)
         self.actionPlotFit.triggered.connect(self.onPlotFit)
         self.actionSimulate_spectrum.triggered.connect(self.createFakeSpectrum)
         self.actionCopy_Results_Selection.triggered.connect(self.copy_Results_Selection)
@@ -294,13 +305,13 @@ class PAScualGUI(QMainWindow):
         self.spectraModel.selectionChanged.connect(self.changePPlot)
         self.updateParamsView.connect(self.onUpdateParamsView)
         self.selectAllTB.clicked[()].connect(self.spectraModel.checkAll)
-        self.selectNoneTB.clicked[()].connect(lambda: self.spectraModel.checkAll(False))
+        self.selectNoneTB.clicked[()].connect(self.spectraModel.uncheckAll)
         self.selectMarkedTB.clicked[()].connect(self.onSelectMarked)
         self.removeSpectraTB.clicked[()].connect(self.onRemoveChecked)
         self.applycompsBT.clicked[()].connect(self.onApplyComps)
         self.applyAllParametersPB.clicked[()].connect(self.onApplyAllParameters)
         self.resetParametersPB.clicked[()].connect(self.onResetParameters)
-        self.actionRegenerateSets.triggered.connect(lambda: self.onRegenerateSets(force=True))
+        self.actionRegenerateSets.triggered.connect(self._onRegenerateSetsAction)
         self.tabWidget.currentChanged.connect(self.onTabChanged)
         self.regenerateSets.connect(self.onRegenerateSets)
         self.fitModeCB.currentIndexChanged[str].connect(self.onFitModeCBChange)
@@ -495,6 +506,12 @@ class PAScualGUI(QMainWindow):
             row = index.row()
         self.plotfit(row)
 
+    def _onNextPlotFit(self):
+        self.plotfit(self.dprow + 1)
+
+    def _onPrevPlotFit(self):
+        self.plotfit(self.dprow - 1)
+
     def plotfit(self, dprow=0, dplist=None):
         """Shows a dialog containing: the spectrum, the fit (with separated components), the residuals and the text report.
 		It does this for a list of discretepals objects that can be browsed in order.
@@ -530,8 +547,8 @@ class PAScualGUI(QMainWindow):
             self.plotfitDlg.layout.addWidget(self.plotfitDlg.textTE)
             self.plotfitDlg.layout.addLayout(layout2)
             self.plotfitDlg.setLayout(self.plotfitDlg.layout)
-            self.plotfitDlg.prevPB.clicked[()].connect(lambda: self.plotfit(self.dprow - 1))
-            self.plotfitDlg.nextPB.clicked[()].connect(lambda: self.plotfit(self.dprow + 1))
+            self.plotfitDlg.prevPB.clicked[()].connect(self._onPrevPlotFit)
+            self.plotfitDlg.nextPB.clicked[()].connect(self._onNextPlotFit)
         else:
             self.plotfitDlg.fitplot.reset()
             self.plotfitDlg.resplot.reset()
@@ -939,9 +956,13 @@ class PAScualGUI(QMainWindow):
     def onTabChanged(self, tabindex):
         if tabindex == 1: self.regenerateSets.emit(False)
 
+    def _onRegenerateSetsAction(self):
+        self.onRegenerateSets(force=True)
+
     def onRegenerateSets(self, force=False):
         # only regenerate if there is a chance of change (or if we explicitely force it)
-        if not self.dirtysets and not force: return
+        if not self.dirtysets and not force:
+            return
         # get a copy of the list of spectra
         temp = self.spectraModel.dumpData()  # note that this is a deepcopy
         # filter the list separating the ready ones from the not-yet-ready

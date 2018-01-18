@@ -32,14 +32,27 @@ class AddCompsWidget(QWidget):
     def __init__(self, parent=None):
         super(AddCompsWidget, self).__init__(parent)
         self.loadUi()
-        self.addpPsBT.clicked[()].connect(lambda: self.addComp(125))
-        self.addDirectBT.clicked[()].connect(lambda: self.addComp(400))
-        self.addoPsBT.clicked[()].connect(lambda: self.addComp(2000))
-        self.addCustomBT.clicked[()].connect(lambda: self.addComp(self.customTauSB.value()))
+        self.addpPsBT.clicked[()].connect(self._onAddComp)
+        self.addDirectBT.clicked[()].connect(self._onAddComp)
+        self.addoPsBT.clicked[()].connect(self._onAddComp)
+        self.addCustomBT.clicked[()].connect(self._onAddComp)
 
     # 		self.connect(self.addCustomBT,SIGNAL('clicked()'), self.getComps)
     def addComp(self, tau):
         self.selectionsTE.append("%i" % tau)
+
+    def _onAddComp(self):
+        s = self.sender()
+        if s is self.addpPsBT:
+            self.addComp(125)
+        elif s is self.addDirectBT:
+            self.addComp(400)
+        elif s is self.addoPsBT:
+            self.addComp(2000)
+        elif s is self.addCustomBT:
+            self.addComp(self.customTauSB.value())
+        else:
+            raise RuntimeError("Unknown sender")
 
     def getComps(self):
         '''parses the text in the selectionsTE and extract an array of lifetimes and of min and max values'''
