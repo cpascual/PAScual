@@ -24,7 +24,6 @@ PlotGraphWidget: Widget for plotting spectra. Originally based on an example cod
 # import qwt.qt.Qwt5 as Qwt
 import qwt as Qwt
 import sys
-# from PyQt4 import Qt
 from qwt.qt import QtCore, QtGui
 from numpy import *
 
