@@ -36,10 +36,13 @@
 
 import platform
 
-import sip
-sip.setdestroyonexit(False)  # to avoid segfaults on exit
 from qwt.qt.QtCore import *
 from qwt.qt.QtGui import *
+
+if os.environ['QT_API'] == 'pyqt':
+    # Avoid segfaults on exit when using PyQt4
+    import sip
+    sip.setdestroyonexit(False)
 
 from PAScual import *
 import CommandsTableMV as CMDTMV
