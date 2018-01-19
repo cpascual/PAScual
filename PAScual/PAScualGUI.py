@@ -36,10 +36,11 @@
 
 import platform
 
+from qwt import qt
 from qwt.qt.QtCore import *
 from qwt.qt.QtGui import *
 
-if os.environ['QT_API'] == 'pyqt':
+if qt.API == 'pyqt':
     # Avoid segfaults on exit when using PyQt4
     import sip
     sip.setdestroyonexit(False)
