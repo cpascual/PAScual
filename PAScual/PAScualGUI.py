@@ -44,6 +44,8 @@ if os.environ['QT_API'] == 'pyqt':
     import sip
     sip.setdestroyonexit(False)
 
+from qt_filedlg import getOpenFileName, getSaveFileName
+
 from PAScual import *
 import CommandsTableMV as CMDTMV
 import ComponentTableMV as CTMV
@@ -446,17 +448,19 @@ class PAScualGUI(QMainWindow):
         QApplication.clipboard().setText(string.strip())
 
     def onResultsFileSelectBT(self):
-        filename = QFileDialog.getSaveFileName(self, "Results File Selection",
-                                               self.options.workDirectory + '/PASresults.txt',
-                                               "ASCII (*.txt)\nAll (*)",
-                                               QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog)
+        filename, _ = getSaveFileName(
+            self, "Results File Selection",
+            self.options.workDirectory + '/PASresults.txt',
+            "ASCII (*.txt)\nAll (*)",
+            QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog)
         if filename: self.resultsFileLE.setText(filename)
 
     def onOutputFileSelect(self):
-        ofile = QFileDialog.getSaveFileName(self, "Output File Selection",
-                                            self.outputFileLE.text(),
-                                            "ASCII (*.txt)\nAll (*)",
-                                            QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog)
+        ofile, _ = getSaveFileName(
+            self, "Output File Selection",
+            self.outputFileLE.text(),
+            "ASCII (*.txt)\nAll (*)",
+            QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog)
         if ofile:
             self.outputFileLE.setText(ofile)
         return ofile
@@ -1662,10 +1666,13 @@ class PAScualGUI(QMainWindow):
 
     def loadParameters(self):
         """uses a dp to fill the parameters. If no spectra si given, it asks to load a file which is expected to contain a pickled discretepals"""
-        filename = QFileDialog.getOpenFileName(self, "Load parameters from...",
-                                               self.options.workDirectory,
-                                               "(*.par *.ps1)", '',
-                                               QFileDialog.DontUseNativeDialog)
+
+
+        filename, _ = getOpenFileName(
+            self, "Load parameters from...",
+            self.options.workDirectory,
+            "(*.par *.ps1)", '',
+            QFileDialog.DontUseNativeDialog)
         if filename:
             loader = SpecFiles.PAScualfileLoader()
             dp = loader.getDiscretePals(filename)
@@ -1674,13 +1681,13 @@ class PAScualGUI(QMainWindow):
             return dp
         return None
 
-    def saveParameters(self, filename=None):
-        if filename is None:
-            filename = str(
-                QFileDialog.getSaveFileName(self, "Save parameters in...",
-                                            self.options.workDirectory + '/PASparams.par',
-                                            "Parameters File (*.par)", '',
-                                            QFileDialog.DontUseNativeDialog))
+    def saveParameters(self):
+        filename, _ = getSaveFileName(
+            self, "Save parameters in...",
+            self.options.workDirectory + '/PASparams.par',
+            "Parameters File (*.par)", '',
+            QFileDialog.DontUseNativeDialog)
+
         if filename:
             bg = self.bgFitparWidget.getFitpar()
             c0 = self.c0FitparWidget.getFitpar()
@@ -1703,7 +1710,7 @@ class PAScualGUI(QMainWindow):
                               fwhm=fwhm, c0=c0, psperchannel=psperchannel)
             # Save the parameters as a pickled discretepals object
             print 'DEBUG:', filename
-            pickle.dump(dp, open(filename, 'wb'), -1)
+            pickle.dump(dp, open(str(filename), 'wb'), -1)
             return dp
         return None
 
