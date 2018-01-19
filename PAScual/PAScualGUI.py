@@ -288,7 +288,7 @@ class PAScualGUI(QMainWindow):
         self.actionSum_Spectra.triggered.connect(self.sumspectra)
         self.actionTao_Eldrup_Calculator.triggered.connect(self.launchTEcalc)
         self.actionWhat_s_This.triggered.connect(QWhatsThis.enterWhatsThisMode)
-        self.actionPlotFit.triggered.connect(self.onPlotFit)
+        self.actionPlotFit.triggered.connect(self._onPlotSelectedFit)
         self.actionSimulate_spectrum.triggered.connect(self.createFakeSpectrum)
         self.actionCopy_Results_Selection.triggered.connect(self.copy_Results_Selection)
         self.actionShow_hide_Plot.triggered.connect(self.show_hidePlot)
@@ -302,41 +302,41 @@ class PAScualGUI(QMainWindow):
         self.spectraTable.doubleClicked.connect(self.onSpectraTableDoubleClick)
         self.spectraTable.selectionModel().selectionChanged.connect(self.onspectraSelectionChanged)
         self.SBoxNcomp.valueChanged[int].connect(self.changeNcomp)
-        self.roiPB.clicked[()].connect(self.setROI)
-        self.BTpsperchannel.clicked[()].connect(self.setpsperchannel)
+        self.roiPB.clicked.connect(self.setROI)
+        self.BTpsperchannel.clicked.connect(self.setpsperchannel)
         self.showtauRB.toggled.connect(self.onShowTauToggled)
         self.spectraModel.selectionChanged.connect(self.changePPlot)
         self.updateParamsView.connect(self.onUpdateParamsView)
-        self.selectAllTB.clicked[()].connect(self.spectraModel.checkAll)
-        self.selectNoneTB.clicked[()].connect(self.spectraModel.uncheckAll)
-        self.selectMarkedTB.clicked[()].connect(self.onSelectMarked)
-        self.removeSpectraTB.clicked[()].connect(self.onRemoveChecked)
-        self.applycompsBT.clicked[()].connect(self.onApplyComps)
-        self.applyAllParametersPB.clicked[()].connect(self.onApplyAllParameters)
-        self.resetParametersPB.clicked[()].connect(self.onResetParameters)
+        self.selectAllTB.clicked.connect(self.spectraModel.checkAll)
+        self.selectNoneTB.clicked.connect(self.spectraModel.uncheckAll)
+        self.selectMarkedTB.clicked.connect(self.onSelectMarked)
+        self.removeSpectraTB.clicked.connect(self.onRemoveChecked)
+        self.applycompsBT.clicked.connect(self.onApplyComps)
+        self.applyAllParametersPB.clicked.connect(self.onApplyAllParameters)
+        self.resetParametersPB.clicked.connect(self.onResetParameters)
         self.actionRegenerateSets.triggered.connect(self._onRegenerateSetsAction)
         self.tabWidget.currentChanged.connect(self.onTabChanged)
         self.regenerateSets.connect(self.onRegenerateSets)
         self.fitModeCB.currentIndexChanged[str].connect(self.onFitModeCBChange)
-        self.applyFitModeBT.clicked[()].connect(self.assignFitModes)
-        self.goFitBT.clicked[()].connect(self.onGoFit)
-        self.stopFitBT.clicked[()].connect(self.onStopFit)
-        self.skipCommandBT.clicked[()].connect(self.onSkipFit)
+        self.applyFitModeBT.clicked.connect(self.assignFitModes)
+        self.goFitBT.clicked.connect(self.onGoFit)
+        self.stopFitBT.clicked.connect(self.onStopFit)
+        self.skipCommandBT.clicked.connect(self.onSkipFit)
         self.fitter.endrun.connect(self.onFitterFinished)
         self.fitter.command_done.connect(self.setPBar.setValue)
         self.commandsModel.dataChanged.connect(self.onFitModeEdit)
-        self.hideResultsBT.clicked[()].connect(self.onHideResults)
-        self.showResultsBT.clicked[()].connect(self.onShowResults)
-        self.saveResultsBT.clicked[()].connect(self.onSaveResults)
-        self.resultsTable.doubleClicked.connect(self.onPlotFit)
-        self.resultsFileSelectBT.clicked[()].connect(self.onResultsFileSelectBT)
+        self.hideResultsBT.clicked.connect(self.onHideResults)
+        self.showResultsBT.clicked.connect(self.onShowResults)
+        self.saveResultsBT.clicked.connect(self.onSaveResults)
+        self.resultsTable.doubleClicked.connect(self._onPlotFitIndex)
+        self.resultsFileSelectBT.clicked.connect(self.onResultsFileSelectBT)
         self.previousOutputCB.currentIndexChanged[str].connect(self.onPreviousOutputCBChange)
-        self.outputFileSelectBT.clicked[()].connect(self.onOutputFileSelect)
-        self.saveOutputBT.clicked[()].connect(self.onSaveOutput_as)
-        self.saveFitmodeBT.clicked[()].connect(self.saveFitMode)
-        self.loadParametersPB.clicked[()].connect(self.loadParameters)
-        self.saveParametersPB.clicked[()].connect(self.saveParameters)
-        self.plotFitBT.clicked[()].connect(self.onPlotFit)
+        self.outputFileSelectBT.clicked.connect(self.onOutputFileSelect)
+        self.saveOutputBT.clicked.connect(self.onSaveOutput_as)
+        self.saveFitmodeBT.clicked.connect(self.saveFitMode)
+        self.loadParametersPB.clicked.connect(self.loadParameters)
+        self.saveParametersPB.clicked.connect(self.saveParameters)
+        self.plotFitBT.clicked.connect(self._onPlotSelectedFit)
 
         # Restore last session Window state
         size = self.settings.value("MainWindow/Size", QSize(800, 600))
@@ -466,15 +466,14 @@ class PAScualGUI(QMainWindow):
             self.outputFileLE.setText(ofile)
         return ofile
 
-    def onSaveOutput_as(self, ofile=None):
+    def onSaveOutput_as(self):
         # Make sure only finished outputs are saved
         if self.outputTE.isVisible():
             QMessageBox.warning(self, "Cannot save unfinished fit",
                                 "You can only save the output from finished fits. Output won't be written\n Select a different output from the list.")
             return
         # if a file is not given, prompt the user for a file name
-        if ofile is None:
-            ofile = self.onOutputFileSelect()
+        ofile = self.onOutputFileSelect()
         if not ofile:
             return  # failed to get a valid filename
 
@@ -504,11 +503,12 @@ class PAScualGUI(QMainWindow):
             self.previousOutputTE.toPlainText()) + "\n"
         ofile.close()
 
-    def onPlotFit(self, index=None):
-        if index is None:
-            row = self.resultsTable.currentRow()  # this is -1 if there is no table
-        else:
-            row = index.row()
+    def _onPlotSelectedFit(self):
+        row = self.resultsTable.currentRow()  # this is -1 if there is no table
+        self.plotfit(row)
+
+    def _onPlotFitIndex(self, index):
+        row = index.row()
         self.plotfit(row)
 
     def _onNextPlotFit(self):
@@ -552,8 +552,8 @@ class PAScualGUI(QMainWindow):
             self.plotfitDlg.layout.addWidget(self.plotfitDlg.textTE)
             self.plotfitDlg.layout.addLayout(layout2)
             self.plotfitDlg.setLayout(self.plotfitDlg.layout)
-            self.plotfitDlg.prevPB.clicked[()].connect(self._onPrevPlotFit)
-            self.plotfitDlg.nextPB.clicked[()].connect(self._onNextPlotFit)
+            self.plotfitDlg.prevPB.clicked.connect(self._onPrevPlotFit)
+            self.plotfitDlg.nextPB.clicked.connect(self._onNextPlotFit)
         else:
             self.plotfitDlg.fitplot.reset()
             self.plotfitDlg.resplot.reset()
@@ -796,7 +796,7 @@ class PAScualGUI(QMainWindow):
         emitter.initCommandPBar.connect(self.commandPBar.setRange)
         emitter.commandPBarValue.connect(self.commandPBar.setValue)
         emitter.teeOutput.connect(self.outputTE.insertPlainText)
-        abortobject.abortRequested = form.fitter.isStopped  # reassign the  abortRequested() method from the abort object defined in PAScual
+        abortobject.abortRequested = self.fitter.isStopped  # reassign the  abortRequested() method from the abort object defined in PAScual
 
     def onSkipFit(self):
         """Skips the current fit"""
@@ -1061,7 +1061,7 @@ class PAScualGUI(QMainWindow):
 
     def onSpectraTableDoubleClick(self, index):
         if index.column() == STMV.SEL: return
-        self.spectraModel.checkAll(False)
+        self.spectraModel.uncheckAll()
         self.spectraModel.setData(
             self.spectraModel.index(index.row(), STMV.SEL))
 
@@ -1175,12 +1175,10 @@ class PAScualGUI(QMainWindow):
         self.dirtysets = True
         return True
 
-    def onApplyComps(self, selected=None, indexes=None):
-        if indexes is None:
-            if not (selected is None): raise ValueError(
-                'applyFitpar: Ignoring "selected" because "indexes" were not passed')
-            selected, indexes = self.spectraModel.getselectedspectra()
-        if selected == []: return False  # if it is empty, then nothing is selected so do nothing
+    def onApplyComps(self):
+        selected, indexes = self.spectraModel.getselectedspectra()
+        if selected == []:
+            return False  # if it is empty, then nothing is selected so do nothing
         answer = None
         # check if the components are already set for this spectrum (TODO: possibly suggest to apply only selected components )
         ncomps = self.compModel.rowCount()
@@ -1404,7 +1402,7 @@ class PAScualGUI(QMainWindow):
         # Once (if) we have the list of new spectra, make necessary changes in the GUI
         if len(dps) > 0:
             # Uncheck previously checked spectra
-            self.spectraModel.checkAll(False)
+            self.spectraModel.uncheckAll()
             # insert the just created dps in the list
             self.spectraModel.insertRows(position=None, rows=len(dps), dps=dps)
             self.spectraTable.resizeColumnToContents(STMV.NAME)
@@ -1481,9 +1479,9 @@ class PAScualGUI(QMainWindow):
         for dp in selected:
             self.savespectrum(dp)
 
-    def onSaveResults(self, ofile=None):
+    def onSaveResults(self):
         # Manage the file
-        if ofile is None: ofile = str(self.resultsFileLE.text())
+        ofile = str(self.resultsFileLE.text())
         if not isinstance(ofile, file):
             ofile = str(ofile)
             openmode = 'a'

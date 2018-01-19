@@ -190,17 +190,21 @@ class PASspectraTableModel(QAbstractTableModel):
                 seldpi.append(self.index(r, NAME))
         return seldp, seldpi
 
-    def checkAll(self, value=True):
-        if self.spectra == []: return
+    def _checkAll(self, check):
+        if self.spectra == []:
+            return
         indexlist = [self.index(i, SEL) for i in range(len(self.spectra))]
         for dp, idx in zip(self.spectra, indexlist):
-            if dp.selected != value:
-                dp.selected = value
+            if dp.selected != check:
+                dp.selected = check
                 self.selectionChanged.emit(dp, idx)
         self.dataChanged.emit(indexlist[0], indexlist[-1])
 
+    def checkAll(self):
+        self._checkAll(True)
+
     def uncheckAll(self):
-        self.checkAll(False)
+        self._checkAll(False)
 
     def removeChecked(self):
         temp = []
@@ -279,10 +283,10 @@ class demo(QDialog):
         mainLayout.addWidget(self.allBT, 3, 1)
         self.setLayout(mainLayout)
 
-        self.addBT.clicked[()].connect(self.onAdd)
-        self.remBT.clicked[()].connect(self.onRem)
-        self.dataBT.clicked[()].connect(self.onData)
-        self.allBT.clicked[()].connect(self.model.checkAll)
+        self.addBT.clicked.connect(self.onAdd)
+        self.remBT.clicked.connect(self.onRem)
+        self.dataBT.clicked.connect(self.onData)
+        self.allBT.clicked.connect(self.model.checkAll)
         self.table.resizeColumnsToContents()
         # 		self.tree.resizeColumnsToContents()
         self.table.setShowGrid(False)

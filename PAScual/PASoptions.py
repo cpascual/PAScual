@@ -73,9 +73,9 @@ class OptionsDlg(QDialog):
         self.seedLE.setValidator(QIntValidator(self))
         # connections
         self.buttonBox.clicked.connect(self.onclicked)
-        self.manualFilePB.clicked[()].connect(self.onChangeManualFile)
-        self.workDirectoryPB.clicked[()].connect(self.onChangeWorkDirectory)
-        self.BI_savehistPB.clicked[()].connect(self.onChangeHistoryFile)
+        self.manualFilePB.clicked.connect(self.onChangeManualFile)
+        self.workDirectoryPB.clicked.connect(self.onChangeWorkDirectory)
+        self.BI_savehistPB.clicked.connect(self.onChangeHistoryFile)
 
         # set options
         self.reset()
