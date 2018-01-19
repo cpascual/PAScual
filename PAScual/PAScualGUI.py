@@ -402,11 +402,11 @@ class PAScualGUI(QMainWindow):
                        sorted(self.openFilesDlg.specFileLoaderDict.keys())]
         self.openFilesDlg.setFileMode(QFileDialog.ExistingFiles)
         self.openFilesDlg.setViewMode(QFileDialog.Detail)
-        self.openFilesDlg.setFilters(filefilters)
+        # self.openFilesDlg.setFilters(filefilters)
         self.openFilesDlg.setDirectory(self.options.workDirectory)
         selectedfilter = self.settings.value("openfilefilter",
             self.openFilesDlg.specFileLoaderDict['ASCII'].name)
-        self.openFilesDlg.selectFilter(selectedfilter)
+        # self.openFilesDlg.selectFilter(selectedfilter)
         self.openFilesDlg.setOption(
             self.openFilesDlg.DontUseNativeDialog)  # needed as a workaround to a bug in selectedNameFilter in the linux dialog
 
