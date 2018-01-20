@@ -387,38 +387,42 @@ class PAScualGUI(QMainWindow):
 
     def createOpenFilesDlg(self):
         # General OpenFile Dialog (it is never closed, just hidden)
-        self.openFilesDlg = QFileDialog(self,
-                                        "%s - Open spectra" % QApplication.applicationName(),
-                                        "./", "")
-        self.openFilesDlg.specFileLoaderDict = {
-            'ASCII': SpecFiles.ASCIIfileloader('ASCII',
-                                               '*.dat *.txt *.al2 *.chn', 0,
-                                               'ASCII without header'),
-            'ASCII-custom': SpecFiles.ASCIIfileloader('ASCII-custom', '*', None,
-                                                      'ASCII with user-selected header',
-                                                      'qt', self.openFilesDlg),
-            'LT': SpecFiles.ASCIIfileloader('LT', '*.dat *.txt *.al2 *.chn', 4,
-                                            'ASCII with a 4 rows header'),
-            'L80': SpecFiles.ASCIIfileloader('L80', '*.80', 0,
-                                             'multicolumn ASCII with no header'),
+        self.openFilesDlg = QFileDialog(
+            self, "%s - Open spectra" % QApplication.applicationName(),
+            "./", ""
+        )
+        # instantiate file loaders and store them in a dict
+        fileloaders = {
+            'ASCII': SpecFiles.ASCIIfileloader(
+                'ASCII', '*.dat *.txt *.al2 *.chn', 0, 'ASCII without header'),
+            'ASCII-custom': SpecFiles.ASCIIfileloader(
+                'ASCII-custom', '*', None, 'ASCII with user-selected header',
+                'qt', self),
+            'LT': SpecFiles.ASCIIfileloader(
+                'LT', '*.dat *.txt *.al2 *.chn', 4,
+                'ASCII with a 4 rows header'),
+            'L80': SpecFiles.ASCIIfileloader(
+                'L80', '*.80', 0, 'multicolumn ASCII with no header'),
             'MAESTRO': SpecFiles.MAESTROfileLoader('MAESTRO'),
-            'PAScual': SpecFiles.PAScualfileLoader(
-                'PAScual')}  # instantiate file loaders and put them in a dict belonging to the OpenFile dialog
-        self.openFilesDlg.specFileLoaderDict[
-            'ASCII-custom'].needExtraInput = True  # makes
-        filefilters = ["%s (%s)" % (
-        self.openFilesDlg.specFileLoaderDict[k].name,
-        self.openFilesDlg.specFileLoaderDict[k].filenamefilter) for k in
-                       sorted(self.openFilesDlg.specFileLoaderDict.keys())]
+            'PAScual': SpecFiles.PAScualfileLoader('PAScual')
+        }
+        fileloaders['ASCII-custom'].needExtraInput = True
+        filefilters = ["%s (%s)" % (fileloaders[k].name,
+                                     fileloaders[k].filenamefilter
+                                     ) for k in sorted(fileloaders.keys())
+        ]
         self.openFilesDlg.setFileMode(QFileDialog.ExistingFiles)
         self.openFilesDlg.setViewMode(QFileDialog.Detail)
-        # self.openFilesDlg.setFilters(filefilters)
+        self.openFilesDlg.setNameFilters(filefilters)
         self.openFilesDlg.setDirectory(self.options.workDirectory)
         selectedfilter = self.settings.value("openfilefilter",
-            self.openFilesDlg.specFileLoaderDict['ASCII'].name)
-        # self.openFilesDlg.selectFilter(selectedfilter)
-        self.openFilesDlg.setOption(
-            self.openFilesDlg.DontUseNativeDialog)  # needed as a workaround to a bug in selectedNameFilter in the linux dialog
+            fileloaders['ASCII'].name)
+        self.openFilesDlg.selectNameFilter(selectedfilter)
+        # needed as a workaround to a bug in selectedNameFilter in the linux dialog
+        self.openFilesDlg.setOption(self.openFilesDlg.DontUseNativeDialog)
+
+        # Add the fileloaders as a member of the openFilesDlg
+        self.openFilesDlg.specFileLoaderDict = fileloaders
 
     def onOptions(self):
         """Shows the options dialog and saves any changes if accepted"""
@@ -965,7 +969,7 @@ class PAScualGUI(QMainWindow):
         self.settings.setValue("MainWindow/Position", self.pos())
         self.settings.setValue("MainWindow/State", self.saveState())
         self.settings.setValue("fitModeFileName", self.fitModeFileName)
-        self.settings.setValue("openfilefilter", self.openFilesDlg.selectedFilter())
+        self.settings.setValue("openfilefilter", self.openFilesDlg.selectedNameFilter())
         self.saveOptions()
 
     def onTabChanged(self, tabindex):
@@ -1138,7 +1142,8 @@ class PAScualGUI(QMainWindow):
             self.compModel.components[i].ity = copy.deepcopy(dp.itylist[i])
             self.compModel.components[i].tau.common = self.compModel.components[
                 i].ity.common = False
-        self.compModel.reset()
+        self.compModel.beginResetModel()
+        self.compModel.endResetModel()
 
     # TODO: update what is shown in the fitpars Do this by calling a separate function:
     ##If only one is selected, show the fitpars that are set
@@ -1364,7 +1369,8 @@ class PAScualGUI(QMainWindow):
         # Todo: do an inteligent identification of files (LT header present?) possibly also get data from the LT header (psperchannel and fwhm)
         fileNames = []
         self.openFilesDlg.setDirectory(self.options.workDirectory)
-        if not self.openFilesDlg.exec_(): return
+        if not self.openFilesDlg.exec_():
+            return
         self.options.workDirectory = self.openFilesDlg.directory().path()  # update the working directory
         self.settings.setValue("Options/workDirectory", self.options.workDirectory)  # save the new working directory
         fileNames = [str(item) for item in
@@ -1383,8 +1389,8 @@ class PAScualGUI(QMainWindow):
             app.processEvents()
             if progress.wasCanceled(): break
             # read data
-            selectedfilter = \
-            str(self.openFilesDlg.selectedFilter()).split('(')[0].strip()
+            selectedfilter = str(
+                self.openFilesDlg.selectedNameFilter()).split('(')[0].strip()
             fileloader = self.openFilesDlg.specFileLoaderDict[selectedfilter]
             try:
                 tempdp = fileloader.getDiscretePals(fname)
@@ -1666,7 +1672,8 @@ class PAScualGUI(QMainWindow):
         for idx in indexes:
             idx = self.spectraModel.index(idx.row(), STMV.COMP)
             self.spectraModel.dataChanged.emit(idx, idx)
-        self.compModel.reset()
+        self.compModel.beginResetModel()
+        self.compModel.endResetModel()
         # select the last of the checked spectra (so that the parameters are shown)
         self.spectraTable.clearSelection()
         self.spectraTable.selectRow(indexes[-1].row())

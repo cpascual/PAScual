@@ -95,10 +95,9 @@ class ASCIIfileloader(spectrumFileLoader):
                 dflt = 0
             else:
                 dflt = self.hdrlns
-            self.hdrlns, okflag = QInputDialog.getInteger(self.Qtparent,
-                                                          "Header lines?",
-                                                          "Number of lines to skip in the header:",
-                                                          dflt, 0, 999, 1)
+            self.hdrlns, okflag = QInputDialog.getInteger(
+                self.Qtparent, "Header lines?",
+                "Number of lines to skip in the header:", dflt, 0, 999, 1)
         return okflag
 
 
