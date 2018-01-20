@@ -35,6 +35,7 @@
 
 
 import platform
+import sys
 
 from qwt import qt
 from qwt.qt.QtCore import *
@@ -44,6 +45,15 @@ if qt.API == 'pyqt':
     # Avoid segfaults on exit when using PyQt4
     import sip
     sip.setdestroyonexit(False)
+
+elif qt.API == 'pyqt5':
+    import traceback
+
+    def excepthook(etype, value, tb):
+        traceback.print_exception(etype, value, tb)
+
+    sys.excepthook = excepthook
+
 
 from qt_filedlg import getOpenFileName, getSaveFileName
 
@@ -1786,6 +1796,7 @@ class PAScualGUI(QMainWindow):
 
 
 def main():
+
     global app
     app = QApplication(sys.argv)
     app.setOrganizationName("CPI")
