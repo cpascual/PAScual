@@ -1091,7 +1091,8 @@ class PAScualGUI(QMainWindow):
 
     def onShowTauToggled(self, checked):
         self.compModel.showtau = checked
-        self.compModel.reset()
+        self.compModel.beginResetModel()
+        self.compModel.endResetModel()
 
     def changeNcomp(self, ncomp):
         old = len(self.compModel.components)
@@ -1796,7 +1797,6 @@ class PAScualGUI(QMainWindow):
 
 
 def main():
-
     global app
     app = QApplication(sys.argv)
     app.setOrganizationName("CPI")
