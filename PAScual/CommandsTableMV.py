@@ -137,7 +137,8 @@ class CommandTableModel(QAbstractTableModel):
         self.commands = self.commands[:position] + self.commands[
                                                    position + rows:]
         self.endRemoveRows()
-        self.reset()
+        self.beginResetModel()
+        self.endResetModel()
         return True
 
     # 	def getselectedcommands(self):

@@ -234,7 +234,8 @@ class demo(QDialog):
 
     def onTItoggled(self, toggled):
         self.model.showtau = not (toggled)
-        self.model.reset()
+        self.beginResetModel()
+        self.endResetModel()
         if toggled:
             self.tauorityBT.setText("Swtich to Tau")
         else:

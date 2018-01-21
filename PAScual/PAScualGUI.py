@@ -1438,33 +1438,37 @@ class PAScualGUI(QMainWindow):
                      selectedfilter=None):
         if filename is None:
             if self.saveFilesDlg is None:
-                self.saveFilesDlg = QFileDialog(self,
-                                                "%s - Save spectrum '%s'" % (
-                                                QApplication.applicationName(),
-                                                spectrum.name), "./", "")
+                self.saveFilesDlg = QFileDialog(
+                    self,
+                    "%s - Save spectrum '%s'" % (
+                        QApplication.applicationName(), spectrum.name),
+                    "./", ""
+                )
                 fileloadersdict = self.openFilesDlg.specFileLoaderDict
                 filefilters = ["%s (%s)" % (
-                fileloadersdict[k].name, fileloadersdict[k].filenamefilter) for
-                               k in ['PAScual', 'ASCII', 'LT']]
-                self.saveFilesDlg.setOption(
-                    QFileDialog.DontUseNativeDialog)  # needed as a workaround to a bug in selectedNameFilter in the linux dialog
-                self.saveFilesDlg.setFilters(filefilters)
-                self.saveFilesDlg.selectFilter(fileloadersdict['PAScual'].name)
+                    fileloadersdict[k].name,
+                    fileloadersdict[k].filenamefilter) for k in
+                               ['PAScual', 'ASCII', 'LT']
+                ]
+                # needed as a workaround to a bug in selectedNameFilter in the linux dialog
+                self.saveFilesDlg.setOption(QFileDialog.DontUseNativeDialog)
+                self.saveFilesDlg.setNameFilters(filefilters)
+                self.saveFilesDlg.selectNameFilter(fileloadersdict['PAScual'].name)
             self.saveFilesDlg.setWindowTitle("%s - Save spectrum '%s'" % (
             QApplication.applicationName(), spectrum.name))
-            self.saveFilesDlg.setDirectory(
-                self.options.workDirectory + ' ')  # TODO: horrible hack to deselect previously selected files. Any alternative?
+            # TODO: horrible hack to deselect previously selected files. Any alternative?
+            self.saveFilesDlg.setDirectory(self.options.workDirectory + ' ')
             self.saveFilesDlg.selectFile(
                 spectrum.name.split('.', 1)[0] + '.ps1')
-            self.saveFilesDlg.selectFilter(
-                self.saveFilesDlg.selectedFilter())  # re-select filter to make sure that the extensions is the appropriate
+            # re-select filter to make sure that the extensions is the appropriate
+            self.saveFilesDlg.selectNameFilter(self.saveFilesDlg.selectedNameFilter())
             self.saveFilesDlg.setAcceptMode(QFileDialog.AcceptSave)
             self.saveFilesDlg.setViewMode(QFileDialog.Detail)
             if not self.saveFilesDlg.exec_():
                 return None
             filename = str(self.saveFilesDlg.selectedFiles()[0])
-            selectedfilter = \
-            str(self.saveFilesDlg.selectedFilter()).split('(')[0].strip()
+            selectedfilter = str(
+                self.saveFilesDlg.selectedNameFilter()).split('(')[0].strip()
         if selectedfilter is None:
             if filename.endswith(".ps1"):
                 selectedfilter = "PAScual"
@@ -1476,13 +1480,14 @@ class PAScualGUI(QMainWindow):
             elif selectedfilter.startswith("LT"):
                 spectrum.saveAs_LT(filename)
             elif selectedfilter.startswith("PAScual"):
-                pickle.dump(spectrum, open(filename, 'wb'),
-                            -1)  # The PAScual format is just a pickled discretepals object!
+                # The PAScual format is just a pickled discretepals object!
+                pickle.dump(spectrum, open(filename, 'wb'), -1)
             else:
                 raise ValueError('Filter not supported')
         except IOError:
-            QMessageBox.warning(self, "Error saving file",
-                                "Error saving file. Spectrum won't be written")
+            QMessageBox.warning(
+                self, "Error saving file",
+                "Error saving file. Spectrum won't be written")
             return None
         return filename
 
@@ -1490,8 +1495,9 @@ class PAScualGUI(QMainWindow):
         """saves all selected spectra"""
         selected, indexes = self.spectraModel.getselectedspectra()
         if selected == []:
-            QMessageBox.warning(self, "No spectrum selected",
-                                """You must select (check) the spectra that you want to save""")
+            QMessageBox.warning(
+                self, "No spectrum selected",
+                "You must select (check) the spectra that you want to save")
             return
         for dp in selected:
             self.savespectrum(dp)
@@ -1503,9 +1509,13 @@ class PAScualGUI(QMainWindow):
             ofile = str(ofile)
             openmode = 'a'
             if os.path.exists(ofile):
-                answer = QMessageBox.question(self, "Append data?",
-                                              "The selected results File Exists.\nAppend data?\n (Yes for Append. No for Overwrite)",
-                                              QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+                answer = QMessageBox.question(
+                    self, "Append data?",
+                    ("The selected results File Exists.\n" +
+                     "Append data?\n" +
+                     " (Yes for Append. No for Overwrite)"
+                     ),
+                    QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
                 if answer == QMessageBox.Yes:
                     openmode = 'a'
                 elif answer == QMessageBox.No:
@@ -1524,9 +1534,10 @@ class PAScualGUI(QMainWindow):
         for i in xrange(self.resultsTable.columnCount()): hidden += int(
             self.resultsTable.isColumnHidden(i))
         if hidden:
-            answer = QMessageBox.question(self, "Hidden Results",
-                                          "Some results are not shown. \nSave them too?",
-                                          QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+            answer = QMessageBox.question(
+                self, "Hidden Results",
+                "Some results are not shown. \nSave them too?",
+                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
             if answer == QMessageBox.Yes:
                 saveall = True
             elif answer == QMessageBox.No:
@@ -1538,7 +1549,6 @@ class PAScualGUI(QMainWindow):
                                                        "Description:",
                                                        QLineEdit.Normal, "",
                                                        Qt.Dialog)
-        #		customdescription,ok= QInputDialog.getText( const QString & title, const QString & label, QLineEdit::EchoMode echo = QLineEdit::Normal, const QString & text = '', bool * ok = 0, QWidget * parent = 0, const char * name = 0, Qt::WindowFlags f = 0 )
         # Write the results to the file
         widths = [20, 14, 14, 9, 6, 6, 6, 14, 9, 9, 9, 9, 9,
                   9] + 4 * self.results_min_ncomp * [9]

@@ -215,15 +215,16 @@ class PASspectraTableModel(QAbstractTableModel):
             else:
                 temp.append(dp)
         self.spectra = temp
-        self.reset()
+        self.beginResetModel()
+        self.endResetModel()
 
     def dumpData(self):
         return copy.deepcopy(self.spectra)
 
     def loadData(self, data):
         self.spectra = data
-        self.reset()
-
+        self.beginResetModel()
+        self.endResetModel()
 
 # def parent(self, index):
 # 		if index.row()%2: return
