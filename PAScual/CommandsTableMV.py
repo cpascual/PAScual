@@ -46,11 +46,13 @@ class CommandTableModel(QAbstractTableModel):
 
     def loadData(self, commandlist, argslist=None):
         '''commands must be a list of strings! (not a string)'''
-        if argslist is None: argslist = [''] * len(commandlist)
-        if len(commandlist) != len(argslist): raise ValueError(
-            'CommandTableModel.loadData: commands and args must be the same len')
+        if argslist is None:
+            argslist = [''] * len(commandlist)
+        if len(commandlist) != len(argslist):
+            raise ValueError('CommandTableModel.loadData: commands and args must be the same len')
+        self.beginResetModel()
         self.commands = [command(c, a) for c, a in zip(commandlist, argslist)]
-        self.reset()
+        self.endResetModel()
 
     def dumpData(self):
         # 		for c in self.commands: print 'DEBUG:',c.cmd
@@ -135,7 +137,8 @@ class CommandTableModel(QAbstractTableModel):
         self.commands = self.commands[:position] + self.commands[
                                                    position + rows:]
         self.endRemoveRows()
-        self.reset()
+        self.beginResetModel()
+        self.endResetModel()
         return True
 
     # 	def getselectedcommands(self):
@@ -236,9 +239,9 @@ class demo(QDialog):
         mainLayout.addWidget(self.allBT, 3, 1)
         self.setLayout(mainLayout)
 
-        self.addBT.clicked[()].connect(self.onAdd)
-        self.remBT.clicked[()].connect(self.onRem)
-        self.dataBT.clicked[()].connect(self.onData)
+        self.addBT.clicked.connect(self.onAdd)
+        self.remBT.clicked.connect(self.onRem)
+        self.dataBT.clicked.connect(self.onData)
         # 		QObject.connect(self.allBT,SIGNAL("clicked()"),self.model.checkAll)
         self.table.resizeColumnsToContents()
         # 		self.tree.resizeColumnsToContents()

@@ -24,9 +24,9 @@ PlotGraphWidget: Widget for plotting spectra. Originally based on an example cod
 # import qwt.qt.Qwt5 as Qwt
 import qwt as Qwt
 import sys
-# from PyQt4 import Qt
 from qwt.qt import QtCore, QtGui
 from numpy import *
+from qt_filedlg import getSaveFileName
 
 plotcolors_bright = [QtCore.Qt.black, QtCore.Qt.red, QtCore.Qt.blue, QtCore.Qt.magenta,
                      QtCore.Qt.green, QtCore.Qt.cyan, QtCore.Qt.yellow, QtCore.Qt.gray, ]
@@ -164,11 +164,13 @@ class PALSplot(Qwt.QwtPlot):
                          a file name.
         """
         if fileName is None:
-            fileName = QtGui.QFileDialog.getSaveFileName(self, 'Export File Name',
-                                                      'plot.pdf',
-                                                      'PDF Documents (*.pdf)',
-                                                      '',
-                                                      QtGui.QFileDialog.DontUseNativeDialog)
+            fileName, _ = getSaveFileName(
+                self, 'Export File Name',
+                'plot.pdf',
+                'PDF Documents (*.pdf)',
+                '',
+                QtGui.QFileDialog.DontUseNativeDialog
+            )
         fileName = str(fileName)
         if fileName:
             try:  # check if the file is actually writable
@@ -283,11 +285,13 @@ class ResPlot(Qwt.QwtPlot):
                          a file name.
         """
         if fileName is None:
-            fileName = QtGui.QFileDialog.getSaveFileName(self, 'Export File Name',
-                                                      'plot.pdf',
-                                                      'PDF Documents (*.pdf)',
-                                                      '',
-                                                      QtGui.QFileDialog.DontUseNativeDialog)
+            fileName, _ = getSaveFileName(
+                self, 'Export File Name',
+                'plot.pdf',
+                'PDF Documents (*.pdf)',
+                '',
+                QtGui.QFileDialog.DontUseNativeDialog
+            )
         fileName = str(fileName)
         if fileName:
             try:  # check if the file is actually writable

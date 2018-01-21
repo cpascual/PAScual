@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 	PAScualGUI: Graphical User Interface for PAScual
     PAScual: Positron Annihilation Spectroscopy data analysis
     Copyright (C) 2007  Carlos Pascual-Izarra < cpascual [AT] users.sourceforge.net >
@@ -16,7 +16,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+"""
 
 # TODO: Add a reverse selection button to the Spectra selection list
 # TODO: (General) save queue to file before starting and delete file when finished. Check for existence of old files indicating unfinished calcs and offer resume.
@@ -35,11 +35,27 @@
 
 
 import platform
+import sys
 
-import sip
-sip.setdestroyonexit(False)  # to avoid segfaults on exit
+from qwt import qt
 from qwt.qt.QtCore import *
 from qwt.qt.QtGui import *
+
+if qt.API == 'pyqt':
+    # Avoid segfaults on exit when using PyQt4
+    import sip
+    sip.setdestroyonexit(False)
+
+elif qt.API == 'pyqt5':
+    import traceback
+
+    def excepthook(etype, value, tb):
+        traceback.print_exception(etype, value, tb)
+
+    sys.excepthook = excepthook
+
+
+from qt_filedlg import getOpenFileName, getSaveFileName
 
 from PAScual import *
 import CommandsTableMV as CMDTMV
@@ -69,42 +85,53 @@ defaultFitMode = 'LOCAL-connected'
 
 @UILoadable
 class FitparWidget(QWidget):
-    '''A composite widget that defines fitpars.
-		It contains: a label, an "auto" button, a "value" edit box, "fixed" and "common" check boxes, minimum and maximum edits and an Apply button
-		'''
+    """A composite widget that defines fitpars.
+    It contains: a label, an "auto" button, a "value" edit box, "fixed" and "common" check boxes, minimum and maximum edits and an Apply button
+    """
 
     def __init__(self, fpkey, parent=None, label="", callbackApply=None,
                  callbackAuto=None):
-        '''The parameters for initialisation are:
-		the fpkey is the key for the __dict__ of the spectrum that will contain this fitpar: e.g. spectrum.__dict__[fpkey]=...
-		the label to be shown
-		The callback for the apply button (the button is disabled if this is None)
-		The callback for the auto button (the button is disabled if this is None)
-		Note, the widget is not laid out. Use addtoGridLayout to stack various widgets of this type'''
+        """The parameters for initialisation are:
+        the fpkey is the key for the __dict__ of the spectrum that will contain this fitpar: e.g. spectrum.__dict__[fpkey]=...
+        the label to be shown
+        The callback for the apply button (the button is disabled if this is None)
+        The callback for the auto button (the button is disabled if this is None)
+        Note, the widget is not laid out. Use addtoGridLayout to stack various widgets of this type
+        """
         super(FitparWidget, self).__init__(parent)
         self.loadUi()
-        #		self.__close=self.close
         self._fpkey = fpkey
         self.label.setText(label)
         self.setMinimumHeight(1.5 * self.LEValue.minimumHeight())
-        #		self.setSizePolicy ( QSizePolicy.Preferred,QSizePolicy.Minimum)
-        # connect the Apply and auto buttons to their respective callbacks (or disable them)
+        # connect the Apply and auto buttons to their respective callbacks
+        # (or disable them)
+        self._callbackApply = callbackApply
+        self._callbackAuto = callbackAuto
+
         if callbackApply is None:
             self.BTApply.setDisabled(True)
         else:
             # it returns self to the callback
-            self.BTApply.clicked[()].connect(lambda: callbackApply(self))  
+            self.BTApply.clicked.connect(self._onApply)
         if callbackAuto is None:
             self.BTAutoFill.setDisabled(True)
         else:
-            self.BTAutoFill.clicked[()].connect(lambda: callbackAuto(self))
+            self.BTAutoFill.clicked.connect(self._onAuto)
         # set up validators
-        for widget in [self.LEValue, self.LEMin,
-                       self.LEMax]: widget.setValidator(QDoubleValidator(self))
+        for widget in [self.LEValue, self.LEMin, self.LEMax]:
+            widget.setValidator(QDoubleValidator(self))
+
+    def _onApply(self):
+        self._callbackApply(self)
+
+    def _onAuto(self):
+        self._callbackAuto(self)
 
     def addtoGridLayout(self, gridlayout=None, row=None):
-        '''gridlayout is used for stacking several FitParWidgets,
-		row is the row at which we want the widget to be set. If it is None, it defaults to the last'''
+        """gridlayout is used for stacking several FitParWidgets,
+        row is the row at which we want the widget to be set. If it is None,
+        it defaults to the last
+        """
         if gridlayout is None: gridlayout = QGridLayout()
         if row is None: row = gridlayout.rowCount()
         for widget, col in zip(
@@ -122,7 +149,7 @@ class FitparWidget(QWidget):
             widget.close()
 
     def getFitpar(self):
-        '''returns a fitpar object based on the widgets selections'''
+        """returns a fitpar object based on the widgets selections"""
         # TODO: validate input
         name = str(self.label.text()).split('[')[0]
         try:
@@ -144,7 +171,7 @@ class FitparWidget(QWidget):
                       free=free)
 
     def showFitpar(self, fp):
-        '''returns a fitpar object based on the widgets selections'''
+        """returns a fitpar object based on the widgets selections"""
         if fp is None:
             self.LEValue.setText('')
             self.LEMin.setText('')
@@ -270,8 +297,8 @@ class PAScualGUI(QMainWindow):
         self.actionLicense.triggered.connect(self.showlicense)
         self.actionSum_Spectra.triggered.connect(self.sumspectra)
         self.actionTao_Eldrup_Calculator.triggered.connect(self.launchTEcalc)
-        self.actionWhat_s_This.triggered.connect(lambda: QWhatsThis.enterWhatsThisMode())
-        self.actionPlotFit.triggered.connect(self.onPlotFit)
+        self.actionWhat_s_This.triggered.connect(QWhatsThis.enterWhatsThisMode)
+        self.actionPlotFit.triggered.connect(self._onPlotSelectedFit)
         self.actionSimulate_spectrum.triggered.connect(self.createFakeSpectrum)
         self.actionCopy_Results_Selection.triggered.connect(self.copy_Results_Selection)
         self.actionShow_hide_Plot.triggered.connect(self.show_hidePlot)
@@ -285,41 +312,41 @@ class PAScualGUI(QMainWindow):
         self.spectraTable.doubleClicked.connect(self.onSpectraTableDoubleClick)
         self.spectraTable.selectionModel().selectionChanged.connect(self.onspectraSelectionChanged)
         self.SBoxNcomp.valueChanged[int].connect(self.changeNcomp)
-        self.roiPB.clicked[()].connect(self.setROI)
-        self.BTpsperchannel.clicked[()].connect(self.setpsperchannel)
+        self.roiPB.clicked.connect(self.setROI)
+        self.BTpsperchannel.clicked.connect(self.setpsperchannel)
         self.showtauRB.toggled.connect(self.onShowTauToggled)
         self.spectraModel.selectionChanged.connect(self.changePPlot)
         self.updateParamsView.connect(self.onUpdateParamsView)
-        self.selectAllTB.clicked[()].connect(self.spectraModel.checkAll)
-        self.selectNoneTB.clicked[()].connect(lambda: self.spectraModel.checkAll(False))
-        self.selectMarkedTB.clicked[()].connect(self.onSelectMarked)
-        self.removeSpectraTB.clicked[()].connect(self.onRemoveChecked)
-        self.applycompsBT.clicked[()].connect(self.onApplyComps)
-        self.applyAllParametersPB.clicked[()].connect(self.onApplyAllParameters)
-        self.resetParametersPB.clicked[()].connect(self.onResetParameters)
-        self.actionRegenerateSets.triggered.connect(lambda: self.onRegenerateSets(force=True))
+        self.selectAllTB.clicked.connect(self.spectraModel.checkAll)
+        self.selectNoneTB.clicked.connect(self.spectraModel.uncheckAll)
+        self.selectMarkedTB.clicked.connect(self.onSelectMarked)
+        self.removeSpectraTB.clicked.connect(self.onRemoveChecked)
+        self.applycompsBT.clicked.connect(self.onApplyComps)
+        self.applyAllParametersPB.clicked.connect(self.onApplyAllParameters)
+        self.resetParametersPB.clicked.connect(self.onResetParameters)
+        self.actionRegenerateSets.triggered.connect(self._onRegenerateSetsAction)
         self.tabWidget.currentChanged.connect(self.onTabChanged)
         self.regenerateSets.connect(self.onRegenerateSets)
         self.fitModeCB.currentIndexChanged[str].connect(self.onFitModeCBChange)
-        self.applyFitModeBT.clicked[()].connect(self.assignFitModes)
-        self.goFitBT.clicked[()].connect(self.onGoFit)
-        self.stopFitBT.clicked[()].connect(self.onStopFit)
-        self.skipCommandBT.clicked[()].connect(self.onSkipFit)
+        self.applyFitModeBT.clicked.connect(self.assignFitModes)
+        self.goFitBT.clicked.connect(self.onGoFit)
+        self.stopFitBT.clicked.connect(self.onStopFit)
+        self.skipCommandBT.clicked.connect(self.onSkipFit)
         self.fitter.endrun.connect(self.onFitterFinished)
         self.fitter.command_done.connect(self.setPBar.setValue)
         self.commandsModel.dataChanged.connect(self.onFitModeEdit)
-        self.hideResultsBT.clicked[()].connect(self.onHideResults)
-        self.showResultsBT.clicked[()].connect(self.onShowResults)
-        self.saveResultsBT.clicked[()].connect(self.onSaveResults)
-        self.resultsTable.doubleClicked.connect(self.onPlotFit)
-        self.resultsFileSelectBT.clicked[()].connect(self.onResultsFileSelectBT)
+        self.hideResultsBT.clicked.connect(self.onHideResults)
+        self.showResultsBT.clicked.connect(self.onShowResults)
+        self.saveResultsBT.clicked.connect(self.onSaveResults)
+        self.resultsTable.doubleClicked.connect(self._onPlotFitIndex)
+        self.resultsFileSelectBT.clicked.connect(self.onResultsFileSelectBT)
         self.previousOutputCB.currentIndexChanged[str].connect(self.onPreviousOutputCBChange)
-        self.outputFileSelectBT.clicked[()].connect(self.onOutputFileSelect)
-        self.saveOutputBT.clicked[()].connect(self.onSaveOutput_as)
-        self.saveFitmodeBT.clicked[()].connect(self.saveFitMode)
-        self.loadParametersPB.clicked[()].connect(self.loadParameters)
-        self.saveParametersPB.clicked[()].connect(self.saveParameters)
-        self.plotFitBT.clicked[()].connect(self.onPlotFit)
+        self.outputFileSelectBT.clicked.connect(self.onOutputFileSelect)
+        self.saveOutputBT.clicked.connect(self.onSaveOutput_as)
+        self.saveFitmodeBT.clicked.connect(self.saveFitMode)
+        self.loadParametersPB.clicked.connect(self.loadParameters)
+        self.saveParametersPB.clicked.connect(self.saveParameters)
+        self.plotFitBT.clicked.connect(self._onPlotSelectedFit)
 
         # Restore last session Window state
         size = self.settings.value("MainWindow/Size", QSize(800, 600))
@@ -340,7 +367,7 @@ class PAScualGUI(QMainWindow):
                                    "Sorry, %s is not yet implemented" % featurename)
 
     def loadOptions(self):
-        '''create the self.options object from values stored in the settings'''
+        """create the self.options object from values stored in the settings"""
         self.options = PASoptions.Options()
         for opt, dflt in zip(self.options.optlist, self.options.dfltlist):
             _type = type(dflt)
@@ -360,41 +387,45 @@ class PAScualGUI(QMainWindow):
 
     def createOpenFilesDlg(self):
         # General OpenFile Dialog (it is never closed, just hidden)
-        self.openFilesDlg = QFileDialog(self,
-                                        "%s - Open spectra" % QApplication.applicationName(),
-                                        "./", "")
-        self.openFilesDlg.specFileLoaderDict = {
-            'ASCII': SpecFiles.ASCIIfileloader('ASCII',
-                                               '*.dat *.txt *.al2 *.chn', 0,
-                                               'ASCII without header'),
-            'ASCII-custom': SpecFiles.ASCIIfileloader('ASCII-custom', '*', None,
-                                                      'ASCII with user-selected header',
-                                                      'qt', self.openFilesDlg),
-            'LT': SpecFiles.ASCIIfileloader('LT', '*.dat *.txt *.al2 *.chn', 4,
-                                            'ASCII with a 4 rows header'),
-            'L80': SpecFiles.ASCIIfileloader('L80', '*.80', 0,
-                                             'multicolumn ASCII with no header'),
+        self.openFilesDlg = QFileDialog(
+            self, "%s - Open spectra" % QApplication.applicationName(),
+            "./", ""
+        )
+        # instantiate file loaders and store them in a dict
+        fileloaders = {
+            'ASCII': SpecFiles.ASCIIfileloader(
+                'ASCII', '*.dat *.txt *.al2 *.chn', 0, 'ASCII without header'),
+            'ASCII-custom': SpecFiles.ASCIIfileloader(
+                'ASCII-custom', '*', None, 'ASCII with user-selected header',
+                'qt', self),
+            'LT': SpecFiles.ASCIIfileloader(
+                'LT', '*.dat *.txt *.al2 *.chn', 4,
+                'ASCII with a 4 rows header'),
+            'L80': SpecFiles.ASCIIfileloader(
+                'L80', '*.80', 0, 'multicolumn ASCII with no header'),
             'MAESTRO': SpecFiles.MAESTROfileLoader('MAESTRO'),
-            'PAScual': SpecFiles.PAScualfileLoader(
-                'PAScual')}  # instantiate file loaders and put them in a dict belonging to the OpenFile dialog
-        self.openFilesDlg.specFileLoaderDict[
-            'ASCII-custom'].needExtraInput = True  # makes
-        filefilters = ["%s (%s)" % (
-        self.openFilesDlg.specFileLoaderDict[k].name,
-        self.openFilesDlg.specFileLoaderDict[k].filenamefilter) for k in
-                       sorted(self.openFilesDlg.specFileLoaderDict.keys())]
+            'PAScual': SpecFiles.PAScualfileLoader('PAScual')
+        }
+        fileloaders['ASCII-custom'].needExtraInput = True
+        filefilters = ["%s (%s)" % (fileloaders[k].name,
+                                     fileloaders[k].filenamefilter
+                                     ) for k in sorted(fileloaders.keys())
+        ]
         self.openFilesDlg.setFileMode(QFileDialog.ExistingFiles)
         self.openFilesDlg.setViewMode(QFileDialog.Detail)
-        self.openFilesDlg.setFilters(filefilters)
+        self.openFilesDlg.setNameFilters(filefilters)
         self.openFilesDlg.setDirectory(self.options.workDirectory)
         selectedfilter = self.settings.value("openfilefilter",
-            self.openFilesDlg.specFileLoaderDict['ASCII'].name)
-        self.openFilesDlg.selectFilter(selectedfilter)
-        self.openFilesDlg.setOption(
-            self.openFilesDlg.DontUseNativeDialog)  # needed as a workaround to a bug in selectedNameFilter in the linux dialog
+            fileloaders['ASCII'].name)
+        self.openFilesDlg.selectNameFilter(selectedfilter)
+        # needed as a workaround to a bug in selectedNameFilter in the linux dialog
+        self.openFilesDlg.setOption(self.openFilesDlg.DontUseNativeDialog)
+
+        # Add the fileloaders as a member of the openFilesDlg
+        self.openFilesDlg.specFileLoaderDict = fileloaders
 
     def onOptions(self):
-        '''Shows the options dialog and saves any changes if accepted'''
+        """Shows the options dialog and saves any changes if accepted"""
         if self.optionsDlg is None:
             # create the dialog if not already done
             self.optionsDlg = PASoptions.OptionsDlg(self)
@@ -417,7 +448,7 @@ class PAScualGUI(QMainWindow):
         self.settings.sync()
 
     def copy_Results_Selection(self):
-        '''copies the selected results to the clipboard'''
+        """copies the selected results to the clipboard"""
         string = ''
         selecteditems = self.resultsTable.selectedItems()
         for i in range(self.resultsTable.rowCount()):
@@ -432,30 +463,31 @@ class PAScualGUI(QMainWindow):
         QApplication.clipboard().setText(string.strip())
 
     def onResultsFileSelectBT(self):
-        filename = QFileDialog.getSaveFileName(self, "Results File Selection",
-                                               self.options.workDirectory + '/PASresults.txt',
-                                               "ASCII (*.txt)\nAll (*)",
-                                               QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog)
+        filename, _ = getSaveFileName(
+            self, "Results File Selection",
+            self.options.workDirectory + '/PASresults.txt',
+            "ASCII (*.txt)\nAll (*)",
+            QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog)
         if filename: self.resultsFileLE.setText(filename)
 
     def onOutputFileSelect(self):
-        ofile = QFileDialog.getSaveFileName(self, "Output File Selection",
-                                            self.outputFileLE.text(),
-                                            "ASCII (*.txt)\nAll (*)",
-                                            QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog)
+        ofile, _ = getSaveFileName(
+            self, "Output File Selection",
+            self.outputFileLE.text(),
+            "ASCII (*.txt)\nAll (*)",
+            QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog)
         if ofile:
             self.outputFileLE.setText(ofile)
         return ofile
 
-    def onSaveOutput_as(self, ofile=None):
+    def onSaveOutput_as(self):
         # Make sure only finished outputs are saved
         if self.outputTE.isVisible():
             QMessageBox.warning(self, "Cannot save unfinished fit",
                                 "You can only save the output from finished fits. Output won't be written\n Select a different output from the list.")
             return
         # if a file is not given, prompt the user for a file name
-        if ofile is None:
-            ofile = self.onOutputFileSelect()
+        ofile = self.onOutputFileSelect()
         if not ofile:
             return  # failed to get a valid filename
 
@@ -485,17 +517,24 @@ class PAScualGUI(QMainWindow):
             self.previousOutputTE.toPlainText()) + "\n"
         ofile.close()
 
-    def onPlotFit(self, index=None):
-        if index is None:
-            row = self.resultsTable.currentRow()  # this is -1 if there is no table
-        else:
-            row = index.row()
+    def _onPlotSelectedFit(self):
+        row = self.resultsTable.currentRow()  # this is -1 if there is no table
         self.plotfit(row)
 
+    def _onPlotFitIndex(self, index):
+        row = index.row()
+        self.plotfit(row)
+
+    def _onNextPlotFit(self):
+        self.plotfit(self.dprow + 1)
+
+    def _onPrevPlotFit(self):
+        self.plotfit(self.dprow - 1)
+
     def plotfit(self, dprow=0, dplist=None):
-        '''Shows a dialog containing: the spectrum, the fit (with separated components), the residuals and the text report.
+        """Shows a dialog containing: the spectrum, the fit (with separated components), the residuals and the text report.
 		It does this for a list of discretepals objects that can be browsed in order.
-		dplist is the list of discretepals objects. dprow is the index of that list that is to be reported.'''
+		dplist is the list of discretepals objects. dprow is the index of that list that is to be reported."""
         # TODO: This function has grown too much. It should be encapsulated  in a class (suggested name: reportDlg).
         if dplist is None: dplist = self.resultsdplist
         self.dprow = dprow
@@ -527,8 +566,8 @@ class PAScualGUI(QMainWindow):
             self.plotfitDlg.layout.addWidget(self.plotfitDlg.textTE)
             self.plotfitDlg.layout.addLayout(layout2)
             self.plotfitDlg.setLayout(self.plotfitDlg.layout)
-            self.plotfitDlg.prevPB.clicked[()].connect(lambda: self.plotfit(self.dprow - 1))
-            self.plotfitDlg.nextPB.clicked[()].connect(lambda: self.plotfit(self.dprow + 1))
+            self.plotfitDlg.prevPB.clicked.connect(self._onPrevPlotFit)
+            self.plotfitDlg.nextPB.clicked.connect(self._onNextPlotFit)
         else:
             self.plotfitDlg.fitplot.reset()
             self.plotfitDlg.resplot.reset()
@@ -566,11 +605,11 @@ class PAScualGUI(QMainWindow):
         self.plotfitDlg.textTE.setPlainText(dp.showreport(silent=True))
 
     def saveFitCurves(self, globalprefix=''):
-        '''
+        """
 		Write the fit data as ASCII tables. For each spectrum, a file
 		ended in _fit.dat is created containing the total fit,
 		the background, the components and the residuals
-		'''
+		"""
 
         for dp in self.resultsdplist:
             prefix, _ = os.path.splitext(os.path.basename(dp.name))
@@ -734,7 +773,7 @@ class PAScualGUI(QMainWindow):
         return accepted, rejected  # returns both dictionaries. IMPORTANT: they contain references to the palssets in palssetsdict, not copies!
 
     def stopFitter(self, timeout=10000, offerForce=False):
-        '''Tries to stop the fitter nicely. If offerforce==True, it also offers to send a terminate signal to the fitter'''
+        """Tries to stop the fitter nicely. If offerforce==True, it also offers to send a terminate signal to the fitter"""
         # Ask the fitter thread to stop and wait till it does stop
         self.fitter.stop()
         self.statusbar.showMessage(
@@ -763,18 +802,18 @@ class PAScualGUI(QMainWindow):
         return False
 
     def regenerateFitter(self, abortobject):
-        '''Restores a the self.fitter object and its connections (use in case of having terminated the fitter thread)
-		abortobject is the handler containing the abortRequested() to which we assign the fitter.isStopped()'''
+        """Restores a the self.fitter object and its connections (use in case of having terminated the fitter thread)
+		abortobject is the handler containing the abortRequested() to which we assign the fitter.isStopped()"""
         self.fitter = PCP.fitter(self)
         self.fitter.endrun.connect(self.onFitterFinished)
         self.fitter.connect(self.setPBar.setValue)
         emitter.initCommandPBar.connect(self.commandPBar.setRange)
         emitter.commandPBarValue.connect(self.commandPBar.setValue)
         emitter.teeOutput.connect(self.outputTE.insertPlainText)
-        abortobject.abortRequested = form.fitter.isStopped  # reassign the  abortRequested() method from the abort object defined in PAScual
+        abortobject.abortRequested = self.fitter.isStopped  # reassign the  abortRequested() method from the abort object defined in PAScual
 
     def onSkipFit(self):
-        '''Skips the current fit'''
+        """Skips the current fit"""
         skipped = self.stopFitter(offerForce=False)
         while not skipped:
             answer = QMessageBox.warning(self, "Fit not responding",
@@ -787,7 +826,7 @@ class PAScualGUI(QMainWindow):
         print "\nCurrent fit skipped\n"
 
     def onStopFit(self):
-        '''Stops the current fit'''
+        """Stops the current fit"""
         # delete the queue
         self.fitqueuedict = {}
         self.fitqueuekeys = []
@@ -807,7 +846,7 @@ class PAScualGUI(QMainWindow):
                     0)  # switch the view to thelast to the last
 
     def onGoFit(self):
-        '''launches the fit'''
+        """launches the fit"""
         # populate the queue (generates self.fitqueuedict )
         self.generatequeue()
         if len(self.fitqueuedict) == 0:
@@ -894,7 +933,7 @@ class PAScualGUI(QMainWindow):
         self.advanceFitQueue()
 
     def onPreviousOutputCBChange(self, key):
-        '''prints the previous output in a pop up window)'''
+        """prints the previous output in a pop up window)"""
         key = str(key)
         if key == "All":
             self.previousOutputTE.clear()
@@ -924,21 +963,25 @@ class PAScualGUI(QMainWindow):
         return customFitModesdict
 
     def closeEvent(self, event):
-        '''This event handler receives widget close events'''
+        """This event handler receives widget close events"""
         # save current window state before closing
         self.settings.setValue("MainWindow/Size", self.size())
         self.settings.setValue("MainWindow/Position", self.pos())
         self.settings.setValue("MainWindow/State", self.saveState())
         self.settings.setValue("fitModeFileName", self.fitModeFileName)
-        self.settings.setValue("openfilefilter", self.openFilesDlg.selectedFilter())
+        self.settings.setValue("openfilefilter", self.openFilesDlg.selectedNameFilter())
         self.saveOptions()
 
     def onTabChanged(self, tabindex):
         if tabindex == 1: self.regenerateSets.emit(False)
 
+    def _onRegenerateSetsAction(self):
+        self.onRegenerateSets(force=True)
+
     def onRegenerateSets(self, force=False):
         # only regenerate if there is a chance of change (or if we explicitely force it)
-        if not self.dirtysets and not force: return
+        if not self.dirtysets and not force:
+            return
         # get a copy of the list of spectra
         temp = self.spectraModel.dumpData()  # note that this is a deepcopy
         # filter the list separating the ready ones from the not-yet-ready
@@ -995,7 +1038,7 @@ class PAScualGUI(QMainWindow):
         self.regenerateSets.emit(False)
 
     def sumspectra(self):
-        '''Sums the checked spectra and offers to save them. It inserts the sum in the list'''
+        """Sums the checked spectra and offers to save them. It inserts the sum in the list"""
         # TODO: needs more work on interface
         # Todo: implement Duplatre's suggestion on fitting with non-poisson noise from splitted spectra:
         #	Introduce take into account non-poisson noise
@@ -1032,7 +1075,7 @@ class PAScualGUI(QMainWindow):
 
     def onSpectraTableDoubleClick(self, index):
         if index.column() == STMV.SEL: return
-        self.spectraModel.checkAll(False)
+        self.spectraModel.uncheckAll()
         self.spectraModel.setData(
             self.spectraModel.index(index.row(), STMV.SEL))
 
@@ -1052,7 +1095,8 @@ class PAScualGUI(QMainWindow):
 
     def onShowTauToggled(self, checked):
         self.compModel.showtau = checked
-        self.compModel.reset()
+        self.compModel.beginResetModel()
+        self.compModel.endResetModel()
 
     def changeNcomp(self, ncomp):
         old = len(self.compModel.components)
@@ -1098,7 +1142,8 @@ class PAScualGUI(QMainWindow):
             self.compModel.components[i].ity = copy.deepcopy(dp.itylist[i])
             self.compModel.components[i].tau.common = self.compModel.components[
                 i].ity.common = False
-        self.compModel.reset()
+        self.compModel.beginResetModel()
+        self.compModel.endResetModel()
 
     # TODO: update what is shown in the fitpars Do this by calling a separate function:
     ##If only one is selected, show the fitpars that are set
@@ -1146,12 +1191,10 @@ class PAScualGUI(QMainWindow):
         self.dirtysets = True
         return True
 
-    def onApplyComps(self, selected=None, indexes=None):
-        if indexes is None:
-            if not (selected is None): raise ValueError(
-                'applyFitpar: Ignoring "selected" because "indexes" were not passed')
-            selected, indexes = self.spectraModel.getselectedspectra()
-        if selected == []: return False  # if it is empty, then nothing is selected so do nothing
+    def onApplyComps(self):
+        selected, indexes = self.spectraModel.getselectedspectra()
+        if selected == []:
+            return False  # if it is empty, then nothing is selected so do nothing
         answer = None
         # check if the components are already set for this spectrum (TODO: possibly suggest to apply only selected components )
         ncomps = self.compModel.rowCount()
@@ -1326,7 +1369,8 @@ class PAScualGUI(QMainWindow):
         # Todo: do an inteligent identification of files (LT header present?) possibly also get data from the LT header (psperchannel and fwhm)
         fileNames = []
         self.openFilesDlg.setDirectory(self.options.workDirectory)
-        if not self.openFilesDlg.exec_(): return
+        if not self.openFilesDlg.exec_():
+            return
         self.options.workDirectory = self.openFilesDlg.directory().path()  # update the working directory
         self.settings.setValue("Options/workDirectory", self.options.workDirectory)  # save the new working directory
         fileNames = [str(item) for item in
@@ -1345,8 +1389,8 @@ class PAScualGUI(QMainWindow):
             app.processEvents()
             if progress.wasCanceled(): break
             # read data
-            selectedfilter = \
-            str(self.openFilesDlg.selectedFilter()).split('(')[0].strip()
+            selectedfilter = str(
+                self.openFilesDlg.selectedNameFilter()).split('(')[0].strip()
             fileloader = self.openFilesDlg.specFileLoaderDict[selectedfilter]
             try:
                 tempdp = fileloader.getDiscretePals(fname)
@@ -1375,7 +1419,7 @@ class PAScualGUI(QMainWindow):
         # Once (if) we have the list of new spectra, make necessary changes in the GUI
         if len(dps) > 0:
             # Uncheck previously checked spectra
-            self.spectraModel.checkAll(False)
+            self.spectraModel.uncheckAll()
             # insert the just created dps in the list
             self.spectraModel.insertRows(position=None, rows=len(dps), dps=dps)
             self.spectraTable.resizeColumnToContents(STMV.NAME)
@@ -1394,33 +1438,37 @@ class PAScualGUI(QMainWindow):
                      selectedfilter=None):
         if filename is None:
             if self.saveFilesDlg is None:
-                self.saveFilesDlg = QFileDialog(self,
-                                                "%s - Save spectrum '%s'" % (
-                                                QApplication.applicationName(),
-                                                spectrum.name), "./", "")
+                self.saveFilesDlg = QFileDialog(
+                    self,
+                    "%s - Save spectrum '%s'" % (
+                        QApplication.applicationName(), spectrum.name),
+                    "./", ""
+                )
                 fileloadersdict = self.openFilesDlg.specFileLoaderDict
                 filefilters = ["%s (%s)" % (
-                fileloadersdict[k].name, fileloadersdict[k].filenamefilter) for
-                               k in ['PAScual', 'ASCII', 'LT']]
-                self.saveFilesDlg.setOption(
-                    QFileDialog.DontUseNativeDialog)  # needed as a workaround to a bug in selectedNameFilter in the linux dialog
-                self.saveFilesDlg.setFilters(filefilters)
-                self.saveFilesDlg.selectFilter(fileloadersdict['PAScual'].name)
+                    fileloadersdict[k].name,
+                    fileloadersdict[k].filenamefilter) for k in
+                               ['PAScual', 'ASCII', 'LT']
+                ]
+                # needed as a workaround to a bug in selectedNameFilter in the linux dialog
+                self.saveFilesDlg.setOption(QFileDialog.DontUseNativeDialog)
+                self.saveFilesDlg.setNameFilters(filefilters)
+                self.saveFilesDlg.selectNameFilter(fileloadersdict['PAScual'].name)
             self.saveFilesDlg.setWindowTitle("%s - Save spectrum '%s'" % (
             QApplication.applicationName(), spectrum.name))
-            self.saveFilesDlg.setDirectory(
-                self.options.workDirectory + ' ')  # TODO: horrible hack to deselect previously selected files. Any alternative?
+            # TODO: horrible hack to deselect previously selected files. Any alternative?
+            self.saveFilesDlg.setDirectory(self.options.workDirectory + ' ')
             self.saveFilesDlg.selectFile(
                 spectrum.name.split('.', 1)[0] + '.ps1')
-            self.saveFilesDlg.selectFilter(
-                self.saveFilesDlg.selectedFilter())  # re-select filter to make sure that the extensions is the appropriate
+            # re-select filter to make sure that the extensions is the appropriate
+            self.saveFilesDlg.selectNameFilter(self.saveFilesDlg.selectedNameFilter())
             self.saveFilesDlg.setAcceptMode(QFileDialog.AcceptSave)
             self.saveFilesDlg.setViewMode(QFileDialog.Detail)
             if not self.saveFilesDlg.exec_():
                 return None
             filename = str(self.saveFilesDlg.selectedFiles()[0])
-            selectedfilter = \
-            str(self.saveFilesDlg.selectedFilter()).split('(')[0].strip()
+            selectedfilter = str(
+                self.saveFilesDlg.selectedNameFilter()).split('(')[0].strip()
         if selectedfilter is None:
             if filename.endswith(".ps1"):
                 selectedfilter = "PAScual"
@@ -1432,36 +1480,42 @@ class PAScualGUI(QMainWindow):
             elif selectedfilter.startswith("LT"):
                 spectrum.saveAs_LT(filename)
             elif selectedfilter.startswith("PAScual"):
-                pickle.dump(spectrum, open(filename, 'wb'),
-                            -1)  # The PAScual format is just a pickled discretepals object!
+                # The PAScual format is just a pickled discretepals object!
+                pickle.dump(spectrum, open(filename, 'wb'), -1)
             else:
                 raise ValueError('Filter not supported')
         except IOError:
-            QMessageBox.warning(self, "Error saving file",
-                                "Error saving file. Spectrum won't be written")
+            QMessageBox.warning(
+                self, "Error saving file",
+                "Error saving file. Spectrum won't be written")
             return None
         return filename
 
     def onSaveSpectra(self):
-        '''saves all selected spectra'''
+        """saves all selected spectra"""
         selected, indexes = self.spectraModel.getselectedspectra()
         if selected == []:
-            QMessageBox.warning(self, "No spectrum selected",
-                                """You must select (check) the spectra that you want to save""")
+            QMessageBox.warning(
+                self, "No spectrum selected",
+                "You must select (check) the spectra that you want to save")
             return
         for dp in selected:
             self.savespectrum(dp)
 
-    def onSaveResults(self, ofile=None):
+    def onSaveResults(self):
         # Manage the file
-        if ofile is None: ofile = str(self.resultsFileLE.text())
+        ofile = str(self.resultsFileLE.text())
         if not isinstance(ofile, file):
             ofile = str(ofile)
             openmode = 'a'
             if os.path.exists(ofile):
-                answer = QMessageBox.question(self, "Append data?",
-                                              "The selected results File Exists.\nAppend data?\n (Yes for Append. No for Overwrite)",
-                                              QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+                answer = QMessageBox.question(
+                    self, "Append data?",
+                    ("The selected results File Exists.\n" +
+                     "Append data?\n" +
+                     " (Yes for Append. No for Overwrite)"
+                     ),
+                    QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
                 if answer == QMessageBox.Yes:
                     openmode = 'a'
                 elif answer == QMessageBox.No:
@@ -1480,9 +1534,10 @@ class PAScualGUI(QMainWindow):
         for i in xrange(self.resultsTable.columnCount()): hidden += int(
             self.resultsTable.isColumnHidden(i))
         if hidden:
-            answer = QMessageBox.question(self, "Hidden Results",
-                                          "Some results are not shown. \nSave them too?",
-                                          QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
+            answer = QMessageBox.question(
+                self, "Hidden Results",
+                "Some results are not shown. \nSave them too?",
+                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
             if answer == QMessageBox.Yes:
                 saveall = True
             elif answer == QMessageBox.No:
@@ -1494,7 +1549,6 @@ class PAScualGUI(QMainWindow):
                                                        "Description:",
                                                        QLineEdit.Normal, "",
                                                        Qt.Dialog)
-        #		customdescription,ok= QInputDialog.getText( const QString & title, const QString & label, QLineEdit::EchoMode echo = QLineEdit::Normal, const QString & text = '', bool * ok = 0, QWidget * parent = 0, const char * name = 0, Qt::WindowFlags f = 0 )
         # Write the results to the file
         widths = [20, 14, 14, 9, 6, 6, 6, 14, 9, 9, 9, 9, 9,
                   9] + 4 * self.results_min_ncomp * [9]
@@ -1571,7 +1625,7 @@ class PAScualGUI(QMainWindow):
             not (self.spectraDockWidget.isVisible()))
 
     def onParamWizard(self):
-        '''Launches the wizard and applies changes afterwards'''
+        """Launches the wizard and applies changes afterwards"""
         selected, indexes = self.spectraModel.getselectedspectra()
         if selected == []:
             QMessageBox.warning(self, "No spectrum selected",
@@ -1628,7 +1682,8 @@ class PAScualGUI(QMainWindow):
         for idx in indexes:
             idx = self.spectraModel.index(idx.row(), STMV.COMP)
             self.spectraModel.dataChanged.emit(idx, idx)
-        self.compModel.reset()
+        self.compModel.beginResetModel()
+        self.compModel.endResetModel()
         # select the last of the checked spectra (so that the parameters are shown)
         self.spectraTable.clearSelection()
         self.spectraTable.selectRow(indexes[-1].row())
@@ -1637,11 +1692,14 @@ class PAScualGUI(QMainWindow):
         self.regenerateSets.emit(False)
 
     def loadParameters(self):
-        '''uses a dp to fill the parameters. If no spectra si given, it asks to load a file which is expected to contain a pickled discretepals'''
-        filename = QFileDialog.getOpenFileName(self, "Load parameters from...",
-                                               self.options.workDirectory,
-                                               "(*.par *.ps1)", '',
-                                               QFileDialog.DontUseNativeDialog)
+        """uses a dp to fill the parameters. If no spectra si given, it asks to load a file which is expected to contain a pickled discretepals"""
+
+
+        filename, _ = getOpenFileName(
+            self, "Load parameters from...",
+            self.options.workDirectory,
+            "(*.par *.ps1)", '',
+            QFileDialog.DontUseNativeDialog)
         if filename:
             loader = SpecFiles.PAScualfileLoader()
             dp = loader.getDiscretePals(filename)
@@ -1650,13 +1708,13 @@ class PAScualGUI(QMainWindow):
             return dp
         return None
 
-    def saveParameters(self, filename=None):
-        if filename is None:
-            filename = str(
-                QFileDialog.getSaveFileName(self, "Save parameters in...",
-                                            self.options.workDirectory + '/PASparams.par',
-                                            "Parameters File (*.par)", '',
-                                            QFileDialog.DontUseNativeDialog))
+    def saveParameters(self):
+        filename, _ = getSaveFileName(
+            self, "Save parameters in...",
+            self.options.workDirectory + '/PASparams.par',
+            "Parameters File (*.par)", '',
+            QFileDialog.DontUseNativeDialog)
+
         if filename:
             bg = self.bgFitparWidget.getFitpar()
             c0 = self.c0FitparWidget.getFitpar()
@@ -1679,12 +1737,12 @@ class PAScualGUI(QMainWindow):
                               fwhm=fwhm, c0=c0, psperchannel=psperchannel)
             # Save the parameters as a pickled discretepals object
             print 'DEBUG:', filename
-            pickle.dump(dp, open(filename, 'wb'), -1)
+            pickle.dump(dp, open(str(filename), 'wb'), -1)
             return dp
         return None
 
     def showManual(self):
-        '''Shows the User Manual in a window'''
+        """Shows the User Manual in a window"""
         onlinecopy = "http://pascual.wiki.sourceforge.net/User+Manual"
         localcopy = "file:" + self.options.manualFile
         self.manualBrowser = QDialog()
