@@ -11,8 +11,6 @@ with open(releasefname) as f:
 entry_points={
     'console_scripts': [
         'pascual_batch = PAScual.PAScual:start',
-    ],
-    'gui_scripts': [
         'pascual = PAScual.PAScualGUI:main',
         'pascual_TEcalc = PAScual.TEcalcGUI:main',
     ]
