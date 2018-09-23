@@ -1,15 +1,13 @@
 language: python
-
 script:
-  - python setup.py sdist
-  - export ARTIFACT_SDIST=`ls dist/*tar.gz`
-
+- python setup.py sdist
+- export ARTIFACT_SDIST=`ls dist/*tar.gz`
+- echo $ARTIFACT_SDIST
 deploy:
   provider: releases
   api_key:
-    secure: EHQiRlnBoPZuTe8+Zdtl3rISzgDOtCJ9VhsY8ML3NgUsj5CVs5T3183T8XVkAFXMwvKUrcAvKwNWsTvX53+7/R0CwHoo15D8B6LFwmnhPSjKMUDhYPIOZa9SPyN0JcAoqvhpUU2ynsbmVWcqgMGeHRBKWJlOxQioGFcEFtvF8bBjQ7O+d5Cqu8lvCoayDfqW9FT4qBcenIDv+wkUf/e6e1QPWJ5F0AdH8VNhKz3gsJ6H8pMiX84vt4Etvtu0uxTZPLJtPr4hPXwNKLALgQ6qgXoQPmyx76sWOTuD+r6mRsB+SQVEMgdpse7IilfjaACpD3YMe4LKpqqStJGE/t9Ps5fV4J/41kcr3OR3O8zn9PE6/qA2qoTsijJn2BHmGujJ4PFKyoM1nCG9cS8yFUIM7xHuciMyg+TyA/At/SwWitiYZXGh3fOts5q/3IDiOTmq6I5T71yxT8AzhoF/ElUOD5AiYuxyHyYpVE1S0SogZH19OskfOyZzujNjnQptJw1TMjXCE2rfNmiD+WxxMwBsvq/ebgEFSIQrSIhpA/q/Bn6yrZ6vVx5YQoC4CeiVWlqHu66vDp8LEO7JOB3Fx503Av46FNM4IOqNL4Gx5YXSb4qP0kWmeWLNJvmvmAIu9yN8GqOA4PvbRDSTJxiGiYw/xhpAE1xyjEVdHN2P/SXaRLc=
-  file: "$ARTIFACT_SDIST"
+    secure: LQLLQ5p0inq9b4+26RByrgrklDNZu37CNMza2WXj5a9p3JDeBl6jpUkibiIBFdhLzhBfqUaiY0BO3YZNZWOvzuEJPql2maqfj82iQdFfkxpAmqZ19T14tmBdgR6QV2TLNXEuB4/d54b6VIaz4pys4o77+3EX30iuqssGDXY4okJJpxbODmd+j8R1x+B3OtIunoxTCkEM/A2JB0FSg6G0fDfZDq5P+5mIBdPA9DdfaUFdJl/+ZFmRJWREMUsSbX1cOolZmMj87uYRtW+aRTB/gPDwyz8PVS6jmG7JaW6gllCYFn0LyqWrinxEfv6tGaTbaPlrRhccrpRrPVbvWpJ/xHjl6hRewtpZt/BtBz3gZ+EiheMZ2Iz3jmOqsl1bzWwDMRwJB+g6GD6U7nvrmAmZ4amj2LT8dKWTqYiFTshSjdGZrLB4b0RVprzUpGWQZYBj2cvYW+TVElKLcRUNJPWjqu+9A85FOIHBTPo8s1vjcCa3cAbQJsvMqS2HvHUsmvBz3S/pMgbQYlncWYSPDcG3E7bysVD9AQvooHan2PK+1ggi4K8j16IbtrpzLGLR9zIY90Cc2cDUB7qLG4Dq1Rw4YMlJbg89anaKJ+hRe4n/GHUab6x92d2Xl8kxMN2MHymK7BWLhnHRL5LE6rrKAtaqtklJzF1GjakGxE9+IwH8mFY=
   skip_cleanup: true
+  file: $ARTIFACT_SDIST
   on:
     repo: cpascual/PAScual
-    tags: true
