@@ -3,7 +3,7 @@
 
 Maintainer: Carlos Pascual-Izarra < cpascual [AT] users.sourceforge.net >
 This manual is work in progress.
-The most recent version of this manual can be found at:
+The most recent version of this manual can be found at: 
 [http://pascual.sourceforge.net/UserManual.html](http://pascual.sourceforge.net/UserManual.html)
 It describes the features of the latest version (sometimes describes features that are only present in the development version but which will be available soon in the stable version)
 The screenshots shown in the manual may differ sometimes from the latest version. They are only updated if it affects to the discussion.
@@ -442,27 +442,27 @@ Here I am going to give a step-by-step example of few common things you can do w
 
 ## Example 1: simple fit
 
-1.- Launch PAScualGUI
-2.- Click on <tt>File-->Load Spectra</tt> (or use the icon in the toolbar). This will open the "Open Files" window.
-3.- Navigate to the <tt>examples</tt> directory.
-4.- Choose "Files of Type: <tt>LT</tt>" on the bottom (the spectra we are going to load are in LT file format).
-5.- Select the 5 files called CPI_A_00X.dat , (where X is 1-5) and click on "Open". Tip: you can select multiple files holding the CTRL key down while selecting them.
+1. Launch PAScualGUI
+2. Click on <tt>File-->Load Spectra</tt> (or use the icon in the toolbar). This will open the "Open Files" window.
+3. Navigate to the <tt>examples</tt> directory.
+4. Choose "Files of Type: <tt>LT</tt>" on the bottom (the spectra we are going to load are in LT file format).
+5. Select the 5 files called CPI_A_00X.dat , (where X is 1-5) and click on "Open". Tip: you can select multiple files holding the CTRL key down while selecting them.
 ![v1.2-LoadFiles.PNG](files/v1.2-LoadFiles.PNG "v1.2-LoadFiles.PNG")
-6.- When you selected open, the files were loaded, automatically inserted in the Spectra Selection list and checked. Also , the "Parameters Wizard" was launched.
-7.- If we wanted, we could cancel the the wizard and set the parameters manually, but the Wizard will make it easier, so we use it.
-8.- The first screen in the wizard allows us to set the Channel width (in ps per channel) and the instrumental resolution Full width half maximum (FWHM, in ps). These values depend on the experimental set-up. The channel width should be very well known through the calibration of the system and it is important to put the right number since it won't be fitted. The resolution FWHM is approximately known from the calibration and will be fitted, so an approximated guess will suffice. For this example, we set 50 ps/ch and 300 ps respectively. And we click on "Next".
+6. When you selected open, the files were loaded, automatically inserted in the Spectra Selection list and checked. Also , the "Parameters Wizard" was launched.
+7. If we wanted, we could cancel the the wizard and set the parameters manually, but the Wizard will make it easier, so we use it.
+8. The first screen in the wizard allows us to set the Channel width (in ps per channel) and the instrumental resolution Full width half maximum (FWHM, in ps). These values depend on the experimental set-up. The channel width should be very well known through the calibration of the system and it is important to put the right number since it won't be fitted. The resolution FWHM is approximately known from the calibration and will be fitted, so an approximated guess will suffice. For this example, we set 50 ps/ch and 300 ps respectively. And we click on "Next".
 ![v1.2-Wizard1.PNG](files/v1.2-Wizard1.PNG "v1.2-Wizard1.PNG")
-9.- The next screen in the wizard lets us set the Region of interest. The interface is exactly the same described in the [ROI selection section](User%20Manual.html#roisel) (read it for tips on how to perform graphical selection of parameters and how to zoom/unzoom in the plot). It is generally a good idea to select a region that starts from only a few channels below the maximum and ends as far to the right of the spectrum as there is significant data (i.e. just before any cut-off that could introduce a distortion, if any). For this example, we select 4 channels below the maximum (lower limit=-4 with the "relative to the max" option activated) up to the channel 1000 (upper limit=1000, not relative). Then we click "Next".
+9. The next screen in the wizard lets us set the Region of interest. The interface is exactly the same described in the [ROI selection section](User%20Manual.html#roisel) (read it for tips on how to perform graphical selection of parameters and how to zoom/unzoom in the plot). It is generally a good idea to select a region that starts from only a few channels below the maximum and ends as far to the right of the spectrum as there is significant data (i.e. just before any cut-off that could introduce a distortion, if any). For this example, we select 4 channels below the maximum (lower limit=-4 with the "relative to the max" option activated) up to the channel 1000 (upper limit=1000, not relative). Then we click "Next".
 ![v1.2-Wizard2.PNG](files/v1.2-Wizard2.PNG "v1.2-Wizard2.PNG")
-10.- The next page allows us to add components. It is possible to add some standard ones or custom ones. We add 3 components by clicking in "add ppS", then in "add Direct" and finally in "add oPs". In the text box on the right, we can see our selections and we can even edit them by hand.
+10. The next page allows us to add components. It is possible to add some standard ones or custom ones. We add 3 components by clicking in "add ppS", then in "add Direct" and finally in "add oPs". In the text box on the right, we can see our selections and we can even edit them by hand.
 ![v1.2-Wizard3.PNG](files/v1.2-Wizard3.PNG "v1.2-Wizard3.PNG")
-11.- Once added the 3 components, we click on Next and get to the Summary, where we can review the settings. It is important to take into account that it is always possible to refine some settings afterwards when we exit the Wizard. We click on "Finish" and can see that the spectra have been set with our selections. Click on any spectrum in the Spectra selection panel to see its specific settings (they are not necessarily the same for all spectra).
+11. Once added the 3 components, we click on Next and get to the Summary, where we can review the settings. It is important to take into account that it is always possible to refine some settings afterwards when we exit the Wizard. We click on "Finish" and can see that the spectra have been set with our selections. Click on any spectrum in the Spectra selection panel to see its specific settings (they are not necessarily the same for all spectra).
 ![v1.2-Wizard4.PNG](files/v1.2-Wizard4.PNG "v1.2-Wizard4.PNG")
-12.- We can observe that the checklist in the spectra selection panel is all green for our five spectra. This indicates that we can proceed to the fitting tab.
-13.- Clicking on the Fitting Tab will show that 5 sets have been created, each one containing just one spectrum. The spectra of this example are all very similar, so it makes sense to use the results of each fit to initialise the next fit. Also, we want just a quick LOCAL fit. Therefore, we leave the fitting mode as <tt>LOCAL-Connected</tt> (see the explanation of the [fitting modes](User%20Manual.html#fitmodes) above).
-14.- We only need to click on the "Play" button (![CRplayer_play.png](files/CRplayer_play.png "CRplayer_play.png")) to launch the fit. The fit should finish very quicikly in any modern computer, but in any case, it is possible to continue working while the fits are being done (e.g. you could start loading more spectra).
+12. We can observe that the checklist in the spectra selection panel is all green for our five spectra. This indicates that we can proceed to the fitting tab.
+13. Clicking on the Fitting Tab will show that 5 sets have been created, each one containing just one spectrum. The spectra of this example are all very similar, so it makes sense to use the results of each fit to initialise the next fit. Also, we want just a quick LOCAL fit. Therefore, we leave the fitting mode as <tt>LOCAL-Connected</tt> (see the explanation of the [fitting modes](User%20Manual.html#fitmodes) above).
+14. We only need to click on the "Play" button (![CRplayer_play.png](files/CRplayer_play.png "CRplayer_play.png")) to launch the fit. The fit should finish very quicikly in any modern computer, but in any case, it is possible to continue working while the fits are being done (e.g. you could start loading more spectra).
 ![v1.2-Fitting.PNG](files/v1.2-Fitting.PNG "v1.2-Fitting.PNG")
-15.- The results for the fit of each set appear in the results table as soon as they are available, in the form of a compact table. More detailed information appears in the Output tab. Both the results table and the Output, can be saved to text files for future reference. Selections of results in the results table can also be copied: select with the mouse, right-click and choose "Copy Results (Selection)". This can be pasted into a spreadsheet program.
+15. The results for the fit of each set appear in the results table as soon as they are available, in the form of a compact table. More detailed information appears in the Output tab. Both the results table and the Output, can be saved to text files for future reference. Selections of results in the results table can also be copied: select with the mouse, right-click and choose "Copy Results (Selection)". This can be pasted into a spreadsheet program.
 
 ## Example 2: Fitting a series of related spectra.
 
@@ -477,7 +477,10 @@ Here I am going to give a step-by-step example of few common things you can do w
 
 The mathematical background of PAScual has been written in the following paper:
 
-1.  C. Pascual-Izarra et al., “Characterisation of Amphiphile Self-Assembly Materials using Positron Annihilation Lifetime Spectroscopy (PALS)-Part1: Advanced Fitting Algorithms for Data Analysis,” _Journal of Physical Chemistry B_, vol. in review, 2008.
+C. Pascual-Izarra et al.,
+Advanced Fitting Algorithms for Analysing Positron Annihilation Lifetime Spectra,
+Nuclear Instruments and Methods A, 603, p456-466 (2009)
+(DOI: 10.1016/j.nima.2009.01.205)
 
 <a name="textmode"></a>
 
@@ -499,9 +502,10 @@ To use PAScual in text mode (advanced, you need some familiarity with Python syn
 
 If you use PAScual for your research, please acknowledge it by citing the following paper:
 
-C. Pascual-Izarra et al., _Characterisation of Amphiphile Self-Assembly Materials using Positron Annihilation Lifetime Spectroscopy (PALS)-Part1: Advanced Fitting Algorithms for Data Analysis_, Journal of Physical Chemistry B, [in review], 2008.
-
-see [http://pascual.sourceforge.net](http://pascual.sourceforge.net) for up-to-date information about citing.
+C. Pascual-Izarra et al.,
+Advanced Fitting Algorithms for Analysing Positron Annihilation Lifetime Spectra,
+Nuclear Instruments and Methods A, 603, p456-466 (2009)
+(DOI: 10.1016/j.nima.2009.01.205)
 
 Also, if you modify PAScual or use its source code for your own program, please notify me so that maybe your code can be included in future versions of PAScual and be useful for other people.
 
