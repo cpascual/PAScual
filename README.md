@@ -1,11 +1,11 @@
 PAScual: a Positron Annihilation Spectroscopy data analysis program.
 ====================================================================
 
-(c) 2007-2016 Carlos Pascual-Izarra
+(c) 2007-2019 Carlos Pascual-Izarra
 
 email: < cpascual [AT] users.sourceforge.net >
 
-Home page: http://pascual.sourceforge.net
+Home page: https://github.com/cpascual/PAScual
 
 
 Installation instructions for PAScual
@@ -21,7 +21,7 @@ For running PAScual you need, at least:
 - Numpy >=1.0.3
 - scipy >=0.5.2
 - PyQt >=4.6
-- PythonQwt >=0.5.5  (**Note that this is different from PyQwt5**)
+- PythonQwt >=0.5.5 
 
 For getting graphical output in the text mode interface, you may want
 
@@ -29,11 +29,16 @@ For getting graphical output in the text mode interface, you may want
 
 Except for PythonQwt, the rest of the packages should be available in the
 official repositories of any linux distribution that supports Python2.7.
-For windows, you can simplify the installation using the
-[PythonXY](pythonxy.org) bundle)
+
 For PythonQwt, you may need to use [PyPI](pypi.python.org)
 
-For more detailed instructions, refer to the User Manual.
+### TIP: using conda to install the pre-requisites
+
+You can create a [conda](https://docs.conda.io/en/latest/miniconda.html) environment with the required prerequisites with:
+
+`conda create -c conda-forge -n PAScual python=2 pythonqwt pyqt numpy scipy`
+
+
 
 Installing PAScual
 ------------------
