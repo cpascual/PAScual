@@ -44,15 +44,15 @@ artifacts:
       name: PAScual_MSI
 
 ### See https://www.appveyor.com/docs/deployment/github/
-deploy:
-  #release: PAScual-v$(appveyor_build_version)
-  description: 'PAScual Windows installer'
-  provider: GitHub
-  auth_token:
-    secure: j5IxMH2IZxvrvoVMfRYiZYvWG4WA0qT5ucKl6ctgFtFmVGQ4/jGjPjsw4+2eCWtg
-  artifact: PAScual_MSI
-  draft: false
-  prerelease: false
-  on:
-    branch: master                 # release from master branch only
-    appveyor_repo_tag: true        # deploy on tag push only
+#deploy:
+#  #release: PAScual-v$(appveyor_build_version)
+#  description: 'PAScual Windows installer'
+#  provider: GitHub
+#  auth_token:
+#    secure: j5IxMH2IZxvrvoVMfRYiZYvWG4WA0qT5ucKl6ctgFtFmVGQ4/jGjPjsw4+2eCWtg
+#  artifact: PAScual_MSI
+#  draft: false
+#  prerelease: false
+#  on:
+#    branch: master                 # release from master branch only
+#    appveyor_repo_tag: true        # deploy on tag push only
