@@ -118,7 +118,7 @@ class PALSplot(Qwt.QwtPlot):
         # 		self.picker.selected.connect( pointselected)
         self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
         self._exportPdfAction = QtGui.QAction("Export plot to PDF...", self)
-        self._exportPdfAction.triggered[()].connect(self.exportPdf)
+        self._exportPdfAction.triggered.connect(self.exportPdf)
         self.addAction(self._exportPdfAction)
 
     def attachCurve(self, x, y, name='', pen=None, style="Lines"):
