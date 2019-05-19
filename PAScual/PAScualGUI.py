@@ -372,7 +372,7 @@ class PAScualGUI(QMainWindow):
         for opt, dflt in zip(self.options.optlist, self.options.dfltlist):
             _type = type(dflt)
             v = self.settings.value('Options/' + opt, dflt)
-            if _type == bool:
+            if _type == bool and not isinstance(v, bool):
                 v = (v.lower() == 'true')
             else:
                 v = _type(v)  # cast to same type as dflt
