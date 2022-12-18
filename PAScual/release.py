@@ -18,6 +18,9 @@
 """
 # Common metadata to be used by the whole package
 
-__version__ = "2.1.5"
+__version__ = "2.1.6"
 __homepage__ = "https://github.com/cpascual/PAScual"
-__citation_html__ = 'C. Pascual-Izarra et al., <i>Advanced Fitting Algorithms for Analysing Positron Annihilation Lifetime Spectra</i>, Nuclear Instruments and Methods A, 603, p456-466 (2009) <p><a href="http://dx.doi.org/10.1016/j.nima.2009.01.205">(DOI: 10.1016/j.nima.2009.01.205)</a> <p>see %s for up-to-date information about citing</p>' % __homepage__
+__citation_html__ = (
+    'C. Pascual-Izarra et al., <i>Advanced Fitting Algorithms for Analysing Positron Annihilation Lifetime Spectra</i>, Nuclear Instruments and Methods A, 603, p456-466 (2009) <p><a href="http://dx.doi.org/10.1016/j.nima.2009.01.205">(DOI: 10.1016/j.nima.2009.01.205)</a> <p>see %s for up-to-date information about citing</p>'
+    % __homepage__
+)
