@@ -40,6 +40,7 @@ setup(
     description='Positron Annihilation Spectroscopy data analysis',
     long_description=open(os.path.join(os.path.dirname(__file__),
                                        'README.md')).read(),
+    long_description_content_type='text/markdown',
     keywords = "science PALS PAS positron annihilation fit",
 
     packages=find_packages(),
