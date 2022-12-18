@@ -1,26 +1,46 @@
-PAScual: a Positron Annihilation Spectroscopy data analysis program.
-====================================================================
+# PAScual: a Positron Annihilation Spectroscopy data analysis program.
 
-(c) 2007-2019 Carlos Pascual-Izarra
+(c) 2007-2022 Carlos Pascual-Izarra
 
 email: < cpascual [AT] users.sourceforge.net >
 
 Home page: https://github.com/cpascual/PAScual
 
 
-Installation instructions for PAScual
-=====================================
+## Installation instructions for PAScual
 
 
-Prerequisites
--------------
+The **recommended way** of installing PAScual is by using a virtual environment where all needed dependencies are installed using [mamba](https://mamba.readthedocs.io). For this, first [install mamba](https://mamba.readthedocs.io/en/latest/installation.html) and then, on a terminal, run: 
 
-For running PAScual you need, at least:
+```
+mamba create -c conda-forge -n PAScual python=2 pythonqwt pyqt numpy scipy
+
+mamba activate PAScual
+```
+
+> **Note**: Using other conda implementations such as [Anaconda](https://www.anaconda.com) should also work, but I found mamba **a lot** faster. Replace `mamba` by `conda` if you are using Anaconda or miniconda instead of mamba.
+
+
+Once the requirements are installed, **and in the same terminal (or a terminal where you alsready activated thePAScual environment), you can install PAScual with:
+
+```
+pip install PAScual
+```
+
+### Alternative: manual installation of PAScual
+
+
+> **Note**: I strongly recommended installing using a mamba (or conda) environment (as described above), specially for Windows users.
+
+If for some reason you cannot install with the recommended way, here are generic instructions to install it (but note that you may run into more trouble to get the proper versions of all the requirements).
+
+For running PAScual, at least the following packages **and all their dependencies** should
+be installed:
 
 - Python >=2.7
 - Numpy >=1.0.3
 - scipy >=0.5.2
-- PyQt >=4.6
+- PyQt >=5
 - PythonQwt >=0.5.5 
 
 For getting graphical output in the text mode interface, you may want
@@ -32,32 +52,18 @@ official repositories of any linux distribution that supports Python2.7.
 
 For PythonQwt, you may need to use [PyPI](pypi.python.org)
 
-### TIP: using conda to install the pre-requisites
-
-You can create a [conda](https://docs.conda.io/en/latest/miniconda.html) environment with the required prerequisites with:
-
-`conda create -c conda-forge -n PAScual python=2 pythonqwt pyqt numpy scipy`
-
-
-
-Installing PAScual
-------------------
-
-The simplest way is to use:
+Once the requirements are properly installed, you can install PAScual with:
 
 ```
 pip install PAScual
 ```
 
-Alternatively, you can also download the tar.gz from PyPI, untar it into a
-temporary directory, change to it and run:
 
-```
-python setup.py install
-```
+## Running PAScual
 
-Running PAScual
----------------
+
+> *Note**: if you installed PAScual in a virtual environment (as recommended), make sure to activate the environment before continuing (i.e., in your current terminal, run `mamba activate PAScual` or equivalent)
+
 
 Once installed, just run the following command to get the graphical application:
 
@@ -69,8 +75,7 @@ And I recommend to try the tutorial from the User Manual (some example spectra
 are provided in the examples dir)
 
 
-Important:
-==========
+# Important:
 
 **PLEASE give credit:**
 
