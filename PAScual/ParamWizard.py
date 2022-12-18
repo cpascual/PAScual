@@ -24,8 +24,8 @@ from qwt.qt.QtCore import *
 from qwt.qt.QtGui import *
 
 
-from ui import UILoadable
-from ROISelectorDlg import ROISelectorDialog
+from .ui import UILoadable
+from .ROISelectorDlg import ROISelectorDialog
 
 @UILoadable()
 class AddCompsWidget(QWidget):
@@ -211,7 +211,7 @@ class SummaryPage(QWizardPage):
         w.roilist = w.ROIPage.ROIsel.roilist
         w.bg = S.zeros(len(w.selected))
         w.deltabg = S.zeros(len(w.selected))
-        for i in xrange(len(w.selected)):
+        for i in range(len(w.selected)):
             nbgroi = min(10, 0.1 * w.roilist[i].size)
             w.bg[i] = w.selected[i].exp[w.roilist[i][-nbgroi:]].mean()
             w.deltabg[i] = 10 * max(10, S.sqrt(w.bg[i]), w.selected[i].exp[
@@ -222,14 +222,14 @@ class SummaryPage(QWizardPage):
     def buildSummary(self):
         w = self.wizard()
         summary = "According to your selections, the following parameters will be set:<ul>"
-        for i in xrange(len(w.selected)):
+        for i in range(len(w.selected)):
             summary += "<li><b>%s</b>: %.1f ps/ch  ; FWHM=%.1f; ROI: %i-%i  ; bg=%.0f  ; %i comps</li>" % (
             w.selected[i].name, float(w.psperchannel),
             float(w.FWHM), w.roilist[i][0], w.roilist[i][-1], w.bg[i],
             w.taus.size)
         summary += "</ul>"
         summary += "<p>The components to be used are (tau [min,max]):<ul>"
-        for i in xrange(
+        for i in range(
             w.taus.size): summary += "<li>%.0f  [%.0f-%.0f]</li>" % (
         w.taus[i], w.mintaus[i], w.maxtaus[i])
         summary += "</ul></p>"
@@ -283,7 +283,7 @@ class ParamWizard(QWizard):
 
 
 if __name__ == "__main__":
-    from PAScual import discretepals
+    from .PAScual import discretepals
 
     # fake data
     dp2 = discretepals(name="fake2", expdata=S.arange(1024) * 2)

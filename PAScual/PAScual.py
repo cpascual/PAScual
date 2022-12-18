@@ -17,9 +17,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-from release import __version__
+from .release import __version__
 
-import cPickle as pickle
+import pickle as pickle
 import copy
 import os
 import random
@@ -69,7 +69,7 @@ class newcolor(object):
                           'orange', 'cyan', 'purple', 'violet', 'khaki']
         self.i0 = i0
 
-    def next(self):
+    def __next__(self):
         result = self.colorlist[self.i]
         self.i += 1
         if self.i >= len(self.colorlist): self.i = self.i0
@@ -95,7 +95,7 @@ class tee(object):
     def prnt(self, string):
         '''this method is useful if you dont want to permanently redirect sys.stdout but want a print-like behaviour'''
         for fileobject in self.fileobjects:
-            print >> fileobject, string
+            print(string, file=fileobject)
 
     def write(self, string):
         '''This method is useful for making sys.stdout=tee(sys.__stdout__,logfile)
@@ -360,9 +360,9 @@ class fitpar(fitpar_original):
         self.best = None
 
     def showreport(self):
-        print "%s: %.3e (%.3e) [%s - %s]\n\tFree=%s NNRLA: %.3e (%.3e)\n\t%s" % (
+        print("%s: %.3e (%.3e) [%s - %s]\n\tFree=%s NNRLA: %.3e (%.3e)\n\t%s" % (
         self.name, self.val, S.sqrt(self.var), self.minval, self.maxval,
-        self.free, self.NNRLA_delta, self.NNRLA_sigma, self)
+        self.free, self.NNRLA_delta, self.NNRLA_sigma, self))
 
     def importval(self, val, onlyfree=False):
         '''Changes the value only if it is within limits. If onlyfree is True, the parameter is only changed if it is free
@@ -449,7 +449,7 @@ class discretepals(fitable):
         else:
             self.roi = S.arange(self.exp.size, dtype='i')
         if len(taulist) != len(
-            itylist): raise TypeError, 'taulist and itylist must be of same size'
+            itylist): raise TypeError('taulist and itylist must be of same size')
         for ob in taulist + itylist:
             if not isinstance(ob, fitpar): raise TypeError("Fitpar wanted")
         self.taulist = taulist
@@ -483,7 +483,7 @@ class discretepals(fitable):
         self.tau = S.zeros(self.ncomp, dtype='d')
         self.ity = S.zeros(self.ncomp, dtype='d')
         self.freeityindexes = []
-        for i in xrange(self.ncomp):
+        for i in range(self.ncomp):
             self.tau[i], self.ity[i] = self.taulist[i].val, self.itylist[
                 i].val  # filling the tau and ity vectors
             if self.itylist[i].free: self.freeityindexes.append(i)
@@ -591,14 +591,14 @@ class discretepals(fitable):
         recalc_M = []
         recalc_M_dot_a = False
         if self.fwhm.changed():
-            recalc_M = range(self.ncomp)
+            recalc_M = list(range(self.ncomp))
         if self.c0.changed():
-            recalc_M = range(self.ncomp)
+            recalc_M = list(range(self.ncomp))
             self.channeltimes = self.calculate_channeltimes(self.roi,
                                                             self.c0.val,
                                                             self.psperchannel)
         #		print ";;;;;;;;;;;;;;;;;;;;;;;;;",self.ncomp
-        for i in xrange(self.ncomp):
+        for i in range(self.ncomp):
             if self.taulist[i].changed():
                 self.tau[i] = self.taulist[i].val
                 recalc_M.append(i)
@@ -727,7 +727,7 @@ class discretepals(fitable):
         S.sqrt(self.c0.var), self.bg.mean, S.sqrt(self.bg.var))
         npad = (min_ncomp - self.ncomp)
         #		for ity,i in zip(self.itylist,range(len(self.itylist))): retval+="%9g\t%9g\t"%(ity.mean*itynorm[i], S.sqrt(ity.var)*itynorm[i])
-        for i in xrange(self.ncomp): retval += "%9g\t%9g\t" % (
+        for i in range(self.ncomp): retval += "%9g\t%9g\t" % (
         itymean[i], ityerr[i])
         retval += (2 * npad) * ("%9g\t" % 0)
         for tau in self.taulist: retval += "%9g\t%9g\t" % (
@@ -755,7 +755,7 @@ class discretepals(fitable):
         result += "bg   [ct]: %5g (%g)\t  [%s]\n" % (
         self.bg.mean, S.sqrt(self.bg.var), self.bg.freetag)
         result += "Intensities [%]       Lifetimes [ps]\n"
-        for i in xrange(self.ncomp):
+        for i in range(self.ncomp):
             ity, tau = self.itylist[i], self.taulist[i]
             #			result+= "%4.1f (%4.1f) [%s]         %5i (%i) [%s]\n"%(ity.mean*itynorm[i], S.sqrt(ity.var)*itynorm[i], ity.freetag, tau.mean, S.sqrt(tau.var), tau.freetag)
             result += "%4.1f (%4.1f) [%s]         %5i (%i) [%s]\n" % (
@@ -766,7 +766,7 @@ class discretepals(fitable):
         result += "Chi2: %.3f \t (=%.3e/DOF)\t AutoCorrel:%.3e\n" % (
         self.chi2 / self.dof, self.chi2, autocorr)
         result += '---------------------'
-        if not silent: print result
+        if not silent: print(result)
         return result
 
     def calculate_residuals_local_correlation(self, residuals=None,
@@ -781,7 +781,7 @@ class discretepals(fitable):
         if nboxes < 1: raise ValueError(
             "The locallength must be smaller than the size of the residuals")
         result = 0
-        for i in xrange(nboxes):
+        for i in range(nboxes):
             localcorr = S.corrcoef(self.channeltimes[i:i + locallength],
                                    residuals[i:i + locallength])[0][1]
             result += localcorr * localcorr
@@ -1136,9 +1136,9 @@ class palsset(fitable):
             "ROImin", "ROImax", "ROIch", "Integral"))
             file.write("%9s\t%9s\t%9s\t%9s\t%9s\t%9s\t" % (
             "FWHM", "dev", "c0", "dev", "bg", "dev"))
-            for i in xrange(1, min_ncomp + 1): file.write(
+            for i in range(1, min_ncomp + 1): file.write(
                 "%9s\t%9s\t" % ("ity%i" % i, "dev"))
-            for i in xrange(1, min_ncomp + 1): file.write(
+            for i in range(1, min_ncomp + 1): file.write(
                 "%9s\t%9s\t" % ("tau%i" % i, "dev"))
             file.write("\n")
         for ob in self.spectralist: ob.showreport_1row(file=file,
@@ -1146,20 +1146,20 @@ class palsset(fitable):
 
     def showreport(self, T=None, acc=None, verbosity=0, NNRLA=-1):
         clock = time.clock()
-        print "*********************************************"
-        print "Set name:", self.name
-        if T: print "T= %.2e " % (T)
-        print "X2= %.3e(mean)  %.3e(min)  %.3e(deviation)  %.3e(curr)" % (
-        self.chi2_mean, self.chi2_best, S.sqrt(self.chi2_var), self.chi2)
+        print("*********************************************")
+        print("Set name:", self.name)
+        if T: print("T= %.2e " % (T))
+        print("X2= %.3e(mean)  %.3e(min)  %.3e(deviation)  %.3e(curr)" % (
+        self.chi2_mean, self.chi2_best, S.sqrt(self.chi2_var), self.chi2))
         if acc is not None:
-            print "accepted: %i  (%.1f%% , %.1f%%increased)" % (
-            acc, self.accratio * 100, self.inc_dec_ratio * 100)
-            print "NNRLA period: %.1f iter (average) " % (
-            self.NNRLAcount / float(acc))
-        print  "Time: %.5g s" % (clock - self.lastclock)
+            print("accepted: %i  (%.1f%% , %.1f%%increased)" % (
+            acc, self.accratio * 100, self.inc_dec_ratio * 100))
+            print("NNRLA period: %.1f iter (average) " % (
+            self.NNRLAcount / float(acc)))
+        print("Time: %.5g s" % (clock - self.lastclock))
         self.lastclock = clock
         if verbosity > 0:
-            print "Spectra:"
+            print("Spectra:")
             for ob in self.spectralist:
                 ob.showreport()
         if verbosity > 1:
@@ -1170,7 +1170,7 @@ class palsset(fitable):
             pylab.gca().set_yscale('log')
             pylab.plot(kk.channeltimes, kk.exp[kk.roi])
             pylab.plot(kk.channeltimes, kk.sim)
-        print "*********************************************"
+        print("*********************************************")
 
     def graph_report(self, filename=None, show=True):
         newclr = newcolor(i0=2)
@@ -1189,10 +1189,10 @@ class palsset(fitable):
                    color='black')  # draw a base line for reference
         pylab.plot([self.roimin, self.roimax], [-1, -1],
                    color='black')  # draw a base line for reference
-        print 'Plot legend:'
+        print('Plot legend:')
         for sp in self.spectralist:
-            col = newclr.next()
-            print  col, sp.name
+            col = next(newclr)
+            print(col, sp.name)
             chi2, residuals = sp.recalculate_chi2(full_output=True,
                                                   forcecalc=True)
             pylab.subplot(211)
@@ -1206,7 +1206,7 @@ class palsset(fitable):
                        marker='o', markersize=3.)
         if filename is not None:
             pylab.savefig(filename)
-            print "\nGraphic output saved to '%s'\n" % filename
+            print("\nGraphic output saved to '%s'\n" % filename)
         if show: pylab.show()
 
     def simann(self, LM=None, startT=2., stopT=1e-3, stepT=.9, maxiter=S.inf,
@@ -1227,7 +1227,7 @@ class palsset(fitable):
             T *= 10.
             self.MCMC_generate(LM=LM, T=T, ireport=LM, NNRLA='auto',
                                direct=False)
-            print 'SimAnn: initial acc. ratio too low. Increasing T to %.2g' % T
+            print('SimAnn: initial acc. ratio too low. Increasing T to %.2g' % T)
             if abort.abortRequested(): return  # check if we should abort
         # The SA loop
         emitter.initCommandPBar.emit(int(-S.log(T)), int(-S.log(stopT)))
@@ -1240,19 +1240,19 @@ class palsset(fitable):
             emitter.commandPBarValue.emit(int(-S.log(T)))
             # Check exit conditions
             if iter > maxiter:
-                print '\nMaximum number of iterations reached\n'
+                print('\nMaximum number of iterations reached\n')
                 endflag = True
             if T < stopT:
-                print '\nMinimum T reached\n'
+                print('\nMinimum T reached\n')
                 endflag = True
             if self.chi2_mean < chi2min and self.chi2_var < tolerance:
-                print '\nMinimum chi2 reached\n'
+                print('\nMinimum chi2 reached\n')
                 endflag = True
             if self.chi2_var < tolerance and iter > 15 and self.accratio < minaccratio:
-                print '\nMinimum acceptance ratio reached (soft limit)\n'
+                print('\nMinimum acceptance ratio reached (soft limit)\n')
                 endflag = True
             if self.accratio < hardminaccratio:
-                print '\nMinimum acceptance ratio reached (hard limit)\n'
+                print('\nMinimum acceptance ratio reached (hard limit)\n')
                 endflag = True
 
     def BI(self, LM, stabilisation=0., ireport=None, factor=None, iemit=-1,
@@ -1281,14 +1281,14 @@ class palsset(fitable):
         for ob in self.fitparlist: ob.val = ob.mean
         self.calculate_chi2(recalc=True)
         if ireport > 0:
-            print 'Results for the MEAN state obtained after %i BI iterations:' % (
-            LM * factor)
+            print('Results for the MEAN state obtained after %i BI iterations:' % (
+            LM * factor))
             self.showreport(acc=LM * factor, verbosity=1)
         # Show the values for the BEST fit
-        print 'Results for the "BEST chi2" state found in %i BI iterations:\n(non-normized intensities!)' % (
-        LM * factor)
-        print 'Best chi2: %5e' % (self.chi2_best)
-        for ob in self.fitparlist: print "%9s: %9g" % (ob.name, ob.best)
+        print('Results for the "BEST chi2" state found in %i BI iterations:\n(non-normized intensities!)' % (
+        LM * factor))
+        print('Best chi2: %5e' % (self.chi2_best))
+        for ob in self.fitparlist: print("%9s: %9g" % (ob.name, ob.best))
 
         # Save the history of the parameters (with a header)
         if savehist:
@@ -1296,12 +1296,12 @@ class palsset(fitable):
                 histfile = open(savehist, 'w')
             else:
                 histfile = savehist
-            if ireport > 0: print "\n Saving history of parameters in '%s'..." % savehist,
-            print >> histfile, "# ", time.asctime()
-            print >> histfile, "# History of the following parameters (in rows):"
-            print >> histfile, "# ", tuple([ob.name for ob in self.fitparlist])
+            if ireport > 0: print("\n Saving history of parameters in '%s'..." % savehist, end=' ')
+            print("# ", time.asctime(), file=histfile)
+            print("# History of the following parameters (in rows):", file=histfile)
+            print("# ", tuple([ob.name for ob in self.fitparlist]), file=histfile)
             S.savetxt(histfile, tuple([ob.hist for ob in self.fitparlist]))
-            if ireport > 0: print " Done."
+            if ireport > 0: print(" Done.")
             histfile.close()
         self.confirm()
 
@@ -1380,7 +1380,7 @@ class palsset(fitable):
         # itys now contains the indexes for the parameters that are intensities in myargs
         itys = S.array(itys)
         # Try to do a (relatively fast) *unbounded* minimisation using a Levenberg-Marquardt algorithm
-        if ireport: print "\nTrying a Levenberg-Marquardt (LMA) fit\n"
+        if ireport: print("\nTrying a Levenberg-Marquardt (LMA) fit\n")
         emitter.commandPBarValue.emit(1)
         #		self.showreport(verbosity=1)
         if abort.abortRequested(): return  # check if we should abort
@@ -1404,14 +1404,14 @@ class palsset(fitable):
         (myx > minmaxarray[:, 0]) * (myx < minmaxarray[:, 1])).all()
         if not withinlimits and forcelimits:
             if ireport:
-                print "\nLMA failed to give result within limits:"
+                print("\nLMA failed to give result within limits:")
                 for fp in myargs:
                     if fp.maxval is None:
                         maxval = S.inf
                     else:
                         maxval = fp.maxval
                     if not (fp.minval < fp.val < maxval): fp.showreport()
-                print "\nTrying a bounded minimisation (may be slow)\nProgress:",
+                print("\nTrying a bounded minimisation (may be slow)\nProgress:", end=' ')
             # reset the state
             self.undolist += myargs
             self.undo()
@@ -1425,7 +1425,7 @@ class palsset(fitable):
                                                          bounds=minmax, m=10,
                                                          iprint=-1)
             emitter.commandPBarValue.emit(2)
-            if ireport: print '#',
+            if ireport: print('#', end=' ')
             # Do several runs of unbound simplex downhill till it converges
             warnflag, i = True, 0
             while warnflag and i < maxunbound:
@@ -1438,7 +1438,7 @@ class palsset(fitable):
                     factor=100, diag=None)
                 warnflag = (ier != 1)
                 #				print mesg
-                if ireport: print '>',
+                if ireport: print('>', end=' ')
             emitter.commandPBarValue.emit(3)
             # Do a second L-BFGS-B minimisation
             #			myx=S.where(myx<minmaxarray[:,0], minmaxarray[:,0], myx)
@@ -1450,7 +1450,7 @@ class palsset(fitable):
                                                          bounds=minmax, m=10,
                                                          iprint=-1)
             emitter.commandPBarValue.emit(4)
-            if ireport: print '#\n'
+            if ireport: print('#\n')
         # Confirm and show the results
         emitter.commandPBarValue.emit(5)
         self.calculate_chi2(recalc=True)
@@ -1458,13 +1458,13 @@ class palsset(fitable):
         self.clearstats()
         err = S.diag(cov_x)
         # put errors for the raw parameters
-        for i in xrange(len(err)): myargs[i].var = err[i]
+        for i in range(len(err)): myargs[i].var = err[i]
         # now caculate the errors for the intensities after normalisation for each espectrum independently
         for dp in self.spectralist:
             if dp.freeityindexes.size > 0:
                 # find the indexes for the free intensities for this spectrum
                 aindexes = S.zeros(dp.freeityindexes.size, dtype='i')
-                for i, j in zip(dp.freeityindexes, xrange(aindexes.size)):
+                for i, j in zip(dp.freeityindexes, range(aindexes.size)):
                     # aindexes contains the indexes (in myargs) of the free intensities for this spectrum
                     aindexes[j] = objectindex(dp.itylist[i], myargs)
                 a = myx[aindexes]
@@ -1529,7 +1529,7 @@ class palsset(fitable):
         # decode args
         xmap = args
         # decode x
-        for i in xrange(len(x)):
+        for i in range(len(x)):
             #			if xmap[i].val!=x[i]: xmap[i].val=x[i]
             xmap[i].val = x[i]
         chi2 = self.calculate_chi2(recalc=True)
@@ -1543,7 +1543,7 @@ class palsset(fitable):
         # decode args
         xmap = args
         # decode x
-        for i in xrange(len(x)): xmap[i].val = x[i]
+        for i in range(len(x)): xmap[i].val = x[i]
         # calculate the residuals of each spectrum
         res = []
         for ob in self.spectralist:  # TODO: Optimize code (eliminate append, maybe calculate residuals without callng recalculate_chi2(), and so...)
@@ -1674,9 +1674,9 @@ def distributeinsets(dplist):
                    dplist]  # find the connection groups for each spectrum in the list
     exclude = []
     # check the uniqueness of each case
-    for i in xrange(len(connections)):
+    for i in range(len(connections)):
         if not exclude.count(i):  # if i is not amongst the already excluded
-            for j in xrange(i + 1, len(connections)):
+            for j in range(i + 1, len(connections)):
                 if len(connections[i]) == len(unique(
                                 connections[i] + connections[
                             j])):  # this is true only the elements of connections[j] are the same as those of  connections[i]
@@ -1689,7 +1689,7 @@ def distributeinsets(dplist):
     result = []
     pad = int(S.ceil(S.log10(max(1, len(
         connections)))))  # find the number of digits needed for 0-padded sequential number
-    for i in xrange(len(connections)):
+    for i in range(len(connections)):
         result.append(palsset(name='SET_%0*i' % (pad, i),
                               spectralist=connections[
                                   i]))  # instantiate spectrum set and init it with a group of connected spectra
@@ -1700,24 +1700,24 @@ def printwarning(message, wait=False):
     '''It prints a warning, returns it for logging and, optionally, waits for user acknowledgement'''
     if isinstance(message, list):
         if len(message) > 0:
-            print '\n******************************************************************'
-            print '%i warning(s) occurred:' % len(message)
-            for ob in message: print ob
-            print '******************************************************************\n'
+            print('\n******************************************************************')
+            print('%i warning(s) occurred:' % len(message))
+            for ob in message: print(ob)
+            print('******************************************************************\n')
         return len(message)
     else:
         w = "WARNING (%s): %s" % (time.asctime(), message)
-        print "\n%s\n" % w
+        print("\n%s\n" % w)
         if wait:
-            print "(press ENTER to continue)\n"
-            raw_input()
+            print("(press ENTER to continue)\n")
+            input()
         return [w]
 
 
 def mainprogram(warningslog=[]):
     '''Initialises, and then runs the command interpreter'''
     # import the input info
-    import PAScual_input as userinput
+    from . import PAScual_input as userinput
     time.clock()  # Set start of time measuring (we ignore the import time for scipy and pylab)   )
     S.random.seed(userinput.seed)  # Seeding the random generators.
 
@@ -1741,7 +1741,7 @@ def mainprogram(warningslog=[]):
         userinput.namedparameters = {}
     namedpars = {}
     # note that the diff beetween namedpars and userinput.namedparameters is that the former will only contain already instantiated fitpars
-    for k in userinput.namedparameters.keys():
+    for k in list(userinput.namedparameters.keys()):
         if isinstance(userinput.namedparameters[k],
                       str): warningslog += printwarning(
             "Defining a named parameter using another named parameter may lead to problems. You are warned.",
@@ -1776,9 +1776,9 @@ def mainprogram(warningslog=[]):
 
     ###read the spectra from ascii file(s).
     expdata = []
-    print "\nReading %i spectra" % nspectra,
+    print("\nReading %i spectra" % nspectra, end=' ')
     for fname, hdrlns in zip(userinput.expfilenames, userinput.headerlines):
-        print '.',
+        print('.', end=' ')
         if fname is None:
             expdata.append(None)  # No exp data is given (we will only simulate)
         else:
@@ -1800,7 +1800,7 @@ def mainprogram(warningslog=[]):
         userinput.left_of_max = to_list(nspectra, userinput.left_of_max)
         userinput.stopdat = to_list(nspectra, userinput.stopdat)
         userinput.roi = []
-        for i in xrange(nspectra): userinput.roi.append(
+        for i in range(nspectra): userinput.roi.append(
             MELTlikeROI(expdata[i], headerlines=userinput.headerlines[i],
                         left_of_max=userinput.left_of_max[i],
                         stopdat=userinput.stopdat[i]))
@@ -1824,9 +1824,9 @@ def mainprogram(warningslog=[]):
 
     # instantiate all the fitpar and the spectrum objects
     spectra = []
-    print "\nInitialising simulations",
-    for i in xrange(nspectra):
-        print '.',
+    print("\nInitialising simulations", end=' ')
+    for i in range(nspectra):
+        print('.', end=' ')
         # Assign fwhm
         fwhm = assignfitpar(userinput.fwhm[i], namedpars)
         # Assign c0
@@ -1869,7 +1869,7 @@ def mainprogram(warningslog=[]):
                          c0=c0, psperchannel=userinput.psperchannel[i],
                          fake=fake, area=1))
 
-    print "\nGenerating sets"
+    print("\nGenerating sets")
     # Now instantiate the palsset(s) and register spectra
     palssetslist = distributeinsets(spectra)
     npalssets = len(palssetslist)
@@ -1895,17 +1895,17 @@ def mainprogram(warningslog=[]):
     # Main loop of fitting. for all palssets
     saveslot = saveslot_auto = saveslot_user = None  # before starting with the fit of each palsset, reset the save slots
     logfilesdict = {}
-    for iset in xrange(npalssets):
+    for iset in range(npalssets):
         temp = " Processing %s (%s) " % (
         palssetslist[iset].name, time.asctime())
         starwidth = 5 + len(temp) + 5
-        print "\n" + (starwidth * "*")
-        print "*****%s*****" % temp
-        print (starwidth * "*") + "\n"
-        print '%s is comprised of the following spectra: ' % palssetslist[
-            iset].name,
-        for ob in palssetslist[iset].spectralist: print ob.name,
-        print
+        print("\n" + (starwidth * "*"))
+        print("*****%s*****" % temp)
+        print((starwidth * "*") + "\n")
+        print('%s is comprised of the following spectra: ' % palssetslist[
+            iset].name, end=' ')
+        for ob in palssetslist[iset].spectralist: print(ob.name, end=' ')
+        print()
         # parse commands for this set
         for text in userinput.fitmode[iset]:
             try:  # This try-except block is here to catch CTRL+C presses while executing a given program
@@ -1918,9 +1918,9 @@ def mainprogram(warningslog=[]):
                     args = None
                 # LOAD command
                 if cmd == 'LOAD':
-                    print '\n********* Loading previous results **************\n'
+                    print('\n********* Loading previous results **************\n')
                     if args:  # load from file
-                        print "\nPrevious status loaded from '%s'\n" % args
+                        print("\nPrevious status loaded from '%s'\n" % args)
                         try:
                             saveslot = pickle.load(open(args, 'rb'))
                         except IOError:
@@ -1946,7 +1946,7 @@ def mainprogram(warningslog=[]):
                     palssetslist[iset].clearstats()
                 # SA command
                 elif cmd == 'SA':
-                    print '\n********* Performing Simulated Annealing **************\n'
+                    print('\n********* Performing Simulated Annealing **************\n')
                     palssetslist[iset].simann(minaccratio=0.1,
                                               direct=userinput.SA_direct[iset],
                                               stopT=userinput.SA_stopT[iset],
@@ -1961,7 +1961,7 @@ def mainprogram(warningslog=[]):
                         forcelimits = (args != 'NOLIMITS')
                     else:
                         forcelimits = True
-                    print '\n********* Performing Local search **************\n'
+                    print('\n********* Performing Local search **************\n')
                     temp = copy.deepcopy(palssetslist[
                                              iset])  # making backup in case LOCAL minimisation fails
                     try:
@@ -1975,30 +1975,30 @@ def mainprogram(warningslog=[]):
                             iset] = temp  # recovering original from backup
                 # BI command
                 elif cmd == 'BI':
-                    print '\n********* Performing Bayesian Inference **************\n'
+                    print('\n********* Performing Bayesian Inference **************\n')
                     palssetslist[iset].BI(LM=userinput.BI_length[iset],
                                           stabilisation=userinput.BI_stab[iset],
                                           ireport=userinput.BI_report[iset],
                                           savehist=userinput.BI_savehist)
                 # SAVE command
                 elif cmd == 'SAVE':
-                    print '\n********* Saving results **************\n'
+                    print('\n********* Saving results **************\n')
                     saveslot_user = copy.deepcopy(palssetslist[iset])
                     saveslot_user.name = "Saved(%s)" % palssetslist[iset].name
                     if args:
                         pickle.dump(saveslot_user, open(args, 'wb'),
                                     -1)  # if a filename is provided, save a copy there
-                        print "\nCurrent status saved in '%s'\n" % args
+                        print("\nCurrent status saved in '%s'\n" % args)
                 # REPORT command
                 elif cmd == 'REPORT':
-                    print '\n********* Reporting **************\n'
+                    print('\n********* Reporting **************\n')
                     palssetslist[iset].showreport(verbosity=1)
                     if args:
                         if args.upper().strip() == 'G': palssetslist[
                             iset].graph_report()
                     # FAKE command.
                 elif cmd == 'FAKE':
-                    print '\n********* Generating fake spectra **************\n'
+                    print('\n********* Generating fake spectra **************\n')
                     filename = None
                     if args:
                         args = args.split(None, 1)
@@ -2021,8 +2021,8 @@ def mainprogram(warningslog=[]):
                         suffix = ''
                         for sp in temp.spectralist:
                             if len(temp.spectralist) > 1: suffix = sp.name
-                            print "\nFake spectrum written in '%s'\n" % (
-                            filename + suffix)
+                            print("\nFake spectrum written in '%s'\n" % (
+                            filename + suffix))
                             #							S.savetxt(filename+suffix,sp.exp)
                             sp.saveAs_LT(filename + suffix)
                 elif cmd == 'LOG':
@@ -2074,7 +2074,7 @@ def safemain():
         printwarning(warningslog)
         raise
     printwarning(warningslog)
-    print '\n\n********* DISCRETEPALS took %5.3f seconds of cpu time ********* \n' % time.clock()
+    print('\n\n********* DISCRETEPALS took %5.3f seconds of cpu time ********* \n' % time.clock())
     return 0
 
 
@@ -2103,7 +2103,7 @@ def start():
     try:
         import pylab
     except:
-        print >> sys.stderr, "Pylab could not be imported. Graphical output won't be supported"
+        print("Pylab could not be imported. Graphical output won't be supported", file=sys.stderr)
     safemain()
 
 if __name__ == '__main__':

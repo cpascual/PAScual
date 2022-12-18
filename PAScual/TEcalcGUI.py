@@ -21,9 +21,9 @@ import sys
 from qwt.qt.QtCore import *
 from qwt.qt.QtGui import *
 
-from pyTaoEldrup import *
+from .pyTaoEldrup import *
 
-from ui import UILoadable
+from .ui import UILoadable
 
 
 @UILoadable()
@@ -164,7 +164,7 @@ class TEcalcDialog(QDialog):
         self.resultsTable.setHorizontalHeaderLabels(self.resultsHeader)
         self.resultsTable.resizeColumnsToContents()
         self.resultsTable.setRowCount(tau.size)
-        for i in xrange(tau.size):
+        for i in range(tau.size):
             self.resultsTable.setItem(i, 0, QTableWidgetItem("%g" % tau[i]))
             self.resultsTable.setItem(i, 1, QTableWidgetItem("%g" % T[i]))
             self.resultsTable.setItem(i, 2, QTableWidgetItem("%g" % size[i]))

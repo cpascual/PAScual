@@ -25,7 +25,7 @@ See: TL Dull et al., J. Phys Chem B 105, 4657 (2001)
 
 '''
 
-from pyTaoEldrup import *
+from .pyTaoEldrup import *
 
 
 def raw_inputdflt(prompt, dflt=None):
@@ -33,7 +33,7 @@ def raw_inputdflt(prompt, dflt=None):
     """
     if dflt:
         prompt = "%s[%s] " % (prompt, dflt)
-        res = raw_input(prompt)
+        res = input(prompt)
     if not res and dflt:
         return dflt
     return res
@@ -42,31 +42,31 @@ def raw_inputdflt(prompt, dflt=None):
 # ////////////////////////////////MAIN FUNCTION\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\
 
 def TEcalc():
-    print 'Tao-Eldrup Calculator, v0.3'
-    print '(C) 2007 Carlos Pascual-Izarra\n'
+    print('Tao-Eldrup Calculator, v0.3')
+    print('(C) 2007 Carlos Pascual-Izarra\n')
     T = 298.
     cont = True
     while (cont):
         try:
-            tau = float(raw_input('oPs lifetime? (ns) (enter 0 to finish) '))
+            tau = float(input('oPs lifetime? (ns) (enter 0 to finish) '))
         except ValueError:
             continue
         if tau > 0:
             T = float(raw_inputdflt('Temperature? (Kelvin)', T))
             if tau < 15.:
                 R = TE_radius(tau)
-                print '\nOriginal TE model: Sphere radius= %.5lg nm or %.5lg nm (hard sphere) ' % (
-                R, R + TE_softwall)
+                print('\nOriginal TE model: Sphere radius= %.5lg nm or %.5lg nm (hard sphere) ' % (
+                R, R + TE_softwall))
             else:
-                print 'Original TE model: (out of range)'
+                print('Original TE model: (out of range)')
             a = RTE_cube(tau, T)
-            print 'RTE model: Cube side= %.5lg nm' % a
+            print('RTE model: Cube side= %.5lg nm' % a)
             R = a / 2. - TE_softwall
-            print 'RTE model: Equivalent sphere radius= %.5lg nm or %.5lg nm (hard sphere) ' % (
-            R, R + TE_softwall)
-            print 'RTE model: Square channel side= %.5lg nm' % RTE_channel(tau,
-                                                                           T)
-            print 'RTE model: Sheet spacing= %.5lg nm\n' % RTE_sheet(tau, T)
+            print('RTE model: Equivalent sphere radius= %.5lg nm or %.5lg nm (hard sphere) ' % (
+            R, R + TE_softwall))
+            print('RTE model: Square channel side= %.5lg nm' % RTE_channel(tau,
+                                                                           T))
+            print('RTE model: Sheet spacing= %.5lg nm\n' % RTE_sheet(tau, T))
         else:
             cont = False
 
@@ -75,8 +75,8 @@ def PlotCurves():
     try:
         import pylab
     except ImportError:
-        print '\nError: you need http://matplotlib.sourceforge.net/ installed on your computer for PlotCurves to work'
-        print 'See http://matplotlib.sourceforge.net/\n'
+        print('\nError: you need http://matplotlib.sourceforge.net/ installed on your computer for PlotCurves to work')
+        print('See http://matplotlib.sourceforge.net/\n')
         return
     T = 298.
     mfp = S.concatenate(

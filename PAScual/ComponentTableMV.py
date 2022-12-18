@@ -22,11 +22,11 @@ import sys
 from qwt.qt.QtCore import *
 from qwt.qt.QtGui import *
 
-from PAScual import fitpar
+from .PAScual import fitpar
 
 # set names for column numbers
 _ncolumns = 5
-[VAL, FIX, COMMON, MINVAL, MAXVAL] = range(_ncolumns)
+[VAL, FIX, COMMON, MINVAL, MAXVAL] = list(range(_ncolumns))
 
 
 class componentTableRow(object):
@@ -242,11 +242,11 @@ class demo(QDialog):
             self.tauorityBT.setText("Swtich to Ity")
 
     def showreport(self):
-        print '-------------------------------'
+        print('-------------------------------')
         for cp in self.model.components:
             cp.tau.showreport()
             cp.ity.showreport()
-        print '-------------------------------'
+        print('-------------------------------')
 
 
 if __name__ == "__main__":

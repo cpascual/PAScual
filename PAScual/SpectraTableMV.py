@@ -22,13 +22,13 @@ import sys
 from qwt.qt.QtCore import *
 from qwt.qt.QtGui import *
 
-from PAScual import discretepals, palsset
+from .PAScual import discretepals, palsset
 
 # set names for column numbers
 _ncolumns = 8
-[SEL, NAME, ROI, PSPC, FWHM, BG, C0, COMP] = range(_ncolumns)
+[SEL, NAME, ROI, PSPC, FWHM, BG, C0, COMP] = list(range(_ncolumns))
 
-import PAScual_rc
+from . import PAScual_rc
 
 
 # Spectra Table Model
@@ -305,7 +305,7 @@ class demo(QDialog):
         s = self.table.selectionModel().selectedRows()
         for idx in s:
             dp = self.model.data(idx, role=Qt.UserRole)
-            print dp.name
+            print(dp.name)
 
 
 if __name__ == "__main__":

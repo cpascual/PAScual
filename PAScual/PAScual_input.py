@@ -225,10 +225,10 @@ BI_length = 50000  # (*3)This much steps (multiplied by the order of the searchi
 seed = 1345  # Seed for pseudorandom generator
 
 if __name__ == '__main__':
-    from PAScual import *
+    from .PAScual import *
 
     try:
         import pylab
     except:
-        print >> sys.stderr, "Pylab could not be imported. Graphical output won't be supported"
+        print("Pylab could not be imported. Graphical output won't be supported", file=sys.stderr)
     safemain()

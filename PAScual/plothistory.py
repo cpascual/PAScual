@@ -42,7 +42,7 @@ p = p.split(",")
 # raw_input()
 
 # load the history
-print "Reading '%s' This may take a while..." % histfile
+print("Reading '%s' This may take a while..." % histfile)
 M = S.loadtxt(f)
 # Mbck=M.copy()
 f.close()
@@ -53,12 +53,12 @@ M[itys, :] *= 100. / M[itys, :].sum(axis=0)
 
 # 2D histograms (interactive)
 def make2dhist(fill=True, bins=30, ncolors=64):
-    print "************"
-    for i, name in zip(range(len(p)), p): print i, name
-    print
-    i = int(raw_input("parX?"))
+    print("************")
+    for i, name in zip(list(range(len(p))), p): print(i, name)
+    print()
+    i = int(input("parX?"))
     if i < 0: return False
-    j = int(raw_input("parY?"))
+    j = int(input("parY?"))
     if j < 0: return False
     if fill:
         plotcont = pylab.contourf
@@ -76,11 +76,11 @@ def make2dhist(fill=True, bins=30, ncolors=64):
         # calculate mode:
         imax = h2.argmax()
         ii, jj = imax % h2.shape[0], imax / h2.shape[0]
-        print "mode:", xb[ii], yb[jj]
+        print("mode:", xb[ii], yb[jj])
     pylab.show()
     return True
 
 
 if __name__ == '__main__':
     while make2dhist(fill=True, bins=binning, ncolors=100): pass
-    print 'To start again, type: "while make2dhist(fill=False, bins=binning):pass"'
+    print('To start again, type: "while make2dhist(fill=False, bins=binning):pass"')

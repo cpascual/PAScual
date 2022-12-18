@@ -18,13 +18,13 @@
 '''
 
 # import sys
-import cPickle as pickle
+import pickle as pickle
 import copy
 
 from qwt.qt.QtCore import *
 from qwt.qt.QtGui import *
 
-from PAScual import printwarning
+from .PAScual import printwarning
 
 
 class fitter(QThread):
@@ -72,13 +72,13 @@ class fitter(QThread):
     def launchFit(self, ps):
         '''This launches the fit (called via the run method). For the given palsset, it interpretes the commands and calls the appropriate functions'''
         self.completed = False
-        for ob, icmd in zip(ps.commands, range(len(ps.commands))):
+        for ob, icmd in zip(ps.commands, list(range(len(ps.commands)))):
             if self.isStopped(): return  # This makes possible to respond to a request of stopping the fit
             cmd = ob.cmd
             args = ob.args
             # SA command
             if cmd == 'SA':
-                print '\n********* Performing Simulated Annealing **************\n'
+                print('\n********* Performing Simulated Annealing **************\n')
                 ps.simann(minaccratio=self.options.SA_minaccratio,
                           direct=self.options.SA_direct,
                           stopT=self.options.SA_stopT,
@@ -86,7 +86,7 @@ class fitter(QThread):
                           tolerance=self.options.SA_tol,
                           meltratio=self.options.SA_meltratio)
             elif cmd == 'LOCAL':
-                print '\n********* Performing Local search **************\n'
+                print('\n********* Performing Local search **************\n')
                 if args:
                     args = args.strip().upper()
                     forcelimits = (args != 'NOLIMITS')
@@ -102,7 +102,7 @@ class fitter(QThread):
                     ps = temp  # recovering original from backup
             # BI command
             elif cmd == 'BI':
-                print '\n********* Performing Bayesian Inference **************\n'
+                print('\n********* Performing Bayesian Inference **************\n')
                 savehist = self.options.BI_savehist and self.options.BI_histFile
                 ps.BI(LM=self.options.BI_length,
                       stabilisation=self.options.BI_stab,
@@ -110,9 +110,9 @@ class fitter(QThread):
                       savehist=savehist)
             # LOAD command
             elif cmd == 'LOAD':
-                print '\n********* Loading previous results **************\n'
+                print('\n********* Loading previous results **************\n')
                 if args:  # load from file
-                    print "\nPrevious status loaded from '%s'\n" % args
+                    print("\nPrevious status loaded from '%s'\n" % args)
                     try:
                         self.saveslot = pickle.load(open(args, 'rb'))
                     except IOError:
@@ -136,13 +136,13 @@ class fitter(QThread):
                 ps.clearstats()
             # SAVE command
             elif cmd == 'SAVE':
-                print '\n********* Saving results **************\n'
+                print('\n********* Saving results **************\n')
                 self.saveslot_user = copy.deepcopy(ps)
                 self.saveslot_user.name = "Saved(%s)" % ps.name
                 if args:
                     pickle.dump(self.saveslot_user, open(args, 'wb'),
                                 -1)  # if a filename is provided, save a copy there
-                    print "\nCurrent status saved in '%s'\n" % args
+                    print("\nCurrent status saved in '%s'\n" % args)
 
             # END command
             elif cmd == 'END':

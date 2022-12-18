@@ -55,19 +55,19 @@ elif qt.API == 'pyqt5':
     sys.excepthook = excepthook
 
 
-from qt_filedlg import getOpenFileName, getSaveFileName
+from .qt_filedlg import getOpenFileName, getSaveFileName
 
-from PAScual import *
-import CommandsTableMV as CMDTMV
-import ComponentTableMV as CTMV
-import PASCommandProcess as PCP
-import PASoptions
-import SpecFiles
-import SpectraTableMV as STMV
-from ui import UILoadable
-from PlotGraphWidget import PALSplot, ResPlot
-from ROISelectorDlg import ROISelectorDialog
-from release import __version__, __homepage__, __citation_html__
+from .PAScual import *
+from . import CommandsTableMV as CMDTMV
+from . import ComponentTableMV as CTMV
+from . import PASCommandProcess as PCP
+from . import PASoptions
+from . import SpecFiles
+from . import SpectraTableMV as STMV
+from .ui import UILoadable
+from .PlotGraphWidget import PALSplot, ResPlot
+from .ROISelectorDlg import ROISelectorDialog
+from .release import __version__, __homepage__, __citation_html__
 
 
 defaultFitModesDict = {'LOCAL-connected': ('LOAD', 'LOCAL', 'SAVE'),
@@ -137,7 +137,7 @@ class FitparWidget(QWidget):
         for widget, col in zip(
                 [self.label, self.BTAutoFill, self.LEValue, self.CBFix,
                  self.CBCommon, self.LEMin, self.LEMax, self.BTApply],
-                range(8)):
+                list(range(8))):
             gridlayout.addWidget(widget, row, col)
 
     def removefromGridLayout(self, gridlayout=None, row=None):
@@ -381,7 +381,7 @@ class PAScualGUI(QMainWindow):
         S.random.seed(int(self.options.seed))  # Seeding the random generators.
 
     def createParamWizard(self):
-        from ParamWizard import ParamWizard
+        from .ParamWizard import ParamWizard
         self.paramWizard = ParamWizard(None)
         app.focusChanged.connect(self.paramWizard.ROIPage.ROIsel.onFocusChanged)  # manage the focus events (needed for mouse selection in ROI)
 
@@ -513,8 +513,8 @@ class PAScualGUI(QMainWindow):
                                     "Error opening file. Output won't be written")
                 return
         # Write the output to the file
-        print >> ofile, "\n" + str(
-            self.previousOutputTE.toPlainText()) + "\n"
+        print("\n" + str(
+            self.previousOutputTE.toPlainText()) + "\n", file=ofile)
         ofile.close()
 
     def _onPlotSelectedFit(self):
@@ -578,16 +578,16 @@ class PAScualGUI(QMainWindow):
         # Fit of the exp, sim, bg and components
         self.plotfitDlg.fitplot.attachCurve(S.arange(dp.exp.size), dp.exp,
                                             name=dp.name, pen=QPen(
-                self.plotfitDlg.fitplot.autocolor.next(), 4), style="Dots")
+                next(self.plotfitDlg.fitplot.autocolor), 4), style="Dots")
         self.plotfitDlg.fitplot.attachCurve(dp.roi, dp.sim, name='fit',
                                             pen=QPen(
-                                                self.plotfitDlg.fitplot.autocolor.next(),
+                                                next(self.plotfitDlg.fitplot.autocolor),
                                                 2))
         self.plotfitDlg.fitplot.attachCurve(dp.roi,
                                             S.ones(dp.sim.size) * dp.bg.val,
                                             name='bkgnd')
         ity = dp.normalizeity()
-        for i in xrange(dp.ncomp):
+        for i in range(dp.ncomp):
             area = dp.M_dot_a.sum()
             comp = ((dp.exparea - dp.bg.val * S.size(dp.sim)) / area) * dp.M[:,
                                                                         i] * \
@@ -621,7 +621,7 @@ class PAScualGUI(QMainWindow):
             fit[:, 1] = dp.sim
             fit[:, 2] = S.ones(dp.sim.size) * dp.bg.val
             ity = dp.normalizeity()
-            for i in xrange(dp.ncomp):
+            for i in range(dp.ncomp):
                 header += ' Comp%i' % (i + 1)
                 area = dp.M_dot_a.sum()
                 fit[:, 3 + i] = ((dp.exparea - dp.bg.val * S.size(
@@ -694,7 +694,7 @@ class PAScualGUI(QMainWindow):
                 else:
                     bgbrush = QBrush(
                         Qt.red)  # highlight if chi2 is out of normal values
-                for c, s in zip(range(len(rowitems)), rowitems):
+                for c, s in zip(list(range(len(rowitems))), rowitems):
                     item = QTableWidgetItem(s)
                     item.setBackground(bgbrush)
                     self.resultsTable.setItem(row, c, item)
@@ -721,7 +721,7 @@ class PAScualGUI(QMainWindow):
                 key = str(item.text(0))
                 self.palssetsdict[key].commands = commands
         else:  # if the box is not checked, assign the current fitmode to all the sets
-            for ps in self.palssetsdict.values(): ps.commands = commands
+            for ps in list(self.palssetsdict.values()): ps.commands = commands
 
     def advanceFitQueue(self, key=None):
         if self.fitter.isRunning():  # extra safety check. Make sure that fitter is not running at this moment
@@ -756,12 +756,12 @@ class PAScualGUI(QMainWindow):
 
     def generatequeue(self):
         if self.fitter.isRunning():
-            print 'DEBUG: cannot regenerate the queue while one fit is running'  # TODO: handle this properly
+            print('DEBUG: cannot regenerate the queue while one fit is running')  # TODO: handle this properly
             return
         # create a filtered version of palssetsdict (remove those which have no commands)
         rejected = {}
         accepted = {}
-        for ps in self.palssetsdict.values():
+        for ps in list(self.palssetsdict.values()):
             if len(ps.commands) == 1 and ps.commands[0].cmd.upper() == 'END':
                 rejected[ps.name] = ps
             else:
@@ -823,7 +823,7 @@ class PAScualGUI(QMainWindow):
                 self.onStopFit()
                 return
             skipped = self.stopFitter(offerForce=False)
-        print "\nCurrent fit skipped\n"
+        print("\nCurrent fit skipped\n")
 
     def onStopFit(self):
         """Stops the current fit"""
@@ -854,7 +854,7 @@ class PAScualGUI(QMainWindow):
                                     "There are no sets to fit", QMessageBox.Ok)
             return
         # check the common itys for each set in the queue
-        for ps in self.fitqueuedict.values():
+        for ps in list(self.fitqueuedict.values()):
             answer = None
             if not ps.goodItyErrors():
                 answer = QMessageBox.warning(self,
@@ -906,7 +906,7 @@ class PAScualGUI(QMainWindow):
         self.resultsTable.clear()
         self.resultsTable.setRowCount(0)
         spectra = []
-        for ps in self.fitqueuedict.values(): spectra += ps.spectralist
+        for ps in list(self.fitqueuedict.values()): spectra += ps.spectralist
         self.results_min_ncomp = max([ob.ncomp for ob in spectra])
         self.resultsHeader = ["name", "chi2", "autocorr", "Set", "ROImin",
                               "ROImax", "ROIch", "Integral", "FWHM", "dev",
@@ -926,9 +926,9 @@ class PAScualGUI(QMainWindow):
         self.commandPBar.reset()
         self.setPBar.reset()
         # Print a message to indicate a new calculation
-        print 60 * '*'
-        print time.asctime()
-        print 60 * '*'
+        print(60 * '*')
+        print(time.asctime())
+        print(60 * '*')
         # Start the fit
         self.advanceFitQueue()
 
@@ -1137,7 +1137,7 @@ class PAScualGUI(QMainWindow):
             return
         self.SBoxNcomp.setValue(
             len(dp.taulist))  # this puts the right number of comps
-        for i in xrange(len(dp.taulist)):
+        for i in range(len(dp.taulist)):
             self.compModel.components[i].tau = copy.deepcopy(dp.taulist[i])
             self.compModel.components[i].ity = copy.deepcopy(dp.itylist[i])
             self.compModel.components[i].tau.common = self.compModel.components[
@@ -1230,7 +1230,7 @@ class PAScualGUI(QMainWindow):
                     applymatrix[i, :] = False
             if len(dp.taulist) == 0: dp.taulist = dp.itylist = None
         # At this point we have an applymatrix and taulist of the correct size. So we can apply the components
-        for j in xrange(ncomps):
+        for j in range(ncomps):
             cp = self.compModel.components[j]
             # We regenerate the components instead of using the existing fitpar because we want to reinitialize them!
             tau = fitpar(val=cp.tau.val, name='Tau%i' % (j + 1),
@@ -1239,7 +1239,7 @@ class PAScualGUI(QMainWindow):
             ity = fitpar(val=cp.ity.val, name='Ity%i' % (j + 1),
                          minval=cp.ity.minval, maxval=cp.ity.maxval,
                          free=cp.ity.free)
-            for i in xrange(nspect):
+            for i in range(nspect):
                 dp = selected[i]
                 if applymatrix[i, j]:
                     if not cp.tau.common: tau = copy.deepcopy(
@@ -1531,7 +1531,7 @@ class PAScualGUI(QMainWindow):
         # Check if there are hidden cells
         hidden = 0
         saveall = True
-        for i in xrange(self.resultsTable.columnCount()): hidden += int(
+        for i in range(self.resultsTable.columnCount()): hidden += int(
             self.resultsTable.isColumnHidden(i))
         if hidden:
             answer = QMessageBox.question(
@@ -1552,16 +1552,16 @@ class PAScualGUI(QMainWindow):
         # Write the results to the file
         widths = [20, 14, 14, 9, 6, 6, 6, 14, 9, 9, 9, 9, 9,
                   9] + 4 * self.results_min_ncomp * [9]
-        print >> ofile, "\n"
-        print >> ofile, "# " + time.asctime()
-        print >> ofile, "# " + customdescription
-        for col in xrange(self.resultsTable.columnCount()):
+        print("\n", file=ofile)
+        print("# " + time.asctime(), file=ofile)
+        print("# " + customdescription, file=ofile)
+        for col in range(self.resultsTable.columnCount()):
             if saveall or not self.resultsTable.isColumnHidden(col):
                 fmt = "%%%is\t" % widths[col]
                 ofile.write(fmt % self.resultsHeader[col])
-        for row in xrange(self.resultsTable.rowCount()):
+        for row in range(self.resultsTable.rowCount()):
             ofile.write("\n")
-            for col in xrange(self.resultsTable.columnCount()):
+            for col in range(self.resultsTable.columnCount()):
                 if saveall or not self.resultsTable.isColumnHidden(col):
                     fmt = "%%%is\t" % widths[col]
                     ofile.write(
@@ -1584,7 +1584,7 @@ class PAScualGUI(QMainWindow):
             taulist = []
             itylist = []
             ncomps = self.compModel.rowCount()
-            for j in xrange(ncomps):
+            for j in range(ncomps):
                 cp = self.compModel.components[j]
                 taulist.append(fitpar(val=cp.tau.val, name='Tau%i' % (j + 1),
                                       minval=cp.tau.minval,
@@ -1613,7 +1613,7 @@ class PAScualGUI(QMainWindow):
         self.savespectrum(dp)
 
     def launchTEcalc(self):
-        from TEcalcGUI import TEcalcDialog
+        from .TEcalcGUI import TEcalcDialog
         self.TEcalc = TEcalcDialog()
         self.TEcalc.show()
 
@@ -1667,7 +1667,7 @@ class PAScualGUI(QMainWindow):
         for dp in selected:  # wipe the taulist and itylist
             dp.taulist = w.taus.size * [None]
             dp.itylist = w.taus.size * [None]
-        for j in xrange(w.taus.size):
+        for j in range(w.taus.size):
             cp = self.compModel.components[j]
             # We regenerate the components instead of using the existing fitpar because we want to reinitialize them!
             tau = fitpar(val=w.taus[j], name='Tau%i' % (j + 1),
@@ -1723,7 +1723,7 @@ class PAScualGUI(QMainWindow):
             taulist = []
             itylist = []
             ncomps = self.compModel.rowCount()
-            for j in xrange(ncomps):
+            for j in range(ncomps):
                 cp = self.compModel.components[j]
                 taulist.append(fitpar(val=cp.tau.val, name='Tau%i' % (j + 1),
                                       minval=cp.tau.minval,
@@ -1736,7 +1736,7 @@ class PAScualGUI(QMainWindow):
                               taulist=taulist, itylist=itylist, bg=bg,
                               fwhm=fwhm, c0=c0, psperchannel=psperchannel)
             # Save the parameters as a pickled discretepals object
-            print 'DEBUG:', filename
+            print('DEBUG:', filename)
             pickle.dump(dp, open(str(filename), 'wb'), -1)
             return dp
         return None

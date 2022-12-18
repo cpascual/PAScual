@@ -26,7 +26,7 @@ import qwt as Qwt
 import sys
 from qwt.qt import QtCore, QtGui
 from numpy import *
-from qt_filedlg import getSaveFileName
+from .qt_filedlg import getSaveFileName
 
 plotcolors_bright = [QtCore.Qt.black, QtCore.Qt.red, QtCore.Qt.blue, QtCore.Qt.magenta,
                      QtCore.Qt.green, QtCore.Qt.cyan, QtCore.Qt.yellow, QtCore.Qt.gray, ]
@@ -61,7 +61,7 @@ class cycliclist(object):
         self.index = index
         return self.current()
 
-    def next(self):
+    def __next__(self):
         '''advances one item in the list and returns it'''
         self.index += 1
         return self.current()
@@ -122,7 +122,7 @@ class PALSplot(Qwt.QwtPlot):
         self.addAction(self._exportPdfAction)
 
     def attachCurve(self, x, y, name='', pen=None, style="Lines"):
-        if pen is None: pen = QtGui.QPen(self.autocolor.next())
+        if pen is None: pen = QtGui.QPen(next(self.autocolor))
         self.YscaleMax = max(self.YscaleMax, 1.2 * max(y))
         self.YscaleMin = min(self.YscaleMin, max(1, 0.5 * min(y)))
         curve = Qwt.QwtPlotCurve(name)
@@ -241,7 +241,7 @@ class ResPlot(Qwt.QwtPlot):
         self.addAction(self._exportPdfAction)
 
     def attachCurve(self, x, y, name='', pen=None):
-        if pen is None: pen = QtGui.QPen(self.autocolor.next(), 2)
+        if pen is None: pen = QtGui.QPen(next(self.autocolor), 2)
         self.YscaleMax = min(10, 1.2 * max(y))
         self.YscaleMin = max(-10, 1.2 * min(y))
         curve = Qwt.QwtPlotCurve(name)
@@ -335,7 +335,7 @@ def make():
 # make()
 
 def pointselected(pos):
-    print pos.x()
+    print(pos.x())
 
 
 def main(args):

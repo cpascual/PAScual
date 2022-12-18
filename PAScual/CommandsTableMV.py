@@ -25,7 +25,7 @@ from qwt.qt.QtGui import *
 
 # set names for column numbers
 _ncolumns = 2
-[CMD, ARGS] = range(_ncolumns)
+[CMD, ARGS] = list(range(_ncolumns))
 knowncommands = ['END', 'LOCAL', 'SA', 'BI', 'LOG', 'LOAD', 'SAVE']
 
 
@@ -258,7 +258,7 @@ class demo(QDialog):
 
     def onData(self):
         cmds = self.model.dumpData()
-        for c in cmds: print c.cmd, c.args
+        for c in cmds: print(c.cmd, c.args)
 
 
 if __name__ == "__main__":

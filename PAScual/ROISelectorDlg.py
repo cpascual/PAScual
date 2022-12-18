@@ -23,7 +23,7 @@ import sys
 from qwt.qt.QtCore import *
 from qwt.qt.QtGui import *
 
-from PlotGraphWidget import PALSplot
+from .PlotGraphWidget import PALSplot
 
 
 class ROISelectorDialog(QDialog):
@@ -206,7 +206,7 @@ class ROISelectorDialog(QDialog):
 
 
 def make(app=None):
-    from PAScual import discretepals
+    from .PAScual import discretepals
     # fake data
     dp1 = discretepals(expdata=S.arange(1024))
     dp2 = discretepals(name="fake2", expdata=S.arange(1024) * 2)
@@ -222,7 +222,7 @@ def make(app=None):
     demo.exec_()
     demo.resetSelected([dp3, dp4])
     demo.exec_()
-    print demo.result()
+    print(demo.result())
     return demo
 
 

@@ -19,9 +19,9 @@
 
 from qwt.qt.QtCore import *
 from qwt.qt.QtGui import *
-from qt_filedlg import getOpenFileName, getSaveFileName
+from .qt_filedlg import getOpenFileName, getSaveFileName
 
-from ui import UILoadable
+from .ui import UILoadable
 
 class Options(object):
     def __init__(self):
@@ -53,11 +53,11 @@ class Options(object):
             setattr(self, opt, dflt)
 
     def _pprint(self):
-        print str(self)
+        print(str(self))
         for opt, dflt in zip(self.optlist, self.dfltlist):
             v = getattr(self,opt)
-            print "\t%s, %s %r (default=%s %r)" % (opt, type(v), v, type(dflt),
-                                                   dflt)
+            print("\t%s, %s %r (default=%s %r)" % (opt, type(v), v, type(dflt),
+                                                   dflt))
 
 @UILoadable
 class OptionsDlg(QDialog):

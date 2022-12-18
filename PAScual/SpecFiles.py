@@ -56,7 +56,7 @@ class MAESTROfileLoader(spectrumFileLoader):
         self.filenamefilter = '*.chn'
 
     def expdata(self, fname):
-        import CHNfiles
+        from . import CHNfiles
         hdr, expdata = CHNfiles.CHN.readCHN(fname)
         return S.array(expdata, dtype='d')
 
@@ -86,7 +86,7 @@ class ASCIIfileloader(spectrumFileLoader):
         if self.askmode == 't':
             # asks in text mode
             self.hdrlns = self.int(
-                raw_input('Number of lines to skip in the header?'))
+                input('Number of lines to skip in the header?'))
             okflag = True
         if self.askmode == 'qt':
             # Asks via a qt dialog. This assumes that Qt is installed. You must provide a parent for the dialog

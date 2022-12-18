@@ -29,7 +29,7 @@ class CHN(object):
 
     @staticmethod
     def readCHN(CHNfile):
-        if isinstance(CHNfile, (str, str)): CHNfile = open(CHNfile, 'rb')
+        if isinstance(CHNfile, str): CHNfile = open(CHNfile, 'rb')
         raw = CHNfile.read()
         CHNfile.close()
         # the header contains the following: (ftype,mca_num,segment,secs,realtime,livetime,acqtime,channoffset,nchann)
@@ -55,8 +55,8 @@ class CHN(object):
             if rm > 0:
                 nrow += 1
                 if onError == 'w':
-                    print>> sys.stderr, 'Warning: padded with %i zeros' % (
-                    ncol - rm)
+                    print('Warning: padded with %i zeros' % (
+                    ncol - rm), file=sys.stderr)
                 elif onError == 'n':
                     pass
                 else:
@@ -71,7 +71,7 @@ class CHN(object):
                 channels = arange(1, dat.size + 1)
                 channels.resize(dat.size, 1)
                 dat.resize(dat.size, 1)
-                print>> ASCIIfile, "Channel Counts"
+                print("Channel Counts", file=ASCIIfile)
                 savetxt(ASCIIfile, concatenate((channels, dat), axis=1),
                         fmt='%i')
             else:

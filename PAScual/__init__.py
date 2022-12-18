@@ -1,1 +1,1 @@
-from release import __version__
+from .release import __version__

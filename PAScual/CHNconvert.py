@@ -19,7 +19,7 @@
 import glob
 import sys
 
-import CHNfiles
+from . import CHNfiles
 
 #############################################
 ## Change the following options to your needs
@@ -51,9 +51,9 @@ if __name__ == '__main__':
         filenames = sys.argv[1:]
     else:
         filenames = glob.glob(FILES)
-    print "Converting %i files..." % len(filenames)
+    print("Converting %i files..." % len(filenames))
     for f in filenames:
-        print "'%s' " % f,
+        print("'%s' " % f, end=' ')
         spectrum = CHNfiles.CHN(f)
         ASCIIfile = f.rsplit('.', 1)[0] + EXTENSION
         if LTOUTPUT:
@@ -63,4 +63,4 @@ if __name__ == '__main__':
         else:
             spectrum.toASCII(ASCIIfile, ncol=COLUMNS, hdr="", onError='w',
                              writechannel=WRITECHANNEL)
-        print "--> '%s' (%i columns) " % (ASCIIfile, COLUMNS)
+        print("--> '%s' (%i columns) " % (ASCIIfile, COLUMNS))

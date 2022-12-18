@@ -18,68 +18,68 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-print "Testing the required Python packages"
+print("Testing the required Python packages")
 
 ##print '**Required for PAScual.py'
-print '\nnumpy...',
+print('\nnumpy...', end=' ')
 try:
     import numpy as t1
 except:
-    print "Failed"
+    print("Failed")
 else:
-    print 'ok, version:', t1.version.version
+    print('ok, version:', t1.version.version)
 
-print '\nscipy...',
+print('\nscipy...', end=' ')
 try:
     import scipy as t2
 except:
-    print "Failed"
+    print("Failed")
 else:
-    print 'ok, version:', t2.version.version
+    print('ok, version:', t2.version.version)
 
 ##print '**Required for graphs in text mode'
 
-print '\nmatplotlib...',
+print('\nmatplotlib...', end=' ')
 try:
     import matplotlib as t3
 except:
-    print "Failed"
+    print("Failed")
 else:
-    print 'ok, version:', t3.__version__
+    print('ok, version:', t3.__version__)
 
 ##print '**Required for PAScualGUI.py'
 
-print '\nPyQt...',
+print('\nPyQt...', end=' ')
 try:
     import qwt.qt.QtCore as t4
     import qwt.qt.QtGui as t4b
 except:
-    print "Failed"
+    print("Failed")
 else:
-    print 'ok, version:', t4.PYQT_VERSION_STR
+    print('ok, version:', t4.PYQT_VERSION_STR)
 
-print '\nPythonQwt...',
+print('\nPythonQwt...', end=' ')
 try:
     import qwt as t5
 except:
-    print "Failed"
+    print("Failed")
 else:
-    print 'ok, version:', t5.__version__
+    print('ok, version:', t5.__version__)
 
-print '\n\nTesting PAScual.py',
+print('\n\nTesting PAScual.py', end=' ')
 try:
-    import PAScual as t6
+    from . import PAScual as t6
 except:
-    print "Failed"
+    print("Failed")
 else:
-    print 'ok, version:', t6.__version__
+    print('ok, version:', t6.__version__)
 
-print '\n\nTesting PAScualGUI.py',
+print('\n\nTesting PAScualGUI.py', end=' ')
 try:
-    import PAScualGUI as t7
+    from . import PAScualGUI as t7
 except:
-    print "Failed"
+    print("Failed")
 else:
-    print 'ok, version:', t7.__version__
+    print('ok, version:', t7.__version__)
 
-raw_input('\n\nPress <Enter> key to finish')
+input('\n\nPress <Enter> key to finish')
