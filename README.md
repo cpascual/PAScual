@@ -21,7 +21,7 @@ mamba activate PAScual
 > **Note**: Using other conda implementations such as [Anaconda](https://www.anaconda.com) should also work, but I found mamba **a lot** faster. Replace `mamba` by `conda` if you are using Anaconda or miniconda instead of mamba.
 
 
-Once the requirements are installed, **and in the same terminal (or a terminal where you alsready activated thePAScual environment), you can install PAScual with:
+Once the requirements are installed, **and in the same terminal** (or a terminal where you alsready activated the PAScual environment), you can install PAScual with:
 
 ```
 pip install PAScual
@@ -62,7 +62,7 @@ pip install PAScual
 ## Running PAScual
 
 
-> *Note**: if you installed PAScual in a virtual environment (as recommended), make sure to activate the environment before continuing (i.e., in your current terminal, run `mamba activate PAScual` or equivalent)
+> **Note**: if you installed PAScual in a virtual environment (as recommended), make sure to activate the environment before continuing (i.e., in your current terminal, run `mamba activate PAScual` or equivalent)
 
 
 Once installed, just run the following command to get the graphical application:
