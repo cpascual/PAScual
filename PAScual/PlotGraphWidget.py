@@ -24,7 +24,7 @@ PlotGraphWidget: Widget for plotting spectra. Originally based on an example cod
 import qwt as Qwt
 import sys
 from PyQt5 import QtGui, QtCore, QtWidgets
-from numpy import inf
+import numpy as np
 
 plotcolors_bright = [QtCore.Qt.black, QtCore.Qt.red, QtCore.Qt.blue, QtCore.Qt.magenta,
                      QtCore.Qt.green, QtCore.Qt.cyan, QtCore.Qt.yellow, QtCore.Qt.gray, ]
@@ -75,7 +75,7 @@ class PALSplot(Qwt.QwtPlot):
     def __init__(self, *args):
         Qwt.QwtPlot.__init__(self, *args)
         self.YscaleMax = 0
-        self.YscaleMin = inf
+        self.YscaleMin = np.inf
         self.setAxisScaleEngine(Qwt.QwtPlot.yLeft, Qwt.QwtLogScaleEngine())
         # self.plotLayout().setMargin(0)
         self.plotLayout().setCanvasMargin(0)
@@ -127,7 +127,7 @@ class PALSplot(Qwt.QwtPlot):
         curve.attach(self)
         curve.setPen(pen)
         curve.setStyle(getattr(Qwt.QwtPlotCurve, style))
-        curve.setData(x, where(y == 0, 1e-99, y))
+        curve.setData(x, np.where(y == 0, 1e-99, y))
         self._plotdict[name] = curve
         self.clearZoomStack()
         return curve
@@ -246,7 +246,7 @@ class ResPlot(Qwt.QwtPlot):
         curve.attach(self)
         curve.setPen(pen)
         curve.setStyle(Qwt.QwtPlotCurve.Dots)
-        curve.setData(x, where(y == 0, 1e-99, y))
+        curve.setData(x, np.where(y == 0, 1e-99, y))
         self._plotdict[name] = curve
         self.clearZoomStack()
         return curve
