@@ -35,15 +35,13 @@
 
 
 import platform
+import os
 import sys
+import copy
+import pickle
 import numpy as np
 
 from PyQt5 import Qt
-
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-
 
 import traceback
 
@@ -53,7 +51,7 @@ def excepthook(etype, value, tb):
 sys.excepthook = excepthook
 
 
-from .PAScual import *
+from .PAScual import emitter, abort, discretepals, distributeinsets, fitpar
 from . import CommandsTableMV as CMDTMV
 from . import ComponentTableMV as CTMV
 from . import PASCommandProcess as PCP
@@ -80,7 +78,7 @@ defaultFitModesDict = {'LOCAL-connected': ('LOAD', 'LOCAL', 'SAVE'),
 defaultFitMode = 'LOCAL-connected'
 
 @UILoadable
-class FitparWidget(QWidget):
+class FitparWidget(Qt.QWidget):
     """A composite widget that defines fitpars.
     It contains: a label, an "auto" button, a "value" edit box, "fixed" and "common" check boxes, minimum and maximum edits and an Apply button
     """
@@ -115,7 +113,7 @@ class FitparWidget(QWidget):
             self.BTAutoFill.clicked.connect(self._onAuto)
         # set up validators
         for widget in [self.LEValue, self.LEMin, self.LEMax]:
-            widget.setValidator(QDoubleValidator(self))
+            widget.setValidator(Qt.QDoubleValidator(self))
 
     def _onApply(self):
         self._callbackApply(self)
@@ -128,7 +126,7 @@ class FitparWidget(QWidget):
         row is the row at which we want the widget to be set. If it is None,
         it defaults to the last
         """
-        if gridlayout is None: gridlayout = QGridLayout()
+        if gridlayout is None: gridlayout = Qt.QGridLayout()
         if row is None: row = gridlayout.rowCount()
         for widget, col in zip(
                 [self.label, self.BTAutoFill, self.LEValue, self.CBFix,
@@ -137,7 +135,7 @@ class FitparWidget(QWidget):
             gridlayout.addWidget(widget, row, col)
 
     def removefromGridLayout(self, gridlayout=None, row=None):
-        if gridlayout is None: gridlayout = QGridLayout()
+        if gridlayout is None: gridlayout = Qt.QGridLayout()
         if row is None: row = gridlayout.rowCount()
         for widget in [self.label, self.BTAutoFill, self.LEValue, self.CBFix,
                        self.CBCommon, self.LEMin, self.LEMax, self.BTApply]:
@@ -188,11 +186,11 @@ class FitparWidget(QWidget):
     @staticmethod
     def addHeader(gridlayout, row=None):
         if row is None: row = gridlayout.rowCount() - 1
-        hdrVal = QLabel("Value")
-        hdrFix = QLabel("F")
-        hdrCom = QLabel("C")
-        hdrMin = QLabel("Min")
-        hdrMax = QLabel("Max")
+        hdrVal = Qt.QLabel("Value")
+        hdrFix = Qt.QLabel("F")
+        hdrCom = Qt.QLabel("C")
+        hdrMin = Qt.QLabel("Min")
+        hdrMax = Qt.QLabel("Max")
         gridlayout.addWidget(hdrVal, row, 2)
         gridlayout.addWidget(hdrFix, row, 3)
         gridlayout.addWidget(hdrCom, row, 4)
@@ -200,10 +198,10 @@ class FitparWidget(QWidget):
         gridlayout.addWidget(hdrMax, row, 6)
 
 @UILoadable
-class PAScualGUI(QMainWindow):
+class PAScualGUI(Qt.QMainWindow):
 
-    regenerateSets = pyqtSignal(bool)
-    updateParamsView = pyqtSignal(object)
+    regenerateSets = Qt.pyqtSignal(bool)
+    updateParamsView = Qt.pyqtSignal(object)
 
     def __init__(self, parent=None):
         super(PAScualGUI, self).__init__(parent)
@@ -214,7 +212,7 @@ class PAScualGUI(QMainWindow):
         self.dirtysets = True
         self.dirtyresults = False
         self.palssetsdict = {}
-        self.settings = QSettings()  # This  gets the settings from wherever they are stored (the storage point is plattform dependent)
+        self.settings = Qt.QSettings()  # This  gets the settings from wherever they are stored (the storage point is plattform dependent)
         # 		self.settings.clear()
 
         ###add hand-coded widgets and modifications to ui_ widgets here
@@ -223,7 +221,7 @@ class PAScualGUI(QMainWindow):
         self.fitter = PCP.fitter(self)
 
         # FitparWidgets
-        layout1 = QGridLayout()
+        layout1 = Qt.QGridLayout()
         FitparWidget.addHeader(layout1)
         self.fwhmFitparWidget = FitparWidget("fwhm", label="FWHM [ps]",
                                              callbackApply=self.applyFitpar,
@@ -251,7 +249,7 @@ class PAScualGUI(QMainWindow):
         self.spectraTable.resizeColumnsToContents()
 
         # Plot dock
-        plotlayout = QVBoxLayout()
+        plotlayout = Qt.QVBoxLayout()
         self.pplot = PALSplot()
         plotlayout.addWidget(self.pplot)
         self.plotFrame.setLayout(plotlayout)
@@ -277,7 +275,7 @@ class PAScualGUI(QMainWindow):
         self.optionsDlg = None
         self.saveFilesDlg = None
         self.plotfitDlg = None
-        self.LEpsperchannel.setValidator(QDoubleValidator(0, S.inf, 3,
+        self.LEpsperchannel.setValidator(Qt.QDoubleValidator(0, np.inf, 3,
                                                           self))  # add validator to the psperchannel edit
         # 		self.resultsTable.addActions([self.actionCopy_Results_Selection,self.actionSave_results_as]) #context menu
         self.resultsTable.addActions(
@@ -293,7 +291,7 @@ class PAScualGUI(QMainWindow):
         self.actionLicense.triggered.connect(self.showlicense)
         self.actionSum_Spectra.triggered.connect(self.sumspectra)
         self.actionTao_Eldrup_Calculator.triggered.connect(self.launchTEcalc)
-        self.actionWhat_s_This.triggered.connect(QWhatsThis.enterWhatsThisMode)
+        self.actionWhat_s_This.triggered.connect(Qt.QWhatsThis.enterWhatsThisMode)
         self.actionPlotFit.triggered.connect(self._onPlotSelectedFit)
         self.actionSimulate_spectrum.triggered.connect(self.createFakeSpectrum)
         self.actionCopy_Results_Selection.triggered.connect(self.copy_Results_Selection)
@@ -345,21 +343,21 @@ class PAScualGUI(QMainWindow):
         self.plotFitBT.clicked.connect(self._onPlotSelectedFit)
 
         # Restore last session Window state
-        size = self.settings.value("MainWindow/Size", QSize(800, 600))
+        size = self.settings.value("MainWindow/Size", Qt.QSize(800, 600))
         self.resize(size)
-        position = self.settings.value("MainWindow/Position", QPoint(0, 0))
+        position = self.settings.value("MainWindow/Position", Qt.QPoint(0, 0))
         self.move(position)
-        self.restoreState(self.settings.value("MainWindow/State", QByteArray()))
+        self.restoreState(self.settings.value("MainWindow/State", Qt.QByteArray()))
         self.fitModeCB.setCurrentIndex(self.fitModeCB.findText(defaultFitMode))
 
         # Launch low-priority initializations (to speed up load time)
-        QTimer.singleShot(0, self.createParamWizard)  # create the parameters Wizard
-        QTimer.singleShot(0, self.loadOptions)  # create the Options dialog
-        QTimer.singleShot(0, self.createOpenFilesDlg) # create the OpenFiles dialog
+        Qt.QTimer.singleShot(0, self.createParamWizard)  # create the parameters Wizard
+        Qt.QTimer.singleShot(0, self.loadOptions)  # create the Options dialog
+        Qt.QTimer.singleShot(0, self.createOpenFilesDlg) # create the OpenFiles dialog
 
     def notImplementedWarning(self, featurename=None):
         if featurename is None: featurename = 'this function'
-        return QMessageBox.warning(self, "Not implemented",
+        return Qt.QMessageBox.warning(self, "Not implemented",
                                    "Sorry, %s is not yet implemented" % featurename)
 
     def loadOptions(self):
@@ -383,8 +381,8 @@ class PAScualGUI(QMainWindow):
 
     def createOpenFilesDlg(self):
         # General OpenFile Dialog (it is never closed, just hidden)
-        self.openFilesDlg = QFileDialog(
-            self, "%s - Open spectra" % QApplication.applicationName(),
+        self.openFilesDlg = Qt.QFileDialog(
+            self, "%s - Open spectra" % Qt.QApplication.applicationName(),
             "./", ""
         )
         # instantiate file loaders and store them in a dict
@@ -407,8 +405,8 @@ class PAScualGUI(QMainWindow):
                                      fileloaders[k].filenamefilter
                                      ) for k in sorted(fileloaders.keys())
         ]
-        self.openFilesDlg.setFileMode(QFileDialog.ExistingFiles)
-        self.openFilesDlg.setViewMode(QFileDialog.Detail)
+        self.openFilesDlg.setFileMode(Qt.QFileDialog.ExistingFiles)
+        self.openFilesDlg.setViewMode(Qt.QFileDialog.Detail)
         self.openFilesDlg.setNameFilters(filefilters)
         self.openFilesDlg.setDirectory(self.options.workDirectory)
         selectedfilter = self.settings.value("openfilefilter",
@@ -456,22 +454,22 @@ class PAScualGUI(QMainWindow):
                     else:
                         string += '\t%s' % self.resultsTable.item(i, j).text()
                     emptyrow = False
-        QApplication.clipboard().setText(string.strip())
+        Qt.QApplication.clipboard().setText(string.strip())
 
     def onResultsFileSelectBT(self):
-        filename, _ = QFileDialog.getSaveFileName(
+        filename, _ = Qt.QFileDialog.getSaveFileName(
             self, "Results File Selection",
             self.options.workDirectory + '/PASresults.txt',
             "ASCII (*.txt)\nAll (*)",
-            QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog)
+            Qt.QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog)
         if filename: self.resultsFileLE.setText(filename)
 
     def onOutputFileSelect(self):
-        ofile, _ = QFileDialog.getSaveFileName(
+        ofile, _ = Qt.QFileDialog.getSaveFileName(
             self, "Output File Selection",
             self.outputFileLE.text(),
             "ASCII (*.txt)\nAll (*)",
-            QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog)
+            Qt.QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog)
         if ofile:
             self.outputFileLE.setText(ofile)
         return ofile
@@ -479,7 +477,7 @@ class PAScualGUI(QMainWindow):
     def onSaveOutput_as(self):
         # Make sure only finished outputs are saved
         if self.outputTE.isVisible():
-            QMessageBox.warning(self, "Cannot save unfinished fit",
+            Qt.QMessageBox.warning(self, "Cannot save unfinished fit",
                                 "You can only save the output from finished fits. Output won't be written\n Select a different output from the list.")
             return
         # if a file is not given, prompt the user for a file name
@@ -492,20 +490,20 @@ class PAScualGUI(QMainWindow):
             ofile = str(ofile)
             openmode = 'a'
             if os.path.exists(ofile):
-                answer = QMessageBox.question(self, "Append data?",
+                answer = Qt.QMessageBox.question(self, "Append data?",
                                               "'%s' already exists.\nAppend data?\n (Yes for Append. No for Overwrite)" % os.path.basename(
                                                   ofile),
-                                              QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
-                if answer == QMessageBox.Yes:
+                                              Qt.QMessageBox.Yes | Qt.QMessageBox.No | Qt.QMessageBox.Cancel)
+                if answer == Qt.QMessageBox.Yes:
                     openmode = 'a'
-                elif answer == QMessageBox.No:
+                elif answer == Qt.QMessageBox.No:
                     openmode = 'w'
                 else:
                     return
             try:
                 ofile = open(ofile, openmode)
             except IOError:
-                QMessageBox.warning(self, "Error opening file",
+                Qt.QMessageBox.warning(self, "Error opening file",
                                     "Error opening file. Output won't be written")
                 return
         # Write the output to the file
@@ -535,7 +533,7 @@ class PAScualGUI(QMainWindow):
         if dplist is None: dplist = self.resultsdplist
         self.dprow = dprow
         if len(dplist) < 1:
-            QMessageBox.warning(self, "Nothing to report",
+            Qt.QMessageBox.warning(self, "Nothing to report",
                                 """There are no results to report. Do the fits first!""")
             return  # mcheck that the list is not empty
         self.dprow = max(0, min(self.dprow, len(
@@ -543,20 +541,20 @@ class PAScualGUI(QMainWindow):
         dp = dplist[self.dprow]
 
         if self.plotfitDlg is None:
-            self.plotfitDlg = QDialog(self)
+            self.plotfitDlg = Qt.QDialog(self)
             self.plotfitDlg.resize(600, 600)
             self.plotfitDlg.fitplot = PALSplot()
             self.plotfitDlg.resplot = ResPlot()
-            self.plotfitDlg.textTE = QTextEdit()
+            self.plotfitDlg.textTE = Qt.QTextEdit()
             self.plotfitDlg.textTE.setReadOnly(True)
-            self.plotfitDlg.nextPB = QPushButton(">")
+            self.plotfitDlg.nextPB = Qt.QPushButton(">")
             self.plotfitDlg.nextPB.setToolTip("Next result")
-            self.plotfitDlg.prevPB = QPushButton("<")
+            self.plotfitDlg.prevPB = Qt.QPushButton("<")
             self.plotfitDlg.prevPB.setToolTip("Previous result")
-            layout2 = QHBoxLayout()
+            layout2 = Qt.QHBoxLayout()
             layout2.addWidget(self.plotfitDlg.prevPB)
             layout2.addWidget(self.plotfitDlg.nextPB)
-            self.plotfitDlg.layout = QVBoxLayout()
+            self.plotfitDlg.layout = Qt.QVBoxLayout()
             self.plotfitDlg.layout.addWidget(self.plotfitDlg.fitplot)
             self.plotfitDlg.layout.addWidget(self.plotfitDlg.resplot)
             self.plotfitDlg.layout.addWidget(self.plotfitDlg.textTE)
@@ -572,20 +570,20 @@ class PAScualGUI(QMainWindow):
         self.plotfitDlg.prevPB.setEnabled(self.dprow > 0)
         self.plotfitDlg.nextPB.setEnabled(self.dprow < len(dplist) - 1)
         # Fit of the exp, sim, bg and components
-        self.plotfitDlg.fitplot.attachCurve(S.arange(dp.exp.size), dp.exp,
-                                            name=dp.name, pen=QPen(
+        self.plotfitDlg.fitplot.attachCurve(np.arange(dp.exp.size), dp.exp,
+                                            name=dp.name, pen=Qt.QPen(
                 next(self.plotfitDlg.fitplot.autocolor), 4), style="Dots")
         self.plotfitDlg.fitplot.attachCurve(dp.roi, dp.sim, name='fit',
-                                            pen=QPen(
+                                            pen=Qt.QPen(
                                                 next(self.plotfitDlg.fitplot.autocolor),
                                                 2))
         self.plotfitDlg.fitplot.attachCurve(dp.roi,
-                                            S.ones(dp.sim.size) * dp.bg.val,
+                                            np.ones(dp.sim.size) * dp.bg.val,
                                             name='bkgnd')
         ity = dp.normalizeity()
         for i in range(dp.ncomp):
             area = dp.M_dot_a.sum()
-            comp = ((dp.exparea - dp.bg.val * S.size(dp.sim)) / area) * dp.M[:,
+            comp = ((dp.exparea - dp.bg.val * np.size(dp.sim)) / area) * dp.M[:,
                                                                         i] * \
                    ity[i]
             self.plotfitDlg.fitplot.attachCurve(dp.roi, comp,
@@ -593,9 +591,9 @@ class PAScualGUI(QMainWindow):
         # plot of the residuals
         residuals = (dp.sim - dp.exp[dp.roi]) / dp.deltaexp[dp.roi]
         self.plotfitDlg.resplot.attachCurve(dp.roi, residuals, name=dp.name,
-                                            pen=QPen(Qt.red, 2))
+                                            pen=Qt.QPen(Qt.Qt.red, 2))
         self.plotfitDlg.setWindowTitle("%s - Fitted Spectrum '%s'" % (
-        QApplication.applicationName(), dp.name))
+        Qt.QApplication.applicationName(), dp.name))
         self.plotfitDlg.show()
         # show the spectrum report
         self.plotfitDlg.textTE.setPlainText(dp.showreport(silent=True))
@@ -610,28 +608,28 @@ class PAScualGUI(QMainWindow):
         for dp in self.resultsdplist:
             prefix, _ = os.path.splitext(os.path.basename(dp.name))
             fname = "%s%s_fit.dat" % (globalprefix, prefix)
-            fit = S.zeros(
+            fit = np.zeros(
                 (dp.roi.size, dp.ncomp + 4))  # ch + fit + bg + comp + res
             header = 'Channel Fit Bkgnd'
             fit[:, 0] = dp.roi
             fit[:, 1] = dp.sim
-            fit[:, 2] = S.ones(dp.sim.size) * dp.bg.val
+            fit[:, 2] = np.ones(dp.sim.size) * dp.bg.val
             ity = dp.normalizeity()
             for i in range(dp.ncomp):
                 header += ' Comp%i' % (i + 1)
                 area = dp.M_dot_a.sum()
-                fit[:, 3 + i] = ((dp.exparea - dp.bg.val * S.size(
+                fit[:, 3 + i] = ((dp.exparea - dp.bg.val * np.size(
                     dp.sim)) / area) * dp.M[:, i] * ity[i]
             header += ' Res'
             fit[:, -1] = (dp.sim - dp.exp[dp.roi]) / dp.deltaexp[dp.roi]
-            S.savetxt(fname, fit, header=header)
+            np.savetxt(fname, fit, header=header)
 
     def onHideResults(self):
         indexes = self.resultsColumnsListWidget.selectedIndexes()
         for idx in indexes:
             self.resultsTable.hideColumn(idx.row())
             self.resultsColumnsListWidget.itemFromIndex(idx).setForeground(
-                QBrush(Qt.gray))
+                Qt.QBrush(Qt.Qt.gray))
         #		self.resultsColumnsListWidget.reset()
 
     def onShowResults(self):
@@ -639,7 +637,7 @@ class PAScualGUI(QMainWindow):
         for idx in indexes:
             self.resultsTable.showColumn(idx.row())
             self.resultsColumnsListWidget.itemFromIndex(idx).setForeground(
-                QBrush(Qt.black))
+                Qt.QBrush(Qt.Qt.black))
         #		self.resultsColumnsListWidget.reset()
 
     def onFitModeEdit(self, *args):
@@ -652,8 +650,8 @@ class PAScualGUI(QMainWindow):
 
     def saveFitMode(self):
         fmname = str(
-            QInputDialog.getText(self, "Name?", "Name of custom Fit Mode:",
-                                 QLineEdit.Normal, "", Qt.Dialog)[0])
+            Qt.QInputDialog.getText(self, "Name?", "Name of custom Fit Mode:",
+                                 Qt.QLineEdit.Normal, "", Qt.Qt.Dialog)[0])
         self.fitModeCB.addItem(fmname)
         # copy the <user> entry under a different name and restore the original value of the <user> fit mode
         self.fitmodesdict[fmname] = copy.deepcopy(self.fitmodesdict['<user>'])
@@ -666,9 +664,9 @@ class PAScualGUI(QMainWindow):
         if completed:  # If the fitter finished its job (i.e. it was not aborted) update things
             if self.fitter.isRunning():  # extra safety check. Make sure that fitter is not running at this moment
                 if not self.fitter.wait(1000):
-                    QMessageBox.critical(self, "Race condition",
+                    Qt.QMessageBox.critical(self, "Race condition",
                                          "Something went wrong. \nThis may be a bug. If you can reproduce it, please report it to the author (REF: RACE1)\nThe fit needs to be stopped and re-started manually",
-                                         QMessageBox.Ok)
+                                         Qt.QMessageBox.Ok)
                     raise RuntimeError(
                         'onFitterFinished: self.fitter is still running!')
                 # we know fitter is not running, so we safely access its internal palsset and status
@@ -686,12 +684,12 @@ class PAScualGUI(QMainWindow):
                 dp.showreport_1row(file=None, min_ncomp=self.results_min_ncomp,
                                    silent=True)).split()
                 if (self.options.warning_chi2_low < dp.chi2 / dp.dof < self.options.warning_chi2_high):
-                    bgbrush = QBrush(Qt.white)  # is chi2 value ok?
+                    bgbrush = Qt.QBrush(Qt.Qt.white)  # is chi2 value ok?
                 else:
-                    bgbrush = QBrush(
-                        Qt.red)  # highlight if chi2 is out of normal values
+                    bgbrush = Qt.QBrush(
+                        Qt.Qt.red)  # highlight if chi2 is out of normal values
                 for c, s in zip(list(range(len(rowitems))), rowitems):
-                    item = QTableWidgetItem(s)
+                    item = Qt.QTableWidgetItem(s)
                     item.setBackground(bgbrush)
                     self.resultsTable.setItem(row, c, item)
                 row += 1
@@ -700,7 +698,7 @@ class PAScualGUI(QMainWindow):
         self.advanceFitQueue()
         return completed
 
-    @pyqtSlot(str)
+    @Qt.pyqtSlot(str)
     def onFitModeCBChange(self, fitmodename):
         fitmodename = str(fitmodename)
         fitmode = self.fitmodesdict[fitmodename]
@@ -722,9 +720,9 @@ class PAScualGUI(QMainWindow):
     def advanceFitQueue(self, key=None):
         if self.fitter.isRunning():  # extra safety check. Make sure that fitter is not running at this moment
             if not self.fitter.wait(1000):  # give it some time to finish
-                QMessageBox.critical(self, "Race condition",
+                Qt.QMessageBox.critical(self, "Race condition",
                                      "Something went wrong. \nThis may be a bug. If you can reproduce it, please report it to the author (REF: RACE2)\nThe fit needs to be stopped and re-started manually",
-                                     QMessageBox.Ok)
+                                     Qt.QMessageBox.Ok)
                 raise RuntimeError(
                     'onFitterFinished: self.fitter is still running!')
             return
@@ -779,14 +777,14 @@ class PAScualGUI(QMainWindow):
             self.statusbar.showMessage("Fit stopped", 0)
             return True
         if offerForce:
-            answer = QMessageBox.warning(self, "Fit not responding",
+            answer = Qt.QMessageBox.warning(self, "Fit not responding",
                                          """The fit is not responding to the stop request."""
                                          """Your options Are: <ul>"""
                                          """<p><li>To force fit termination (<b>the program may crash!</b>)</li>"""
                                          """<li>To wait till the fit responds (You cannot do more fits till it finishes, but you can save results)</li></ul></p>"""
                                          """<p>Play Russian roulette?  (i.e., force fit termination?)</p>"""
-                                         , QMessageBox.Yes | QMessageBox.No)
-            if answer == QMessageBox.Yes:
+                                         , Qt.QMessageBox.Yes | Qt.QMessageBox.No)
+            if answer == Qt.QMessageBox.Yes:
                 self.statusbar.showMessage(
                     "Risky business: trying to force the fit to stop...", 0)
                 self.fitter.terminate()
@@ -812,10 +810,10 @@ class PAScualGUI(QMainWindow):
         """Skips the current fit"""
         skipped = self.stopFitter(offerForce=False)
         while not skipped:
-            answer = QMessageBox.warning(self, "Fit not responding",
+            answer = Qt.QMessageBox.warning(self, "Fit not responding",
                                          """The fit is not responding to the skip request. Do you want to try to <b>stop</b> the fit?""",
-                                         QMessageBox.Yes | QMessageBox.No)
-            if answer == QMessageBox.Yes:
+                                         Qt.QMessageBox.Yes | Qt.QMessageBox.No)
+            if answer == Qt.QMessageBox.Yes:
                 self.onStopFit()
                 return
             skipped = self.stopFitter(offerForce=False)
@@ -846,14 +844,14 @@ class PAScualGUI(QMainWindow):
         # populate the queue (generates self.fitqueuedict )
         self.generatequeue()
         if len(self.fitqueuedict) == 0:
-            QMessageBox.information(self, "Nothing to do",
-                                    "There are no sets to fit", QMessageBox.Ok)
+            Qt.QMessageBox.information(self, "Nothing to do",
+                                    "There are no sets to fit", Qt.QMessageBox.Ok)
             return
         # check the common itys for each set in the queue
         for ps in list(self.fitqueuedict.values()):
             answer = None
             if not ps.goodItyErrors():
-                answer = QMessageBox.warning(self,
+                answer = Qt.QMessageBox.warning(self,
                                              "Estimation of covariance may fail in LOCAL",
                                              "<p>The estimation of uncertainties for <b>intensities</b> in %s may not be good if:</p>"
                                              "<p>a) you use LOCAL minimisation <b>and</b></p>"
@@ -863,17 +861,17 @@ class PAScualGUI(QMainWindow):
                                              "<p>Note 2: in any case, the uncertainties given by LOCAL are based on the covariance matrix and should not be blindly trusted (more about this in the help files)</p>"
                                              "<p>(if you choose to ignore, this warning won't be repeated for this fit)<p>" % ps.name
                                              ,
-                                             QMessageBox.Ignore | QMessageBox.Cancel)
+                                             Qt.QMessageBox.Ignore | Qt.QMessageBox.Cancel)
                 break  # regardless of the answer, there is no need to continue checking
-        if answer == QMessageBox.Cancel: return  # if the user chose to cancel, do no more.
+        if answer == Qt.QMessageBox.Cancel: return  # if the user chose to cancel, do no more.
         # checks before starting
         if self.dirtyresults:
-            answer = QMessageBox.question(self, "Unsaved results",
+            answer = Qt.QMessageBox.question(self, "Unsaved results",
                                           "There are previous unsaved results. \nSave them before continuing?",
-                                          QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
-            if answer == QMessageBox.Yes:
+                                          Qt.QMessageBox.Yes | Qt.QMessageBox.No | Qt.QMessageBox.Cancel)
+            if answer == Qt.QMessageBox.Yes:
                 self.onSaveResults()
-            elif answer == QMessageBox.No:
+            elif answer == Qt.QMessageBox.No:
                 pass
             else:
                 return  # cancel the "goFit"
@@ -891,7 +889,7 @@ class PAScualGUI(QMainWindow):
         # show the current output
         self.previousOutputCB.setCurrentIndex(
             self.previousOutputCB.findText("Current",
-                                           Qt.MatchExactly | Qt.MatchCaseSensitive))
+                                           Qt.Qt.MatchExactly | Qt.Qt.MatchCaseSensitive))
         sys.stdout = mytee
         # reset the saved results
         self.resultslist = []
@@ -997,10 +995,10 @@ class PAScualGUI(QMainWindow):
         # Populate the sets TreeWidget
         self.setsTree.clear()
         for ps in palssetslist:
-            item = QTreeWidgetItem(self.setsTree, [ps.name, str(
+            item = Qt.QTreeWidgetItem(self.setsTree, [ps.name, str(
                 len(ps.spectralist))])
             item.addChildren(
-                [QTreeWidgetItem([dp.name]) for dp in ps.spectralist])
+                [Qt.QTreeWidgetItem([dp.name]) for dp in ps.spectralist])
         # Show the number of failed (unasigned) spectra
         self.unasignedLE.setText(str(len(failed)))
         # readjust columns in TreeWidget
@@ -1015,16 +1013,16 @@ class PAScualGUI(QMainWindow):
         indexes = self.spectraTable.selectionModel().selectedIndexes()
         if indexes == []: return
         for idx in indexes:
-            if not self.spectraModel.data(idx, Qt.UserRole).selected:
+            if not self.spectraModel.data(idx, Qt.Qt.UserRole).selected:
                 self.spectraModel.setData(self.spectraModel.index(idx.row(),
                                                                   STMV.SEL)
                                           )
 
     def onRemoveChecked(self):
-        answer = QMessageBox.question(self, "Removal confirmation",
+        answer = Qt.QMessageBox.question(self, "Removal confirmation",
                                       "The checked spectra will be removed from the list.\nProceed?",
-                                      QMessageBox.Ok | QMessageBox.Cancel)
-        if answer == QMessageBox.Ok:
+                                      Qt.QMessageBox.Ok | Qt.QMessageBox.Cancel)
+        if answer == Qt.QMessageBox.Ok:
             self.spectraModel.removeChecked()
         # Maybe the selection changed?
         self.onspectraSelectionChanged()
@@ -1049,7 +1047,7 @@ class PAScualGUI(QMainWindow):
         #   Fit s1,s2,sn,...them all simultaneously with ALL parameters common putting deltaexp=nonpoissonratio*poisson for each of them
         selected, indexes = self.spectraModel.getselectedspectra()
         if len(selected) < 2:
-            QMessageBox.warning(self, "At least 2 spectra needed",
+            Qt.QMessageBox.warning(self, "At least 2 spectra needed",
                                 """You must select at least 2 spectra for summing""")
             return
         dpsum = copy.deepcopy(selected[0])
@@ -1058,7 +1056,7 @@ class PAScualGUI(QMainWindow):
             for dp in selected[1:]:
                 dpsum.exp += dp.exp
         except ValueError:
-            QMessageBox.warning(self, "Spectra cannot be added ",
+            Qt.QMessageBox.warning(self, "Spectra cannot be added ",
                                 " When summing spectra, they must have the same number of channels.\n Aborting.""")
             return
         dpsum.initifready(force=True)
@@ -1084,7 +1082,7 @@ class PAScualGUI(QMainWindow):
             self.updateParamsView.emit(discretepals())
         elif nselrows == 1:
             self.updateParamsView.emit(self.spectraModel.data(selrows[0],
-                                                              role=Qt.UserRole)
+                                                              role=Qt.Qt.UserRole)
                                        )
         else:
             self.updateParamsView.emit(None)
@@ -1107,7 +1105,7 @@ class PAScualGUI(QMainWindow):
         if selected == []: return
         for dp in selected:
             if len(str(self.LEpsperchannel.text())) == 0:
-                QMessageBox.warning(self, "Invalid input",
+                Qt.QMessageBox.warning(self, "Invalid input",
                                     " The channel width must be a positive number""")
                 return False
             dp.psperchannel = float(self.LEpsperchannel.text())
@@ -1167,7 +1165,7 @@ class PAScualGUI(QMainWindow):
         #		print "DEBUG: Apply:",caller.label.text()
         fp = caller.getFitpar()
         if fp is None:
-            QMessageBox.warning(self, "Invalid input",
+            Qt.QMessageBox.warning(self, "Invalid input",
                                 "'Value' must be a number.\n 'Min' and 'Max' must either be numbers or be empty.""")
             return False
         fp.forcelimits()
@@ -1195,7 +1193,7 @@ class PAScualGUI(QMainWindow):
         # check if the components are already set for this spectrum (TODO: possibly suggest to apply only selected components )
         ncomps = self.compModel.rowCount()
         nspect = len(selected)
-        applymatrix = S.zeros((nspect, ncomps),
+        applymatrix = np.zeros((nspect, ncomps),
                               dtype='bool')  # The applymatrix is a boolean matrix that says whether to apply a given component to a given spectrum
         for i in range(applymatrix.shape[0]):  # go through rows
             dp = selected[i]
@@ -1206,19 +1204,19 @@ class PAScualGUI(QMainWindow):
                 dp.itylist = ncomps * [None]
             elif len(dp.taulist) == ncomps:
                 applymatrix[i, :] = True  # Apply all (we don't ask)
-            elif answer == QMessageBox.YesToAll:
+            elif answer == Qt.QMessageBox.YesToAll:
                 applymatrix[i, :] = True
                 dp.taulist = ncomps * [None]  # wipe taulist for this dp
                 dp.itylist = ncomps * [None]
-            elif answer == QMessageBox.NoToAll:
+            elif answer == Qt.QMessageBox.NoToAll:
                 applymatrix[i, :] = False
             else:
-                answer = QMessageBox.warning(self,
+                answer = Qt.QMessageBox.warning(self,
                                              "Components numbers do not match",
                                              "Spectrum %s has %i components already defined\n Discard them?" % (
                                              dp.name, len(dp.taulist)),
-                                             QMessageBox.Yes | QMessageBox.YesToAll | QMessageBox.No | QMessageBox.NoToAll)
-                if answer == QMessageBox.Yes or answer == QMessageBox.YesToAll:
+                                             Qt.QMessageBox.Yes | Qt.QMessageBox.YesToAll | Qt.QMessageBox.No | Qt.QMessageBox.NoToAll)
+                if answer == Qt.QMessageBox.Yes or answer == Qt.QMessageBox.YesToAll:
                     applymatrix[i, :] = True
                     dp.taulist = ncomps * [None]  # wipe taulist for this dp
                     dp.itylist = ncomps * [None]
@@ -1274,13 +1272,13 @@ class PAScualGUI(QMainWindow):
         if selected == []: return
         self.statusbar.showMessage("AutoOffset working...", 0)
         if caller.CBCommon.isChecked():
-            answer = QMessageBox.warning(self, "Incompatible input",
+            answer = Qt.QMessageBox.warning(self, "Incompatible input",
                                          str(
                                              "The AutoOffset function is not compatible with a common Offset parameter\n"
                                              "If you continue, the 'common' option will be unchecked."),
-                                         QMessageBox.Ok | QMessageBox.Cancel)
-            if answer == QMessageBox.Ok:
-                caller.CBCommon.setCheckState(Qt.Unchecked)
+                                         Qt.QMessageBox.Ok | Qt.QMessageBox.Cancel)
+            if answer == Qt.QMessageBox.Ok:
+                caller.CBCommon.setCheckState(Qt.Qt.Unchecked)
             else:
                 self.statusbar.showMessage("AutoOffset Cancelled", 0)
                 return  # abort the autoc0
@@ -1297,15 +1295,15 @@ class PAScualGUI(QMainWindow):
                 if ignoreerror:
                     continue  # skip this one if it was previously chosen to ignore all
                 else:
-                    answer = QMessageBox.warning(self,
+                    answer = Qt.QMessageBox.warning(self,
                                                  "Input error in %s" % dp.name,
                                                  "Input error in %s :\n %s \nContinue? (skipping this)" % (
                                                  dp.name, error),
-                                                 QMessageBox.Yes | QMessageBox.YesToAll | QMessageBox.No)
-                    if answer == QMessageBox.No:
+                                                 Qt.QMessageBox.Yes | Qt.QMessageBox.YesToAll | Qt.QMessageBox.No)
+                    if answer == Qt.QMessageBox.No:
                         self.statusbar.showMessage("AutoOffset Cancelled", 0)
                         return  # stop processing and return without accepting the dialog
-                    elif answer == QMessageBox.YesToAll:
+                    elif answer == Qt.QMessageBox.YesToAll:
                         ignoreerror = True  # it won t ask anymore
             else:
                 val = dp.exp.argmax(0)  # a coarse approx of the time 0 channel
@@ -1327,13 +1325,13 @@ class PAScualGUI(QMainWindow):
         if selected == []: return
         # Check if the 'common' option is checked
         if caller.CBCommon.isChecked():
-            answer = QMessageBox.warning(self, "Incompatible input",
+            answer = Qt.QMessageBox.warning(self, "Incompatible input",
                                          str(
                                              "The Auto Background function is not compatible with a common background parameter\n"
                                              "If you continue, the 'common' option will be unchecked."),
-                                         QMessageBox.Ok | QMessageBox.Cancel)
-            if answer == QMessageBox.Ok:
-                caller.CBCommon.setCheckState(Qt.Unchecked)
+                                         Qt.QMessageBox.Ok | Qt.QMessageBox.Cancel)
+            if answer == Qt.QMessageBox.Ok:
+                caller.CBCommon.setCheckState(Qt.Qt.Unchecked)
             else:
                 return  # abort the autobackground
         # launch the dialog in modal mode and execute some code if accepted
@@ -1342,7 +1340,7 @@ class PAScualGUI(QMainWindow):
         if BGselector.exec_():
             for dp, bgroi in zip(selected, BGselector.roilist):
                 val = dp.exp[bgroi].mean()
-                std10 = 10 * max(10, S.sqrt(val), dp.exp[bgroi].std())
+                std10 = 10 * max(10, np.sqrt(val), dp.exp[bgroi].std())
                 # The bg is directly updated!
                 dp.bg = fitpar(val=val, name='Bg(auto)',
                                minval=max(0, val - std10), maxval=val + std10,
@@ -1356,7 +1354,7 @@ class PAScualGUI(QMainWindow):
 
     def changePPlot(self, dp, index=None, replot=True):
         if dp.selected:
-            self.pplot.attachCurve(S.arange(dp.exp.size), dp.exp, name=dp.name)
+            self.pplot.attachCurve(np.arange(dp.exp.size), dp.exp, name=dp.name)
         else:
             self.pplot.detachCurve(dp.name)
         if replot: self.pplot.replot()
@@ -1373,9 +1371,9 @@ class PAScualGUI(QMainWindow):
                      self.openFilesDlg.selectedFiles()]
         dps = []
         answer = None
-        progress = QProgressDialog("Loading Files...", "Abort load", 0,
+        progress = Qt.QProgressDialog("Loading Files...", "Abort load", 0,
                                    len(fileNames), self)
-        progress.setWindowModality(Qt.WindowModal)
+        progress.setWindowModality(Qt.Qt.WindowModal)
         #		progress.setMinimumDuration(1000)
         ifl = 0
         for fname in fileNames:
@@ -1393,7 +1391,7 @@ class PAScualGUI(QMainWindow):
                 if tempdp is None: expdata = fileloader.expdata(fname)
             except:
                 expected = fileloader.name
-                QMessageBox.warning(self, "Wrong file format",
+                Qt.QMessageBox.warning(self, "Wrong file format",
                                     "Unexpected format in: %s\n (expected %s format)" % (
                                     os.path.basename(fname), expected))
                 # 				raise #uncomment for debug, but comment out for release to avoid the progress dialog to remain after failure in loading
@@ -1434,10 +1432,10 @@ class PAScualGUI(QMainWindow):
                      selectedfilter=None):
         if filename is None:
             if self.saveFilesDlg is None:
-                self.saveFilesDlg = QFileDialog(
+                self.saveFilesDlg = Qt.QFileDialog(
                     self,
                     "%s - Save spectrum '%s'" % (
-                        QApplication.applicationName(), spectrum.name),
+                        Qt.QApplication.applicationName(), spectrum.name),
                     "./", ""
                 )
                 fileloadersdict = self.openFilesDlg.specFileLoaderDict
@@ -1447,19 +1445,19 @@ class PAScualGUI(QMainWindow):
                                ['PAScual', 'ASCII', 'LT']
                 ]
                 # needed as a workaround to a bug in selectedNameFilter in the linux dialog
-                self.saveFilesDlg.setOption(QFileDialog.DontUseNativeDialog)
+                self.saveFilesDlg.setOption(Qt.QFileDialog.DontUseNativeDialog)
                 self.saveFilesDlg.setNameFilters(filefilters)
                 self.saveFilesDlg.selectNameFilter(fileloadersdict['PAScual'].name)
             self.saveFilesDlg.setWindowTitle("%s - Save spectrum '%s'" % (
-            QApplication.applicationName(), spectrum.name))
+            Qt.QApplication.applicationName(), spectrum.name))
             # TODO: horrible hack to deselect previously selected files. Any alternative?
             self.saveFilesDlg.setDirectory(self.options.workDirectory + ' ')
             self.saveFilesDlg.selectFile(
                 spectrum.name.split('.', 1)[0] + '.ps1')
             # re-select filter to make sure that the extensions is the appropriate
             self.saveFilesDlg.selectNameFilter(self.saveFilesDlg.selectedNameFilter())
-            self.saveFilesDlg.setAcceptMode(QFileDialog.AcceptSave)
-            self.saveFilesDlg.setViewMode(QFileDialog.Detail)
+            self.saveFilesDlg.setAcceptMode(Qt.QFileDialog.AcceptSave)
+            self.saveFilesDlg.setViewMode(Qt.QFileDialog.Detail)
             if not self.saveFilesDlg.exec_():
                 return None
             filename = str(self.saveFilesDlg.selectedFiles()[0])
@@ -1481,7 +1479,7 @@ class PAScualGUI(QMainWindow):
             else:
                 raise ValueError('Filter not supported')
         except IOError:
-            QMessageBox.warning(
+            Qt.QMessageBox.warning(
                 self, "Error saving file",
                 "Error saving file. Spectrum won't be written")
             return None
@@ -1491,7 +1489,7 @@ class PAScualGUI(QMainWindow):
         """saves all selected spectra"""
         selected, indexes = self.spectraModel.getselectedspectra()
         if selected == []:
-            QMessageBox.warning(
+            Qt.QMessageBox.warning(
                 self, "No spectrum selected",
                 "You must select (check) the spectra that you want to save")
             return
@@ -1505,23 +1503,23 @@ class PAScualGUI(QMainWindow):
             ofile = str(ofile)
             openmode = 'a'
             if os.path.exists(ofile):
-                answer = QMessageBox.question(
+                answer = Qt.QMessageBox.question(
                     self, "Append data?",
                     ("The selected results File Exists.\n" +
                      "Append data?\n" +
                      " (Yes for Append. No for Overwrite)"
                      ),
-                    QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
-                if answer == QMessageBox.Yes:
+                    Qt.QMessageBox.Yes | Qt.QMessageBox.No | Qt.QMessageBox.Cancel)
+                if answer == Qt.QMessageBox.Yes:
                     openmode = 'a'
-                elif answer == QMessageBox.No:
+                elif answer == Qt.QMessageBox.No:
                     openmode = 'w'
                 else:
                     return
             try:
                 ofile = open(ofile, openmode)
             except IOError:
-                QMessageBox.warning(self, "Error opening file",
+                Qt.QMessageBox.warning(self, "Error opening file",
                                     "Error opening file. Results won't be written")
                 return
         # Check if there are hidden cells
@@ -1530,21 +1528,21 @@ class PAScualGUI(QMainWindow):
         for i in range(self.resultsTable.columnCount()): hidden += int(
             self.resultsTable.isColumnHidden(i))
         if hidden:
-            answer = QMessageBox.question(
+            answer = Qt.QMessageBox.question(
                 self, "Hidden Results",
                 "Some results are not shown. \nSave them too?",
-                QMessageBox.Yes | QMessageBox.No | QMessageBox.Cancel)
-            if answer == QMessageBox.Yes:
+                Qt.QMessageBox.Yes | Qt.QMessageBox.No | Qt.QMessageBox.Cancel)
+            if answer == Qt.QMessageBox.Yes:
                 saveall = True
-            elif answer == QMessageBox.No:
+            elif answer == Qt.QMessageBox.No:
                 saveall = False
             else:
                 return
         # prompt for a description of the results
-        (customdescription, ok) = QInputDialog.getText(self, "Description?",
+        (customdescription, ok) = Qt.QInputDialog.getText(self, "Description?",
                                                        "Description:",
-                                                       QLineEdit.Normal, "",
-                                                       Qt.Dialog)
+                                                       Qt.QLineEdit.Normal, "",
+                                                       Qt.Qt.Dialog)
         # Write the results to the file
         widths = [20, 14, 14, 9, 6, 6, 6, 14, 9, 9, 9, 9, 9,
                   9] + 4 * self.results_min_ncomp * [9]
@@ -1569,8 +1567,8 @@ class PAScualGUI(QMainWindow):
         globalpreffix = "%s_" % os.path.splitext(ofile.name)[0]
         self.saveFitCurves(globalpreffix)
 
-    def createFakeSpectrum(self, area=None, roi=S.arange(1024), name=None):
-        #		if roi is None: roi=S.arange(1024)
+    def createFakeSpectrum(self, area=None, roi=np.arange(1024), name=None):
+        #		if roi is None: roi=np.arange(1024)
         # get the parameters
         try:
             bg = self.bgFitparWidget.getFitpar()
@@ -1589,12 +1587,12 @@ class PAScualGUI(QMainWindow):
                                       minval=cp.ity.minval,
                                       maxval=cp.ity.maxval, free=cp.ity.free))
         except(ValueError):
-            QMessageBox.warning(self, "Input error",
+            Qt.QMessageBox.warning(self, "Input error",
                                 "Incomplete or bad values for the parameters.\nFill the parameters fields with the desired values\nSimulation aborted")
             self.statusbar.showMessage("Simulation aborted", 0)
             return
         if area is None:
-            area, okflag = QInputDialog.getDouble(self, "Area?",
+            area, okflag = Qt.QInputDialog.getDouble(self, "Area?",
                                                   "Number of counts in simulated spectrum:",
                                                   1e6, 0, 1e99, 3)
             if not okflag:
@@ -1624,7 +1622,7 @@ class PAScualGUI(QMainWindow):
         """Launches the wizard and applies changes afterwards"""
         selected, indexes = self.spectraModel.getselectedspectra()
         if selected == []:
-            QMessageBox.warning(self, "No spectrum selected",
+            Qt.QMessageBox.warning(self, "No spectrum selected",
                                 """No spectrum is selected. The Wizard applies to selected spectra only""")
             return
         # Reset the selected list and launch the wizard
@@ -1691,11 +1689,11 @@ class PAScualGUI(QMainWindow):
         """uses a dp to fill the parameters. If no spectra si given, it asks to load a file which is expected to contain a pickled discretepals"""
 
 
-        filename, _ = QFileDialog.getOpenFileName(
+        filename, _ = Qt.QFileDialog.getOpenFileName(
             self, "Load parameters from...",
             self.options.workDirectory,
             "(*.par *.ps1)", '',
-            QFileDialog.DontUseNativeDialog)
+            Qt.QFileDialog.DontUseNativeDialog)
         if filename:
             loader = SpecFiles.PAScualfileLoader()
             dp = loader.getDiscretePals(filename)
@@ -1705,11 +1703,11 @@ class PAScualGUI(QMainWindow):
         return None
 
     def saveParameters(self):
-        filename, _ = QFileDialog.getSaveFileName(
+        filename, _ = Qt.QFileDialog.getSaveFileName(
             self, "Save parameters in...",
             self.options.workDirectory + '/PASparams.par',
             "Parameters File (*.par)", '',
-            QFileDialog.DontUseNativeDialog)
+            Qt.QFileDialog.DontUseNativeDialog)
 
         if filename:
             bg = self.bgFitparWidget.getFitpar()
@@ -1741,22 +1739,22 @@ class PAScualGUI(QMainWindow):
         """Shows the User Manual in a window"""
         onlinecopy = "http://pascual.wiki.sourceforge.net/User+Manual"
         localcopy = "file:" + self.options.manualFile
-        self.manualBrowser = QDialog()
+        self.manualBrowser = Qt.QDialog()
         self.manualBrowser.setWindowTitle("PAScual User Manual")
-        manualTB = QTextBrowser()
+        manualTB = Qt.QTextBrowser()
         manualTB.setOpenExternalLinks(True)
-        extLinkLabel = QLabel(
+        extLinkLabel = Qt.QLabel(
             """For the most up-to-date version of the manual, check the <a href="%s">Online User Manual</a>. You can also <a href="%s">open the local copy in your browser.</a>""" % (
             onlinecopy, localcopy))
         extLinkLabel.setOpenExternalLinks(True)
-        layout = QVBoxLayout()
+        layout = Qt.QVBoxLayout()
         layout.addWidget(manualTB)
         layout.addWidget(extLinkLabel)
         self.manualBrowser.setLayout(layout)
         self.manualBrowser.resize(1000, 400)
         self.manualBrowser.show()
         if os.path.exists(self.options.manualFile):
-            manualTB.setSource(QUrl(localcopy))
+            manualTB.setSource(Qt.QUrl(localcopy))
         else:
             errormessage = """<h1> ERROR: User Manual File not found</h1>
 							<p> Check the setting at:</p>
@@ -1764,7 +1762,7 @@ class PAScualGUI(QMainWindow):
             manualTB.setText(errormessage)
 
     def helpAbout(self):
-        QMessageBox.about(self, "About PAScual",
+        Qt.QMessageBox.about(self, "About PAScual",
                           """<b>PAScual</b> v %s
 							<p>Author: Carlos Pascual-Izarra. <cpascual [AT] users.sourceforge.net>
 							<p>Home page: <a href='%s'>%s</a>
@@ -1777,11 +1775,11 @@ class PAScualGUI(QMainWindow):
 							<p>Python %s - Qt %s - PyQt %s on %s""" % (
                               __version__, __homepage__, __homepage__,
                               __citation_html__, platform.python_version(),
-                              QT_VERSION_STR, PYQT_VERSION_STR,
+                              Qt.QT_VERSION_STR, Qt.PYQT_VERSION_STR,
                               platform.system()))
 
     def showlicense(self):
-        QMessageBox.about(self, "Licensing terms",
+        Qt.QMessageBox.about(self, "Licensing terms",
                           """<b>PAScual</b> v %s
 							<p>
 							<p>PAScual and PAScualGUI
@@ -1811,7 +1809,7 @@ class PAScualGUI(QMainWindow):
 
 def main():
     global app
-    app = QApplication(sys.argv)
+    app = Qt.QApplication(sys.argv)
     app.setOrganizationName("CPI")
     app.setApplicationName("PAScual")
     app.setApplicationVersion(__version__)
