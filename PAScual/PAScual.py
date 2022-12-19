@@ -27,16 +27,17 @@ import scipy as S
 import string
 import sys
 import time
+import numpy as np
 from scipy import optimize
 from scipy.special import erfc
 from shutil import copy2
 
 # FWHM = SIGMA*(2*sqrt(2*log(2))) = SIGMA*2.3548200450309493
-FWHM2SIGMA = 1. / (2 * S.sqrt(2 * S.log(2)))
+FWHM2SIGMA = 1. / (2 * np.sqrt(2 * np.log(2)))
 
 
 # if qt is present, we will use it to emit signals
-from qwt.qt.QtCore import QObject, pyqtSignal
+from PyQt5.QtCore import QObject, pyqtSignal
 
 class _Emitter(QObject):
 
@@ -361,7 +362,7 @@ class fitpar(fitpar_original):
 
     def showreport(self):
         print("%s: %.3e (%.3e) [%s - %s]\n\tFree=%s NNRLA: %.3e (%.3e)\n\t%s" % (
-        self.name, self.val, S.sqrt(self.var), self.minval, self.maxval,
+        self.name, self.val, np.sqrt(self.var), self.minval, self.maxval,
         self.free, self.NNRLA_delta, self.NNRLA_sigma, self))
 
     def importval(self, val, onlyfree=False):
@@ -440,14 +441,14 @@ class discretepals(fitable):
         #		super(discretepals,self).__init__(name=name)
         self.realinit = True  # indicates that the real initialization took place
         if expdata is not None:
-            self.exp = S.array(expdata,
+            self.exp = np.array(expdata,
                                dtype='d')  # for fitting, self.exp[self.roi] is to be used
         else:
-            self.exp = S.zeros(len(roi), dtype='d')
+            self.exp = np.zeros(len(roi), dtype='d')
         if roi is not None:
-            self.roi = S.array(roi, dtype='i')
+            self.roi = np.array(roi, dtype='i')
         else:
-            self.roi = S.arange(self.exp.size, dtype='i')
+            self.roi = np.arange(self.exp.size, dtype='i')
         if len(taulist) != len(
             itylist): raise TypeError('taulist and itylist must be of same size')
         for ob in taulist + itylist:
@@ -480,14 +481,14 @@ class discretepals(fitable):
         self.ncomp = len(self.taulist)  # number of components
         self.dof = self.roi.size - len(
             self.perturbablelist)  # degrees of freedom
-        self.tau = S.zeros(self.ncomp, dtype='d')
-        self.ity = S.zeros(self.ncomp, dtype='d')
+        self.tau = np.zeros(self.ncomp, dtype='d')
+        self.ity = np.zeros(self.ncomp, dtype='d')
         self.freeityindexes = []
         for i in range(self.ncomp):
             self.tau[i], self.ity[i] = self.taulist[i].val, self.itylist[
                 i].val  # filling the tau and ity vectors
             if self.itylist[i].free: self.freeityindexes.append(i)
-        self.freeityindexes = S.array(self.freeityindexes,
+        self.freeityindexes = np.array(self.freeityindexes,
                                       dtype='i')  # this contains the indexes of those itys which vary (need normalising)
         self.fixeditysum = self.ity.sum() - self.ity[
             self.freeityindexes].sum()  # the sum of the fixed itys (which won't vary unless the 'free' status of an ity varies)
@@ -495,12 +496,12 @@ class discretepals(fitable):
                                                         self.psperchannel)  # channel times
         self.M = self.calculate_M(self.channeltimes, self.tau, self.fwhm.val,
                                   M=None)  # calculating the M matrix
-        self.M_dot_a = S.dot(self.M,
+        self.M_dot_a = np.dot(self.M,
                              self.normalizeity(self.ity, self.freeityindexes,
                                                self.fixeditysum))
         if self.exp.sum() == 0: self.exp[
             self.roi] = self.fake()  # If no expdata was given, create a fake spectrum and use it as exp data
-        self.deltaexp = S.where(self.exp < 4, 2., S.sqrt(
+        self.deltaexp = np.where(self.exp < 4, 2., np.sqrt(
             self.exp))  # A quite good approximation to Poisson statistics (error=2 for 0-3 counts and Gaussian approx for the rest)
         self.deltaexp2 = self.deltaexp ** 2
         self.NNRLA_S0 = (1. / self.deltaexp2[self.roi]).sum()
@@ -542,7 +543,7 @@ class discretepals(fitable):
 
     def clearstats_ity(self):
         self.ity_mean = self.normalizeity()
-        self.ity_var = S.zeros(self.ity.size, dtype='d')
+        self.ity_var = np.zeros(self.ity.size, dtype='d')
         self.ity_n = 1
 
     def fake(self, area=None, noise=True, filename=None):
@@ -550,7 +551,7 @@ class discretepals(fitable):
         if area is None: area = self.bg.val * self.channeltimes.size * 20  # if no area is given, it is calculated so that the total background is ~5% of the counts
         sim = self.calculate_sim(self.bg.val, area, self.channeltimes,
                                  self.M_dot_a)
-        if noise: sim = S.random.poisson(sim)
+        if noise: sim = numpy.random.poisson(sim)
         return sim
 
     def normalizeity(self, ity=None, freeityindexes=None, fixeditysum=None):
@@ -568,7 +569,7 @@ class discretepals(fitable):
         if freeityindexes is None: freeityindexes = self.freeityindexes
         if fixeditysum is None: fixeditysum = self.fixeditysum
         k = (1 - fixeditysum) / ity[freeityindexes].sum()
-        factor = S.ones(ity.size, dtype='d')
+        factor = np.ones(ity.size, dtype='d')
         factor[freeityindexes] = k
         return factor
 
@@ -616,7 +617,7 @@ class discretepals(fitable):
             recalc_M_dot_a = True
         # Recalculate M_dot_a if needed
         if recalc_M_dot_a:
-            self.M_dot_a = S.dot(self.M, self.normalizeity(self.ity,
+            self.M_dot_a = np.dot(self.M, self.normalizeity(self.ity,
                                                            self.freeityindexes,
                                                            self.fixeditysum))
         # calculate the simulated spectrum
@@ -633,7 +634,7 @@ class discretepals(fitable):
     def calculate_sim(self, bg, exparea, channeltimes, M_dot_a):
         '''adds the background and scales the M_dot_a vector to obtain the simulated spectrum'''
         area = M_dot_a.sum()
-        return bg + ((exparea - bg * S.size(channeltimes)) / area) * M_dot_a
+        return bg + ((exparea - bg * np.size(channeltimes)) / area) * M_dot_a
 
     def calculate_channeltimes(self, roi, c0, psperchannel):
         '''calculates the time corresponding to the center of each channel of a ROI'''
@@ -652,9 +653,9 @@ class discretepals(fitable):
 		The formula used is the one from [Kirkegaard & Eldrup, Computer Physics Communications 3 (1972) 240-255], with T0=0, and a redefinition of sigma
 		IMPORTANT
 		'''
-        K = (intsty * 0.5 / tau) * (S.exp(sigma * sigma * 0.5 / (tau * tau)))
+        K = (intsty * 0.5 / tau) * (np.exp(sigma * sigma * 0.5 / (tau * tau)))
         return K * erfc(
-            (sigma / (S.sqrt(2.) * tau)) - (t / (S.sqrt(2.) * sigma))) * S.exp(
+            (sigma / (np.sqrt(2.) * tau)) - (t / (np.sqrt(2.) * sigma))) * np.exp(
             -t / tau)
 
     def calculate_convoluted_decay_integCh(self, t, tau=1., intsty=1.,
@@ -665,12 +666,12 @@ class discretepals(fitable):
 		           (i.e. no gaps between channels and  constant --or very slow varying-- channel width))
 		           If these premises are not fulfilled, this function wont work"""
         # extend the t vector with one extra time using the channelwidth calculated from the same t (assumes constant channel width!)
-        t_extd = S.concatenate((t, (
+        t_extd = np.concatenate((t, (
         2 * t[-1] - t[-2],)))  # the trick is that t_n+Deltat=2*t_n-t_(n-1)
-        s = S.sqrt(2.) * sigma
+        s = np.sqrt(2.) * sigma
         # Calculate in one go all the values for Y(tau,tk,s)+phi(tk,s)  of eq. 5 of Kirkegaard
-        YplusPhi = S.exp(s * s * 0.25 / (tau * tau)) * erfc(
-            (s / (2. * tau)) - (t_extd / s)) * S.exp(-t_extd / tau) + erfc(
+        YplusPhi = np.exp(s * s * 0.25 / (tau * tau)) * erfc(
+            (s / (2. * tau)) - (t_extd / s)) * np.exp(-t_extd / tau) + erfc(
             t_extd / s)
         return 0.5 * intsty * (YplusPhi[:-1] - YplusPhi[1:])
 
@@ -694,11 +695,11 @@ class discretepals(fitable):
         '''Calculates the M matrix. If M is given, it will be reused'''
         sigma = fwhm * FWHM2SIGMA
         if M is None:
-            M = S.zeros((t.size, gridtau.size), dtype='d')
+            M = np.zeros((t.size, gridtau.size), dtype='d')
             if indexarray is not None: raise ValueError(
                 'M must be supplied if indexarray is supplied')
         if indexarray is None:
-            indexarray = S.arange(gridtau.size, dtype='i')
+            indexarray = np.arange(gridtau.size, dtype='i')
         for i in indexarray:
             M[:, i] = self.calculate_convoluted_decay_integCh(t, tau=gridtau[i],
                                                               intsty=1.,
@@ -712,10 +713,10 @@ class discretepals(fitable):
 		'''
         if file is None: file = sys.stdout
         if min_ncomp is None: min_ncomp = self.ncomp
-        #		itynorm=100./S.sum([ob.mean for ob in self.itylist])
-        #		itynorm=100.*self.normalizeityfactor(ity=S.array([ob.mean for ob in self.itylist]))
+        #		itynorm=100./np.sum([ob.mean for ob in self.itylist])
+        #		itynorm=100.*self.normalizeityfactor(ity=np.array([ob.mean for ob in self.itylist]))
         itymean = 100. * self.ity_mean
-        ityerr = 100. * S.sqrt(self.ity_var)
+        ityerr = 100. * np.sqrt(self.ity_var)
         self.autocorr = self.calculate_residuals_local_correlation()
         retval = "%20s\t%14e\t%14e\t%9s\t" % (
         self.name, self.chi2 / self.dof, self.autocorr,
@@ -723,15 +724,15 @@ class discretepals(fitable):
         retval += "%6i\t%6i\t%6i\t%14e\t" % (
         self.roi[0], self.roi[-1], self.roi.size, self.exparea)
         retval += "%9g\t%9g\t%9g\t%9g\t%9g\t%9g\t" % (
-        self.fwhm.mean, S.sqrt(self.fwhm.var), self.c0.mean,
-        S.sqrt(self.c0.var), self.bg.mean, S.sqrt(self.bg.var))
+        self.fwhm.mean, np.sqrt(self.fwhm.var), self.c0.mean,
+        np.sqrt(self.c0.var), self.bg.mean, np.sqrt(self.bg.var))
         npad = (min_ncomp - self.ncomp)
-        #		for ity,i in zip(self.itylist,range(len(self.itylist))): retval+="%9g\t%9g\t"%(ity.mean*itynorm[i], S.sqrt(ity.var)*itynorm[i])
+        #		for ity,i in zip(self.itylist,range(len(self.itylist))): retval+="%9g\t%9g\t"%(ity.mean*itynorm[i], np.sqrt(ity.var)*itynorm[i])
         for i in range(self.ncomp): retval += "%9g\t%9g\t" % (
         itymean[i], ityerr[i])
         retval += (2 * npad) * ("%9g\t" % 0)
         for tau in self.taulist: retval += "%9g\t%9g\t" % (
-        tau.mean, S.sqrt(tau.var))
+        tau.mean, np.sqrt(tau.var))
         retval += (2 * npad) * ("%9g\t" % 0)
         retval += "\n"
         if not silent: file.write(retval)
@@ -740,26 +741,26 @@ class discretepals(fitable):
     def showreport(self, silent=False):
         '''prints a report of the status of this discretepals spectrum (and also returns the string)
 		Note that what it prints is human readable (i.e.) some output is processed before printing'''
-        #		itynorm=100.*self.normalizeityfactor(ity=S.array([ob.mean for ob in self.itylist]))
+        #		itynorm=100.*self.normalizeityfactor(ity=np.array([ob.mean for ob in self.itylist]))
         itymean = 100. * self.ity_mean
-        ityerr = 100. * S.sqrt(self.ity_var)
+        ityerr = 100. * np.sqrt(self.ity_var)
         result = ''
         result += '---------------------\n'
         result += "Spectrum name: %s\n" % self.name
         result += "ROI: min=%i max=%i    Calibration=%g ps/ch\n" % (
         self.roi[0], self.roi[-1], self.psperchannel)
         result += "FWHM [ps]: %5g (%g)\t  [%s]\n" % (
-        self.fwhm.mean, S.sqrt(self.fwhm.var), self.fwhm.freetag)
+        self.fwhm.mean, np.sqrt(self.fwhm.var), self.fwhm.freetag)
         result += "C0   [ch]: %5g (%g)\t  [%s]\n" % (
-        self.c0.mean, S.sqrt(self.c0.var), self.c0.freetag)
+        self.c0.mean, np.sqrt(self.c0.var), self.c0.freetag)
         result += "bg   [ct]: %5g (%g)\t  [%s]\n" % (
-        self.bg.mean, S.sqrt(self.bg.var), self.bg.freetag)
+        self.bg.mean, np.sqrt(self.bg.var), self.bg.freetag)
         result += "Intensities [%]       Lifetimes [ps]\n"
         for i in range(self.ncomp):
             ity, tau = self.itylist[i], self.taulist[i]
-            #			result+= "%4.1f (%4.1f) [%s]         %5i (%i) [%s]\n"%(ity.mean*itynorm[i], S.sqrt(ity.var)*itynorm[i], ity.freetag, tau.mean, S.sqrt(tau.var), tau.freetag)
+            #			result+= "%4.1f (%4.1f) [%s]         %5i (%i) [%s]\n"%(ity.mean*itynorm[i], np.sqrt(ity.var)*itynorm[i], ity.freetag, tau.mean, np.sqrt(tau.var), tau.freetag)
             result += "%4.1f (%4.1f) [%s]         %5i (%i) [%s]\n" % (
-            itymean[i], ityerr[i], ity.freetag, tau.mean, S.sqrt(tau.var),
+            itymean[i], ityerr[i], ity.freetag, tau.mean, np.sqrt(tau.var),
             tau.freetag)
         #		atocorr=self.calculate_residuals_local_correlation()
         autocorr = 0
@@ -782,7 +783,7 @@ class discretepals(fitable):
             "The locallength must be smaller than the size of the residuals")
         result = 0
         for i in range(nboxes):
-            localcorr = S.corrcoef(self.channeltimes[i:i + locallength],
+            localcorr = np.corrcoef(self.channeltimes[i:i + locallength],
                                    residuals[i:i + locallength])[0][1]
             result += localcorr * localcorr
         return result / nboxes
@@ -848,9 +849,9 @@ class discretepals(fitable):
             for ob in self.ity[other.ncomp:]: success *= ob.importval(0.,
                                                                       onlyfree=onlyfree)  # make the other intensities 0
         elif flexicomp and self.ncomp < other.ncomp:  # the extra components are merged into the LAST one
-            tomergetau = S.array([fp.v for fp in other.taulist[
+            tomergetau = np.array([fp.v for fp in other.taulist[
                                                  self.ncomp - 1:]])  # contains lifetimes to merge
-            tomergeity = S.array([fp.v for fp in other.itylist[
+            tomergeity = np.array([fp.v for fp in other.itylist[
                                                  self.ncomp - 1:]])  # contains intensities to merge
             mergedtau = fitpar(
                 val=((tomergetau * tomergeity).sum() / tomergeity.sum()))
@@ -874,7 +875,7 @@ class discretepals(fitable):
         if not isinstance(f, file): f = open(f, 'w')
         if hdr is not None: f.write(hdr)
         if columns > 1: raise NotImplementedError()  # TODO
-        S.savetxt(f, self.exp, fmt=datafmt)
+        np.savetxt(f, self.exp, fmt=datafmt)
         f.close()
 
     def saveAs_LT(self, f):
@@ -897,11 +898,11 @@ class palsset(fitable):
         #		super(palsset,self).__init__(name=name)
         self.spectralist = []
         self.fitparlist = []
-        self.chi2 = S.inf
+        self.chi2 = np.inf
         self.n = 1
         self.dof = 1
         self.MCMC_generate(LM=0)
-        self.roimin = S.inf
+        self.roimin = np.inf
         self.roimax = None
         for sp in spectralist: self.register_spectrum(sp)
 
@@ -989,7 +990,7 @@ class palsset(fitable):
             maxstep = max(fp.NNRLA_maxstep, 0.1 * fp.val)
             deltaold = fp.NNRLA_delta
             sigmaold = fp.NNRLA_sigma
-            SZ = S.zeros(4, dtype='d')
+            SZ = np.zeros(4, dtype='d')
             for ob in fp.updatelist:  # TODO: This assumes that the fitpar's updatelist only contains discretepals instances!
                 SZ += ob.calculate_NNRLA_SZ(fp, direct)
             #				SZ[0]=0
@@ -1004,7 +1005,7 @@ class palsset(fitable):
                     fp.NNRLA_delta = -maxstep
             # calculate the diff
             # calculate the sigma
-            fp.NNRLA_sigma = S.sqrt(SZ[0] / (SZ[0] * SZ[2] - SZ[1] * SZ[1]))
+            fp.NNRLA_sigma = np.sqrt(SZ[0] / (SZ[0] * SZ[2] - SZ[1] * SZ[1]))
             # apply limits to sigma
             if fp.NNRLA_sigma > maxstep:
                 fp.NNRLA_sigma = maxstep
@@ -1015,7 +1016,7 @@ class palsset(fitable):
                                  deltaold - fp.NNRLA_delta + sigmaold - fp.NNRLA_sigma) / (
                                  abs(deltaold) + sigmaold)))
             diff += fp.NNRLA_diff
-        #			print "DEBUG:%s %g %g (%g) %g (%g)"%( fp.name,fp.val, fp.NNRLA_delta, SZ[3]/SZ[2],fp.NNRLA_sigma, S.sqrt(SZ[0]/(SZ[0]*SZ[2]-SZ[1]*SZ[1])))
+        #			print "DEBUG:%s %g %g (%g) %g (%g)"%( fp.name,fp.val, fp.NNRLA_delta, SZ[3]/SZ[2],fp.NNRLA_sigma, np.sqrt(SZ[0]/(SZ[0]*SZ[2]-SZ[1]*SZ[1])))
         try:
             diff /= len(self.fitparlist)
         except:
@@ -1043,7 +1044,7 @@ class palsset(fitable):
         LM *= factor
         # if required, prepare the history arrays
         if savehist:
-            for ob in self.fitparlist: ob.hist = S.zeros(LM, dtype='d')
+            for ob in self.fitparlist: ob.hist = np.zeros(LM, dtype='d')
         ireport *= factor
         iemit *= factor
         nemit = iemit
@@ -1090,7 +1091,7 @@ class palsset(fitable):
             #			raw_input()
             if (negDX2 > 0):
                 acceptflag = True
-            elif (random.random() < S.exp(negDX2 * self.dof / T)):
+            elif (random.random() < np.exp(negDX2 * self.dof / T)):
                 increase_acc += 1
                 acceptflag = True
             else:
@@ -1150,7 +1151,7 @@ class palsset(fitable):
         print("Set name:", self.name)
         if T: print("T= %.2e " % (T))
         print("X2= %.3e(mean)  %.3e(min)  %.3e(deviation)  %.3e(curr)" % (
-        self.chi2_mean, self.chi2_best, S.sqrt(self.chi2_var), self.chi2))
+        self.chi2_mean, self.chi2_best, np.sqrt(self.chi2_var), self.chi2))
         if acc is not None:
             print("accepted: %i  (%.1f%% , %.1f%%increased)" % (
             acc, self.accratio * 100, self.inc_dec_ratio * 100))
@@ -1209,13 +1210,13 @@ class palsset(fitable):
             print("\nGraphic output saved to '%s'\n" % filename)
         if show: pylab.show()
 
-    def simann(self, LM=None, startT=2., stopT=1e-3, stepT=.9, maxiter=S.inf,
+    def simann(self, LM=None, startT=2., stopT=1e-3, stepT=.9, maxiter=np.inf,
                minaccratio=0.1, meltratio=0.97, tolerance=None, direct=True,
                LMmult=20, chi2min=1.):
         '''It performs a simulated annealing minimisation'''
         # TODO: Implement restarts?
         if LM is None: LM = len(self.unfold_perturbablelist()) * LMmult
-        if maxiter < 1: maxiter = S.inf
+        if maxiter < 1: maxiter = np.inf
         hardminaccratio = minaccratio * .1
         endflag = False
         iter = 0
@@ -1230,14 +1231,14 @@ class palsset(fitable):
             print('SimAnn: initial acc. ratio too low. Increasing T to %.2g' % T)
             if abort.abortRequested(): return  # check if we should abort
         # The SA loop
-        emitter.initCommandPBar.emit(int(-S.log(T)), int(-S.log(stopT)))
+        emitter.initCommandPBar.emit(int(-np.log(T)), int(-np.log(stopT)))
         while not endflag:
             self.MCMC_generate(LM=LM, T=T, ireport=LM, NNRLA='auto',
                                direct=(direct and iter > 4))
             if abort.abortRequested(): return  # check if we should abort
             T *= stepT
             iter += 1
-            emitter.commandPBarValue.emit(int(-S.log(T)))
+            emitter.commandPBarValue.emit(int(-np.log(T)))
             # Check exit conditions
             if iter > maxiter:
                 print('\nMaximum number of iterations reached\n')
@@ -1300,12 +1301,12 @@ class palsset(fitable):
             print("# ", time.asctime(), file=histfile)
             print("# History of the following parameters (in rows):", file=histfile)
             print("# ", tuple([ob.name for ob in self.fitparlist]), file=histfile)
-            S.savetxt(histfile, tuple([ob.hist for ob in self.fitparlist]))
+            np.savetxt(histfile, tuple([ob.hist for ob in self.fitparlist]))
             if ireport > 0: print(" Done.")
             histfile.close()
         self.confirm()
 
-    def downhill(self, maxiter=S.inf, tolerance=None, ireport=-1):
+    def downhill(self, maxiter=np.inf, tolerance=None, ireport=-1):
         '''DO NOT USE. It performs a naive downhill minimisation. Only valid when very close to the min. Use localmin better'''
         self.confirm()
         self.n = 1
@@ -1320,7 +1321,7 @@ class palsset(fitable):
             ireport -= 1
             istats -= 1
             fp = random.choice(self.fitparlist)
-            SZ = S.zeros(4, dtype='d')
+            SZ = np.zeros(4, dtype='d')
             for ob in fp.updatelist:  # TODO: This assumes that the fitpar's updatelist only contains discretepals instances!
                 SZ += ob.calculate_NNRLA_SZ(fp, direct=True)
             fp.NNRLA_delta = SZ[3] / SZ[2]
@@ -1378,7 +1379,7 @@ class palsset(fitable):
         nitys = len(itys)
         for i in range(nitys): itys[i] = objectindex(itys[i], myargs)
         # itys now contains the indexes for the parameters that are intensities in myargs
-        itys = S.array(itys)
+        itys = np.array(itys)
         # Try to do a (relatively fast) *unbounded* minimisation using a Levenberg-Marquardt algorithm
         if ireport: print("\nTrying a Levenberg-Marquardt (LMA) fit\n")
         emitter.commandPBarValue.emit(1)
@@ -1391,9 +1392,9 @@ class palsset(fitable):
         #		for i in xrange(len(myx)): myargs[i].mean=myx[i]  #DEBUG
         #		if ireport: self.showreport(verbosity=1)#DEBUG
         # check if all parameters are within bonds
-        minmaxarray = S.array(minmax)
-        minmaxarray[:, 1] = S.where(minmaxarray[:, 1] > None, minmaxarray[:, 1],
-                                    S.inf)
+        minmaxarray = np.array(minmax)
+        minmaxarray[:, 1] = np.where(minmaxarray[:, 1] > None, minmaxarray[:, 1],
+                                    np.inf)
         # check if all the itys are negative (not only the free ones)!, in which case they can simply be all multiplied by -1
         if nonfreeitys == 0 and (myx[itys] < 0).all():
             # 			print "!!!!!!!!!!"
@@ -1407,7 +1408,7 @@ class palsset(fitable):
                 print("\nLMA failed to give result within limits:")
                 for fp in myargs:
                     if fp.maxval is None:
-                        maxval = S.inf
+                        maxval = np.inf
                     else:
                         maxval = fp.maxval
                     if not (fp.minval < fp.val < maxval): fp.showreport()
@@ -1441,8 +1442,8 @@ class palsset(fitable):
                 if ireport: print('>', end=' ')
             emitter.commandPBarValue.emit(3)
             # Do a second L-BFGS-B minimisation
-            #			myx=S.where(myx<minmaxarray[:,0], minmaxarray[:,0], myx)
-            #			myx=S.where(myx>minmaxarray[:,1], minmaxarray[:,1], myx)
+            #			myx=np.where(myx<minmaxarray[:,0], minmaxarray[:,0], myx)
+            #			myx=np.where(myx>minmaxarray[:,1], minmaxarray[:,1], myx)
             if abort.abortRequested(): return  # check if we should abort
             myx, chi2, infodict = optimize.fmin_l_bfgs_b(self.interfacefunction,
                                                          myx, args=tuple(myargs),
@@ -1456,21 +1457,21 @@ class palsset(fitable):
         self.calculate_chi2(recalc=True)
         self.confirm()  # by doing this confirm, the .val of each parameter is copied to the .mean
         self.clearstats()
-        err = S.diag(cov_x)
+        err = np.diag(cov_x)
         # put errors for the raw parameters
         for i in range(len(err)): myargs[i].var = err[i]
         # now caculate the errors for the intensities after normalisation for each espectrum independently
         for dp in self.spectralist:
             if dp.freeityindexes.size > 0:
                 # find the indexes for the free intensities for this spectrum
-                aindexes = S.zeros(dp.freeityindexes.size, dtype='i')
+                aindexes = np.zeros(dp.freeityindexes.size, dtype='i')
                 for i, j in zip(dp.freeityindexes, range(aindexes.size)):
                     # aindexes contains the indexes (in myargs) of the free intensities for this spectrum
                     aindexes[j] = objectindex(dp.itylist[i], myargs)
                 a = myx[aindexes]
                 asum = a.sum()
                 # find the jacobian of the parameters transformation:
-                Jac = S.identity(len(myargs))  # for most of the parameters, there is no transformation
+                Jac = np.identity(len(myargs))  # for most of the parameters, there is no transformation
                 for i in aindexes:
                     Jac[i, aindexes] = myx[
                         i]  # the row corresponding to the intensity a_i is all equal to a_i...
@@ -1479,8 +1480,8 @@ class palsset(fitable):
                     Jac[i, aindexes] *= (1 - dp.fixeditysum) / (
                     asum ** 2)  # Jac_ij= (norm_free/sum_k{a_k})(a_i-dirac_ij*sum_k{a_k})    ... for i,j,k running over the free intensities
                 # The new covariance matrix is given by cov_new=J.cov.J^T
-                cov_new = S.dot(Jac, S.dot(cov_x, Jac.T))
-                dp.ity_var[dp.freeityindexes] = S.diag(cov_new)[
+                cov_new = np.dot(Jac, np.dot(cov_x, Jac.T))
+                dp.ity_var[dp.freeityindexes] = np.diag(cov_new)[
                     aindexes]  # fill the ity_var array for each spectrum
         if ireport: self.showreport(verbosity=1)
         return infodict  # returns the output dictionary from the last call to the L-BFGS-B algorithm
@@ -1549,7 +1550,7 @@ class palsset(fitable):
         for ob in self.spectralist:  # TODO: Optimize code (eliminate append, maybe calculate residuals without callng recalculate_chi2(), and so...)
             chi2, residuals = ob.recalculate_chi2(full_output=True)
             res.append(residuals)
-        return S.concatenate(res)
+        return np.concatenate(res)
 
     def get_fitpars(self, val=True, minmax=True, onlyfree=True):
         '''returns a list of fitpars related with this palsset instance.
@@ -1564,10 +1565,10 @@ class palsset(fitable):
                 ob.bg, ob.fwhm, ob.c0]
             fpmap = unique(fpmap)
         if minmax:
-            return fpmap, S.array([ob.val for ob in fpmap]), [
+            return fpmap, np.array([ob.val for ob in fpmap]), [
                 (ob.minval, ob.maxval) for ob in fpmap]
         elif val:
-            return fpmap, S.array([ob.val for ob in fpmap])
+            return fpmap, np.array([ob.val for ob in fpmap])
         else:
             return fpmap
 
@@ -1609,11 +1610,11 @@ class palsset(fitable):
 def MELTlikeROI(expdata, headerlines=0, left_of_max=5, stopdat=None):
     '''generates a ROI that goes from left_of_max channels before the peak max to the channel stopdat'''
     if isinstance(expdata, str):
-        #		cmax=S.array(pylab.load(expfilename,skiprows=headerlines),dtype='d').argmax(0)
-        cmax = S.loadtxt(fname, skiprows=hdrlns, dtype='d').argmax(0)
+        #		cmax=np.array(pylab.load(expfilename,skiprows=headerlines),dtype='d').argmax(0)
+        cmax = np.loadtxt(fname, skiprows=hdrlns, dtype='d').argmax(0)
     else:
-        cmax = S.array(expdata, dtype='d').argmax(0)
-    roi = S.arange(cmax - left_of_max, stopdat + 1)
+        cmax = np.array(expdata, dtype='d').argmax(0)
+    roi = np.arange(cmax - left_of_max, stopdat + 1)
     return roi
 
 
@@ -1640,7 +1641,7 @@ def assignfitpar(v, namedpars=None):
         else:
             return copy.deepcopy(
                 namedpars[v])  # returns a COPY of named parameter
-    elif S.size(v) == 1:
+    elif np.size(v) == 1:
         return fitpar(val=v, name='!', free=False)
     else:
         return fitpar(val=v[0], name='@', minval=v[1], maxval=v[2], free=True)
@@ -1687,7 +1688,7 @@ def distributeinsets(dplist):
     for i in exclude: connections.pop(i)
     # Finally, we instantiate palssets with the non-connected unique groups
     result = []
-    pad = int(S.ceil(S.log10(max(1, len(
+    pad = int(np.ceil(np.log10(max(1, len(
         connections)))))  # find the number of digits needed for 0-padded sequential number
     for i in range(len(connections)):
         result.append(palsset(name='SET_%0*i' % (pad, i),
@@ -1719,7 +1720,7 @@ def mainprogram(warningslog=[]):
     # import the input info
     from . import PAScual_input as userinput
     time.clock()  # Set start of time measuring (we ignore the import time for scipy and pylab)   )
-    S.random.seed(userinput.seed)  # Seeding the random generators.
+    numpy.random.seed(userinput.seed)  # Seeding the random generators.
 
     # initialise a tee for output
     outputfile = None
@@ -1782,9 +1783,9 @@ def mainprogram(warningslog=[]):
         if fname is None:
             expdata.append(None)  # No exp data is given (we will only simulate)
         else:
-            #			expdata.append(S.array(pylab.load(fname,skiprows=hdrlns),dtype='d').flatten()) # load datafile: ascii format
+            #			expdata.append(np.array(pylab.load(fname,skiprows=hdrlns),dtype='d').flatten()) # load datafile: ascii format
             expdata.append(
-                S.loadtxt(fname, skiprows=hdrlns, dtype='d').flatten())
+                np.loadtxt(fname, skiprows=hdrlns, dtype='d').flatten())
         #
         #	for es in expdata:
         #		pylab.cla()
@@ -1842,7 +1843,7 @@ def mainprogram(warningslog=[]):
             bg = assignfitpar(userinput.bg[i], namedpars)
         else:
             temp1 = expdata[i][userinput.startbg[i]:userinput.stopbg[i]].mean()
-            temp2 = 10 * max(10, S.sqrt(temp1), expdata[i][userinput.startbg[i]:
+            temp2 = 10 * max(10, np.sqrt(temp1), expdata[i][userinput.startbg[i]:
             userinput.stopbg[i]].std())
             bg = assignfitpar((temp1, max(0., temp1 - temp2), temp1 + temp2),
                               namedpars)
@@ -2012,7 +2013,7 @@ def mainprogram(warningslog=[]):
                     for sp in temp.spectralist:
                         sp.exp[sp.roi] = sp.fake(area=area)
                         sp.exparea = sp.exp[sp.roi].sum()
-                        sp.deltaexp = S.where(sp.exp < 4, 2., S.sqrt(sp.exp))
+                        sp.deltaexp = np.where(sp.exp < 4, 2., np.sqrt(sp.exp))
                         sp.recalculate_chi2(forcecalc=True)
                     #						print sp.showreport_1row()
                     temp.showreport(verbosity=1)
@@ -2023,7 +2024,7 @@ def mainprogram(warningslog=[]):
                             if len(temp.spectralist) > 1: suffix = sp.name
                             print("\nFake spectrum written in '%s'\n" % (
                             filename + suffix))
-                            #							S.savetxt(filename+suffix,sp.exp)
+                            #							np.savetxt(filename+suffix,sp.exp)
                             sp.saveAs_LT(filename + suffix)
                 elif cmd == 'LOG':
                     header = False
@@ -2081,7 +2082,7 @@ def safemain():
 def test_component():
     dpp = discretepals()
     pps = 50.
-    ch = S.arange(1024, dtype='d')
+    ch = np.arange(1024, dtype='d')
     cc0 = 200.
     tt0 = cc0 * pps
     tt = ch * pps - tt0  # time in channel boundaries
