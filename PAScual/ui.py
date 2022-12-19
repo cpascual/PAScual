@@ -34,7 +34,7 @@ import os
 import sys
 import functools
 
-from qwt.qt import uic
+from PyQt5 import uic
 
 
 class __UI(object):
@@ -99,7 +99,7 @@ def UILoadable(klass=None, with_ui=None):
     :file:`<my_widget_dir>/ui/MyWidget.ui` which is a QWidget panel with *at
     least* a QPushButton with objectName *my_button* ::
 
-        from qwt.qt import QtGui
+        from PyQt5 import QtGui
         from ui import UILoadable
 
         @UILoadable
@@ -116,7 +116,7 @@ def UILoadable(klass=None, with_ui=None):
 
         import os.path
 
-        from qwt.qt import QtGui
+        from PyQt5 import QtGui
         from ui import UILoadable
 
         @UILoadable(with_ui="_ui")

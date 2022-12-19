@@ -36,26 +36,22 @@
 
 import platform
 import sys
+import numpy as np
 
-from qwt import qt
-from qwt.qt.QtCore import *
-from qwt.qt.QtGui import *
+from PyQt5 import Qt
 
-if qt.API == 'pyqt':
-    # Avoid segfaults on exit when using PyQt4
-    import sip
-    sip.setdestroyonexit(False)
-
-elif qt.API == 'pyqt5':
-    import traceback
-
-    def excepthook(etype, value, tb):
-        traceback.print_exception(etype, value, tb)
-
-    sys.excepthook = excepthook
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
 
 
-from .qt_filedlg import getOpenFileName, getSaveFileName
+import traceback
+
+def excepthook(etype, value, tb):
+    traceback.print_exception(etype, value, tb)
+
+sys.excepthook = excepthook
+
 
 from .PAScual import *
 from . import CommandsTableMV as CMDTMV
@@ -102,7 +98,7 @@ class FitparWidget(QWidget):
         self.loadUi()
         self._fpkey = fpkey
         self.label.setText(label)
-        self.setMinimumHeight(1.5 * self.LEValue.minimumHeight())
+        self.setMinimumHeight(int(1.5 * self.LEValue.minimumHeight()))
         # connect the Apply and auto buttons to their respective callbacks
         # (or disable them)
         self._callbackApply = callbackApply
@@ -378,7 +374,7 @@ class PAScualGUI(QMainWindow):
                 v = _type(v)  # cast to same type as dflt
             setattr(self.options, opt, v)
         # self.options._pprint()
-        S.random.seed(int(self.options.seed))  # Seeding the random generators.
+        np.random.seed(int(self.options.seed))  # Seeding the random generators.
 
     def createParamWizard(self):
         from .ParamWizard import ParamWizard
@@ -463,7 +459,7 @@ class PAScualGUI(QMainWindow):
         QApplication.clipboard().setText(string.strip())
 
     def onResultsFileSelectBT(self):
-        filename, _ = getSaveFileName(
+        filename, _ = QFileDialog.getSaveFileName(
             self, "Results File Selection",
             self.options.workDirectory + '/PASresults.txt',
             "ASCII (*.txt)\nAll (*)",
@@ -471,7 +467,7 @@ class PAScualGUI(QMainWindow):
         if filename: self.resultsFileLE.setText(filename)
 
     def onOutputFileSelect(self):
-        ofile, _ = getSaveFileName(
+        ofile, _ = QFileDialog.getSaveFileName(
             self, "Output File Selection",
             self.outputFileLE.text(),
             "ASCII (*.txt)\nAll (*)",
@@ -1695,7 +1691,7 @@ class PAScualGUI(QMainWindow):
         """uses a dp to fill the parameters. If no spectra si given, it asks to load a file which is expected to contain a pickled discretepals"""
 
 
-        filename, _ = getOpenFileName(
+        filename, _ = QFileDialog.getOpenFileName(
             self, "Load parameters from...",
             self.options.workDirectory,
             "(*.par *.ps1)", '',
@@ -1709,7 +1705,7 @@ class PAScualGUI(QMainWindow):
         return None
 
     def saveParameters(self):
-        filename, _ = getSaveFileName(
+        filename, _ = QFileDialog.getSaveFileName(
             self, "Save parameters in...",
             self.options.workDirectory + '/PASparams.par',
             "Parameters File (*.par)", '',

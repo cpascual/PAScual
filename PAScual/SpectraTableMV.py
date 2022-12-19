@@ -19,8 +19,7 @@
 import copy
 import sys
 
-from qwt.qt.QtCore import *
-from qwt.qt.QtGui import *
+from PyQt5.Qt import *  # TODO
 
 from .PAScual import discretepals, palsset
 
@@ -28,7 +27,7 @@ from .PAScual import discretepals, palsset
 _ncolumns = 8
 [SEL, NAME, ROI, PSPC, FWHM, BG, C0, COMP] = list(range(_ncolumns))
 
-from . import PAScual_rc
+# from . import PAScual_rc  # TODO: replace icons
 
 
 # Spectra Table Model

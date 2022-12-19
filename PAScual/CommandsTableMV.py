@@ -20,8 +20,8 @@
 import copy
 import sys
 
-from qwt.qt.QtCore import *
-from qwt.qt.QtGui import *
+from PyQt5.Qt import *  # TODO
+
 
 # set names for column numbers
 _ncolumns = 2

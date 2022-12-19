@@ -17,9 +17,8 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-from qwt.qt.QtCore import *
-from qwt.qt.QtGui import *
-from .qt_filedlg import getOpenFileName, getSaveFileName
+from PyQt5.Qt import *  # TODO
+
 
 from .ui import UILoadable
 
@@ -87,14 +86,14 @@ class OptionsDlg(QDialog):
         if filename: self.workDirectoryLE.setText(filename)
 
     def onChangeManualFile(self):
-        filename, _ = getOpenFileName(self, "Select User Manual File",
+        filename, _ = QFileDialog.getOpenFileName(self, "Select User Manual File",
                                      self.manualFileLE.text(),
                                      "(*.html *.htm)")
         if filename:
             self.manualFileLE.setText(filename)
 
     def onChangeHistoryFile(self):
-        filename, _ = getSaveFileName(
+        filename, _ = QFileDialog.getSaveFileName(
             self, "BI history File Selection",
             self.BI_savehistLE.text(),
             "ASCII (*.txt)\nAll (*)",

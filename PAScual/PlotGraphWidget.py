@@ -21,12 +21,10 @@ PlotGraphWidget: Widget for plotting spectra. Originally based on an example cod
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 '''
 
-# import qwt.qt.Qwt5 as Qwt
 import qwt as Qwt
 import sys
-from qwt.qt import QtCore, QtGui
-from numpy import *
-from .qt_filedlg import getSaveFileName
+from PyQt5 import QtGui, QtCore, QtWidgets
+from numpy import inf
 
 plotcolors_bright = [QtCore.Qt.black, QtCore.Qt.red, QtCore.Qt.blue, QtCore.Qt.magenta,
                      QtCore.Qt.green, QtCore.Qt.cyan, QtCore.Qt.yellow, QtCore.Qt.gray, ]
@@ -117,7 +115,7 @@ class PALSplot(Qwt.QwtPlot):
         self._plotdict = {}
         # 		self.picker.selected.connect( pointselected)
         self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
-        self._exportPdfAction = QtGui.QAction("Export plot to PDF...", self)
+        self._exportPdfAction = QtWidgets.QAction("Export plot to PDF...", self)
         self._exportPdfAction.triggered.connect(self.exportPdf)
         self.addAction(self._exportPdfAction)
 
@@ -163,7 +161,7 @@ class PALSplot(Qwt.QwtPlot):
                          a file name.
         """
         if fileName is None:
-            fileName, _ = getSaveFileName(
+            fileName, _ = QtGui.QFileDialog.getSaveFileName(
                 self, 'Export File Name',
                 'plot.pdf',
                 'PDF Documents (*.pdf)',
@@ -235,7 +233,7 @@ class ResPlot(Qwt.QwtPlot):
         self._plotdict = {}
         # 		self.picker.selected.connect( pointselected)
         self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
-        self._exportPdfAction = QtGui.QAction("Export plot to PDF...", self)
+        self._exportPdfAction = QtWidgets.QAction("Export plot to PDF...", self)
         self._exportPdfAction.triggered.connect(
                      self.exportPdf)
         self.addAction(self._exportPdfAction)
@@ -284,7 +282,7 @@ class ResPlot(Qwt.QwtPlot):
                          a file name.
         """
         if fileName is None:
-            fileName, _ = getSaveFileName(
+            fileName, _ = QFileDialog.getSaveFileName(
                 self, 'Export File Name',
                 'plot.pdf',
                 'PDF Documents (*.pdf)',
