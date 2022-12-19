@@ -257,7 +257,7 @@ class fitpar_original(fitable):
         self.mstep = mstep
         self.sstep = sstep
         self.old = val
-        if self.minval > self.maxval and self.maxval is not None: raise ValueError(
+        if self.maxval is not None and self.minval > self.maxval: raise ValueError(
             'minval cannot be larger than maxval')
 
     def __cmp__(self, other):
@@ -265,10 +265,10 @@ class fitpar_original(fitable):
 
     def forcelimits(self):
         '''forces val to be within minval and maxval'''
-        if self.val < self.minval:
+        if self.minval is not None and self.val < self.minval:
             self.val = self.minval
             return -1
-        if self.val > self.maxval and self.maxval is not None:
+        if self.maxval is not None and self.val > self.maxval:
             self.val = self.maxval
             return 1
         return 0
@@ -903,7 +903,7 @@ class palsset(fitable):
         self.dof = 1
         self.MCMC_generate(LM=0)
         self.roimin = np.inf
-        self.roimax = None
+        self.roimax = - np.inf
         for sp in spectralist: self.register_spectrum(sp)
 
     def goodItyErrors(self):
@@ -1069,9 +1069,9 @@ class palsset(fitable):
         self.clearstats()
         self.save_best()
         acceptflag = False
-        self.lastclock = time.clock()
+        self.lastclock = time.process_time()
         perttargetlist = 1 * self.fitparlist
-        self.lastclock = time.clock()
+        self.lastclock = time.process_time()
         while acc < LM:
             # To ensure that each fitpar is perturbated once each time
             try:
@@ -1146,7 +1146,7 @@ class palsset(fitable):
                                                        min_ncomp=min_ncomp)
 
     def showreport(self, T=None, acc=None, verbosity=0, NNRLA=-1):
-        clock = time.clock()
+        clock = time.process_time()
         print("*********************************************")
         print("Set name:", self.name)
         if T: print("T= %.2e " % (T))
@@ -1719,7 +1719,7 @@ def mainprogram(warningslog=[]):
     '''Initialises, and then runs the command interpreter'''
     # import the input info
     from . import PAScual_input as userinput
-    time.clock()  # Set start of time measuring (we ignore the import time for scipy and pylab)   )
+    time.process_time()  # Set start of time measuring (we ignore the import time for scipy and pylab)   )
     numpy.random.seed(userinput.seed)  # Seeding the random generators.
 
     # initialise a tee for output
@@ -2075,7 +2075,7 @@ def safemain():
         printwarning(warningslog)
         raise
     printwarning(warningslog)
-    print('\n\n********* DISCRETEPALS took %5.3f seconds of cpu time ********* \n' % time.clock())
+    print('\n\n********* DISCRETEPALS took %5.3f seconds of cpu time ********* \n' % time.process_time())
     return 0
 
 
