@@ -300,8 +300,23 @@ class fitpar_original(fitable):
         if self.minval > self.maxval:
             raise ValueError("minval cannot be larger than maxval")
 
-    def __cmp__(self, other):
-        return cmp(self.val, self.val)
+    def __lt__(self, other):
+        return self.val < other.val
+        
+    def __le__(self, other):
+        return self.val <= other.val
+        
+    def __eq__(self, other):
+        return self.val == other.val
+        
+    def __ne__(self, other):
+        return self.val != other.val
+        
+    def __gt__(self, other):
+        return self.val > other.val
+        
+    def __ge__(self, other):
+        return self.val >= other.val
 
     def forcelimits(self):
         """forces val to be within minval and maxval"""
