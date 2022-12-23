@@ -288,6 +288,10 @@ class fitpar_original(fitable):
         fitable.__init__(self, free=free, name=name)
         # 		super(fitpar_original,self).__init__(free=free,name=name) # This line is a more elegant way of doing: fitable.__init__(self,free=free,name=name)
         self.val = val
+        if minval is None:
+            minval = float("-inf")
+        if maxval is None:
+            maxval = float("inf")
         self.minval = minval
         self.maxval = maxval
         self.mstep = mstep
