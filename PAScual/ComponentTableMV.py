@@ -1,4 +1,4 @@
-'''
+"""
 	This file is part of PAScual.
     PAScual: Positron Annihilation Spectroscopy data analysis
     Copyright (C) 2007  Carlos Pascual-Izarra < cpascual [AT] users.sourceforge.net >
@@ -15,7 +15,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+"""
 
 import sys
 
@@ -30,8 +30,10 @@ _ncolumns = 5
 
 class componentTableRow(object):
     def __init__(self, tau=None, ity=None, commonTau=False, commonIty=False):
-        if tau is None: tau = fitpar(minval=1, maxval=142e3, free=True)
-        if ity is None: ity = fitpar(val=.1, minval=0, maxval=None, free=True)
+        if tau is None:
+            tau = fitpar(minval=1, maxval=142e3, free=True)
+        if ity is None:
+            ity = fitpar(val=0.1, minval=0, maxval=None, free=True)
         self.tau = tau
         self.ity = ity
         self.tau.common = commonTau
@@ -52,7 +54,7 @@ class componentTableRow(object):
 # 		if index.column()==0:
 # 			print '!!'
 # 			return QItemDelegate.createEditor(self,parent,option,index)
-# 		else: 
+# 		else:
 # 			return QItemDelegate.createEditor(self,parent,option,index)
 
 
@@ -79,14 +81,21 @@ class PAScomponentsTableModel(QAbstractTableModel):
         # Display Role
         if role == Qt.DisplayRole:
             if column == VAL:
-                if self.showtau: return float(fp.val)
-                return float(100. * fp.val)
+                if self.showtau:
+                    return float(fp.val)
+                return float(100.0 * fp.val)
             elif column == MINVAL:
-                if self.showtau: return float(fp.minval)
-                return float(100. * fp.minval)  # since we don't allow to change the ity limits, this will always be 0
+                if self.showtau:
+                    return float(fp.minval)
+                return float(
+                    100.0 * fp.minval
+                )  # since we don't allow to change the ity limits, this will always be 0
             elif column == MAXVAL:
-                if self.showtau: return float(fp.maxval)
-                return float(100)  # Showing "100" is just aesthetics. Since the itys are normalised, the real maxval is None.
+                if self.showtau:
+                    return float(fp.maxval)
+                return float(
+                    100
+                )  # Showing "100" is just aesthetics. Since the itys are normalised, the real maxval is None.
         # CheckState Role
         elif role == Qt.CheckStateRole:
             if column == FIX:
@@ -99,7 +108,8 @@ class PAScomponentsTableModel(QAbstractTableModel):
         # Background Color
         elif role == Qt.TextColorRole:
             if column == MINVAL or column == MAXVAL:
-                if not fp.free: return QColor(Qt.gray)
+                if not fp.free:
+                    return QColor(Qt.gray)
         elif role == Qt.UserRole:
             return self.components[index.row()]
         return None
@@ -132,20 +142,18 @@ class PAScomponentsTableModel(QAbstractTableModel):
             else:
                 return "Ity%i" % (section + 1)
 
-    def flags(self,
-              index):  # use this to set the editable flag when fix is selected
+    def flags(self, index):  # use this to set the editable flag when fix is selected
         if not index.isValid():
             return Qt.ItemIsEnabled
         fp = self.components[index.row()].tauority(self.showtau)
         column = index.column()
-        if (
-                    column == MINVAL or column == MAXVAL or column == COMMON) and not fp.free: return Qt.ItemFlags()  # disbled!
+        if (column == MINVAL or column == MAXVAL or column == COMMON) and not fp.free:
+            return Qt.ItemFlags()  # disbled!
         if (column == MINVAL or column == MAXVAL) and not self.showtau:
             return Qt.ItemFlags()  # disbled! (ity limits cannot be changed)
         elif column == FIX or column == COMMON:
             return Qt.ItemFlags(Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
-        return Qt.ItemFlags(
-            QAbstractTableModel.flags(self, index) | Qt.ItemIsEditable)
+        return Qt.ItemFlags(QAbstractTableModel.flags(self, index) | Qt.ItemIsEditable)
 
     def setData(self, index, value, role=Qt.EditRole):
         if index.isValid() and (0 <= index.row() < self.rowCount()):
@@ -154,18 +162,23 @@ class PAScomponentsTableModel(QAbstractTableModel):
             column = index.column()
             if column == VAL:
                 fp.val = float(value)
-                if not self.showtau: fp.val *= .01
+                if not self.showtau:
+                    fp.val *= 0.01
             if column == MINVAL:
                 fp.minval = float(value)
-                if not self.showtau: fp.minval *= .01
+                if not self.showtau:
+                    fp.minval *= 0.01
             if column == MAXVAL:
-                    fp.maxval = float(value)
-                    if not self.showtau: fp.maxval *= .01
+                fp.maxval = float(value)
+                if not self.showtau:
+                    fp.maxval *= 0.01
             elif column == FIX:
                 fp.free = not fp.free
                 for i in [COMMON, MINVAL, MAXVAL]:
                     otherindex = QAbstractTableModel.index(self, index.row(), i)
-                    self.dataChanged.emit(otherindex, otherindex)  # note: a similar thing can be used to update the whole row
+                    self.dataChanged.emit(
+                        otherindex, otherindex
+                    )  # note: a similar thing can be used to update the whole row
             elif column == COMMON:
                 fp.common = not fp.common
             # 			print fp.showreport()
@@ -182,8 +195,9 @@ class PAScomponentsTableModel(QAbstractTableModel):
 
     def removeRows(self, position, rows=1, index=QModelIndex()):
         self.beginRemoveRows(QModelIndex(), position, position + rows - 1)
-        self.components = self.components[:position] + self.components[
-                                                       position + rows:]
+        self.components = (
+            self.components[:position] + self.components[position + rows :]
+        )
         self.endRemoveRows()
         return True
 
@@ -193,7 +207,8 @@ class demo(QDialog):
         super(demo, self).__init__(parent)
         # generate fake components
         components = []
-        for i in range(4): components.append(componentTableRow())
+        for i in range(4):
+            components.append(componentTableRow())
 
         self.table = QTableView(self)
         self.model = PAScomponentsTableModel(components)
@@ -224,12 +239,10 @@ class demo(QDialog):
         self.dumpBT.clicked.connect(self.showreport)
 
     def onAdd(self):
-        self.model.insertRows(position=self.posSB.value(),
-                              rows=self.newSB.value())
+        self.model.insertRows(position=self.posSB.value(), rows=self.newSB.value())
 
     def onRem(self):
-        self.model.removeRows(position=self.posSB.value(),
-                              rows=self.newSB.value())
+        self.model.removeRows(position=self.posSB.value(), rows=self.newSB.value())
 
     def onTItoggled(self, toggled):
         self.model.showtau = not (toggled)
@@ -241,11 +254,11 @@ class demo(QDialog):
             self.tauorityBT.setText("Swtich to Ity")
 
     def showreport(self):
-        print('-------------------------------')
+        print("-------------------------------")
         for cp in self.model.components:
             cp.tau.showreport()
             cp.ity.showreport()
-        print('-------------------------------')
+        print("-------------------------------")
 
 
 if __name__ == "__main__":

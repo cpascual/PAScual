@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-'''
+"""
 PlotGraphWidget: Widget for plotting spectra. Originally based on an example code from Qwt documentation
 
 	This file is part of PAScual.
@@ -19,53 +19,68 @@ PlotGraphWidget: Widget for plotting spectra. Originally based on an example cod
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+"""
 
 import qwt as Qwt
 import sys
 from PyQt5 import QtGui, QtCore, QtWidgets
 import numpy as np
 
-plotcolors_bright = [QtCore.Qt.black, QtCore.Qt.red, QtCore.Qt.blue, QtCore.Qt.magenta,
-                     QtCore.Qt.green, QtCore.Qt.cyan, QtCore.Qt.yellow, QtCore.Qt.gray, ]
-plotcolors_dark = [QtCore.Qt.darkRed, QtCore.Qt.darkBlue, QtCore.Qt.darkMagenta,
-                   QtCore.Qt.darkGreen, QtCore.Qt.darkCyan, QtCore.Qt.darkYellow,
-                   QtCore.Qt.darkGray]
+plotcolors_bright = [
+    QtCore.Qt.black,
+    QtCore.Qt.red,
+    QtCore.Qt.blue,
+    QtCore.Qt.magenta,
+    QtCore.Qt.green,
+    QtCore.Qt.cyan,
+    QtCore.Qt.yellow,
+    QtCore.Qt.gray,
+]
+plotcolors_dark = [
+    QtCore.Qt.darkRed,
+    QtCore.Qt.darkBlue,
+    QtCore.Qt.darkMagenta,
+    QtCore.Qt.darkGreen,
+    QtCore.Qt.darkCyan,
+    QtCore.Qt.darkYellow,
+    QtCore.Qt.darkGray,
+]
 
 
 class cycliclist(object):
-    '''this class provides an effectively cyclic list.
-    It can be used, e.g., for storing colors or pen properties to be changed automatically in a plot'''
+    """this class provides an effectively cyclic list.
+    It can be used, e.g., for storing colors or pen properties to be changed automatically in a plot"""
 
     def __init__(self, itemlist=[]):
         self.setItemList(itemlist)
 
     def setItemList(self, itemlist):
-        '''sets the item list'''
+        """sets the item list"""
         self.itemlist = itemlist
         self.index = -1
         self.nitems = len(self.itemlist)
 
     def current(self):
-        '''returns current item'''
+        """returns current item"""
         try:
             return self.itemlist[
-                self.index % self.nitems]  # makes the list effectively cyclic
+                self.index % self.nitems
+            ]  # makes the list effectively cyclic
         except ZeroDivisionError:
-            raise IndexError('cyclic list is empty')
+            raise IndexError("cyclic list is empty")
 
     def setItemIndex(self, index):
-        '''sets current item to index and returns it'''
+        """sets current item to index and returns it"""
         self.index = index
         return self.current()
 
     def __next__(self):
-        '''advances one item in the list and returns it'''
+        """advances one item in the list and returns it"""
         self.index += 1
         return self.current()
 
     def previous(self):
-        '''goes one item back in the list and returns it'''
+        """goes one item back in the list and returns it"""
         self.index -= 1
         return self.current()
 
@@ -87,14 +102,14 @@ class PALSplot(Qwt.QwtPlot):
         # legend.setItemMode(Qwt.QwtLegend.ClickableItem)
         self.insertLegend(legend, Qwt.QwtPlot.RightLegend)
         # set axis titles
-        self.setAxisTitle(Qwt.QwtPlot.xBottom, 'Channel #')
-        self.setAxisTitle(Qwt.QwtPlot.yLeft, 'Yield (Cts)')
+        self.setAxisTitle(Qwt.QwtPlot.xBottom, "Channel #")
+        self.setAxisTitle(Qwt.QwtPlot.yLeft, "Yield (Cts)")
         # attach a grid
         grid = Qwt.QwtPlotGrid()
         grid.attach(self)
         grid.setPen(QtGui.QPen(QtCore.Qt.black, 0, QtCore.Qt.DotLine))
         # Connect clicks on toolbar to toggleVisibility
-        #self.legendClicked.connect(self.toggleVisibility)
+        # self.legendClicked.connect(self.toggleVisibility)
         # replot
         self.replot()
         # set zoomer
@@ -119,8 +134,9 @@ class PALSplot(Qwt.QwtPlot):
         self._exportPdfAction.triggered.connect(self.exportPdf)
         self.addAction(self._exportPdfAction)
 
-    def attachCurve(self, x, y, name='', pen=None, style="Lines"):
-        if pen is None: pen = QtGui.QPen(next(self.autocolor))
+    def attachCurve(self, x, y, name="", pen=None, style="Lines"):
+        if pen is None:
+            pen = QtGui.QPen(next(self.autocolor))
         self.YscaleMax = max(self.YscaleMax, 1.2 * max(y))
         self.YscaleMin = min(self.YscaleMin, max(1, 0.5 * min(y)))
         curve = Qwt.QwtPlotCurve(name)
@@ -140,14 +156,12 @@ class PALSplot(Qwt.QwtPlot):
         self.autocolor.setItemIndex(-1)
 
     def toggleVisibility(self, plotItem):
-        """Toggle the visibility of a plot item
-        """
+        """Toggle the visibility of a plot item"""
         plotItem.setVisible(not plotItem.isVisible())
         self.replot()
 
     def clearZoomStack(self):
-        """Auto scale and clear the zoom stack
-        """
+        """Auto scale and clear the zoom stack"""
         self.setAxisAutoScale(Qwt.QwtPlot.xBottom)
         self.setAxisScale(Qwt.QwtPlot.yLeft, self.YscaleMin, self.YscaleMax)
         self.replot()
@@ -162,28 +176,32 @@ class PALSplot(Qwt.QwtPlot):
         """
         if fileName is None:
             fileName, _ = QtGui.QFileDialog.getSaveFileName(
-                self, 'Export File Name',
-                'plot.pdf',
-                'PDF Documents (*.pdf)',
-                '',
-                QtGui.QFileDialog.DontUseNativeDialog
+                self,
+                "Export File Name",
+                "plot.pdf",
+                "PDF Documents (*.pdf)",
+                "",
+                QtGui.QFileDialog.DontUseNativeDialog,
             )
         fileName = str(fileName)
         if fileName:
             try:  # check if the file is actually writable
-                f = open(fileName, 'w')
+                f = open(fileName, "w")
                 f.close()
             except:
                 self.error("Can't write to '%s'" % fileName)
-                QtGui.QMessageBox.warning(self, "File Error",
-                                       "Can't write to\n'%s'" % fileName,
-                                       QtGui.QMessageBox.Ok)
+                QtGui.QMessageBox.warning(
+                    self,
+                    "File Error",
+                    "Can't write to\n'%s'" % fileName,
+                    QtGui.QMessageBox.Ok,
+                )
                 return
             printer = QtGui.QPrinter()
             printer.setOutputFormat(QtGui.QPrinter.PdfFormat)
             printer.setOrientation(QtGui.QPrinter.Landscape)
             printer.setOutputFileName(fileName)
-            printer.setCreator('PAScual')
+            printer.setCreator("PAScual")
             self.print_(printer)
 
 
@@ -203,8 +221,8 @@ class ResPlot(Qwt.QwtPlot):
         # 		legend.setItemMode(Qwt.QwtLegend.ClickableItem)
         # 		self.insertLegend(legend, Qwt.QwtPlot.RightLegend)
         # set axis titles
-        self.setAxisTitle(Qwt.QwtPlot.xBottom, 'Channel #')
-        self.setAxisTitle(Qwt.QwtPlot.yLeft, '(Y-f)/DY')
+        self.setAxisTitle(Qwt.QwtPlot.xBottom, "Channel #")
+        self.setAxisTitle(Qwt.QwtPlot.yLeft, "(Y-f)/DY")
         # attach a grid
         grid = Qwt.QwtPlotGrid()
         grid.attach(self)
@@ -234,12 +252,12 @@ class ResPlot(Qwt.QwtPlot):
         # 		self.picker.selected.connect( pointselected)
         self.setContextMenuPolicy(QtCore.Qt.ActionsContextMenu)
         self._exportPdfAction = QtWidgets.QAction("Export plot to PDF...", self)
-        self._exportPdfAction.triggered.connect(
-                     self.exportPdf)
+        self._exportPdfAction.triggered.connect(self.exportPdf)
         self.addAction(self._exportPdfAction)
 
-    def attachCurve(self, x, y, name='', pen=None):
-        if pen is None: pen = QtGui.QPen(next(self.autocolor), 2)
+    def attachCurve(self, x, y, name="", pen=None):
+        if pen is None:
+            pen = QtGui.QPen(next(self.autocolor), 2)
         self.YscaleMax = min(10, 1.2 * max(y))
         self.YscaleMin = max(-10, 1.2 * min(y))
         curve = Qwt.QwtPlotCurve(name)
@@ -264,8 +282,7 @@ class ResPlot(Qwt.QwtPlot):
     # 		plotItem.setVisible(not plotItem.isVisible())
     # 		self.replot()
     def clearZoomStack(self):
-        """Auto scale and clear the zoom stack
-        """
+        """Auto scale and clear the zoom stack"""
         self.setAxisAutoScale(Qwt.QwtPlot.xBottom)
         self.setAxisScale(Qwt.QwtPlot.yLeft, self.YscaleMin, self.YscaleMax)
         self.replot()
@@ -283,28 +300,32 @@ class ResPlot(Qwt.QwtPlot):
         """
         if fileName is None:
             fileName, _ = QFileDialog.getSaveFileName(
-                self, 'Export File Name',
-                'plot.pdf',
-                'PDF Documents (*.pdf)',
-                '',
-                QtGui.QFileDialog.DontUseNativeDialog
+                self,
+                "Export File Name",
+                "plot.pdf",
+                "PDF Documents (*.pdf)",
+                "",
+                QtGui.QFileDialog.DontUseNativeDialog,
             )
         fileName = str(fileName)
         if fileName:
             try:  # check if the file is actually writable
-                f = open(fileName, 'w')
+                f = open(fileName, "w")
                 f.close()
             except:
                 self.error("Can't write to '%s'" % fileName)
-                QtGui.QMessageBox.warning(self, "File Error",
-                                       "Can't write to\n'%s'" % fileName,
-                                       QtGui.QMessageBox.Ok)
+                QtGui.QMessageBox.warning(
+                    self,
+                    "File Error",
+                    "Can't write to\n'%s'" % fileName,
+                    QtGui.QMessageBox.Ok,
+                )
                 return
             printer = QtGui.QPrinter()
             printer.setOutputFormat(QtGui.QPrinter.PdfFormat)
             printer.setOrientation(QtGui.QPrinter.Landscape)
             printer.setOutputFileName(fileName)
-            printer.setCreator('PAScual')
+            printer.setCreator("PAScual")
             self.print_(printer)
 
 
@@ -316,10 +337,15 @@ def make():
     y = 10 + pi * sin(x)
     y[-1] = 0  # to check the log
     z = 10 + 4 * pi * cos(x) * cos(x) * sin(x)
-    demo.attachCurve(x, z, name='y = 10+4*pi*sin(x)*cos(x)**2',
-                     pen=QtGui.QPen(QtCore.Qt.black, 2), style='Dots')
-    demo.attachCurve(x, y, name='y = 10+pi*sin(x)')
-    demo.attachCurve(x, 2 * z, name='y = 20+8*pi*sin(x)*cos(x)**2')
+    demo.attachCurve(
+        x,
+        z,
+        name="y = 10+4*pi*sin(x)*cos(x)**2",
+        pen=QtGui.QPen(QtCore.Qt.black, 2),
+        style="Dots",
+    )
+    demo.attachCurve(x, y, name="y = 10+pi*sin(x)")
+    demo.attachCurve(x, 2 * z, name="y = 20+8*pi*sin(x)*cos(x)**2")
     demo.show()
 
     demo2 = ResPlot()
@@ -331,6 +357,7 @@ def make():
 
 
 # make()
+
 
 def pointselected(pos):
     print(pos.x())
@@ -346,7 +373,7 @@ def main(args):
 
 
 # Admire
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv)
 
 # Local Variables: ***

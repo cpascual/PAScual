@@ -26,9 +26,10 @@
 
 """utilities to load ui files for widgets"""
 
-__all__ = ["loadUi",
-           "UILoadable",
-           ]
+__all__ = [
+    "loadUi",
+    "UILoadable",
+]
 
 import os
 import sys
@@ -66,9 +67,9 @@ def loadUi(obj, filename=None, path=None, with_ui=None):
     """
     if path is None:
         obj_file = sys.modules[obj.__module__].__file__
-        path = os.path.join(os.path.dirname(obj_file), 'ui')
+        path = os.path.join(os.path.dirname(obj_file), "ui")
     if filename is None:
-        filename = obj.__class__.__name__ + os.path.extsep + 'ui'
+        filename = obj.__class__.__name__ + os.path.extsep + "ui"
     full_name = os.path.join(path, filename)
 
     if with_ui is not None:
@@ -155,11 +156,11 @@ def UILoadable(klass=None, with_ui=None):
 
     klass_name = klass.__name__
     klass_file = sys.modules[klass.__module__].__file__
-    klass_path = os.path.join(os.path.dirname(klass_file), 'ui')
+    klass_path = os.path.join(os.path.dirname(klass_file), "ui")
 
     def _loadUi(self, filename=None, path=None):
         if filename is None:
-            filename = klass_name + os.path.extsep + 'ui'
+            filename = klass_name + os.path.extsep + "ui"
         if path is None:
             path = klass_path
         return loadUi(self, filename=filename, path=path, with_ui=with_ui)

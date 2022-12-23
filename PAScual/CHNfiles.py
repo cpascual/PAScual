@@ -24,44 +24,54 @@ from scipy import array, savetxt, zeros, concatenate, arange
 class CHN(object):
     def __init__(self, CHNfile):
         self.hdr, self.data = self.readCHN(CHNfile)
-        (self.ftype, self.mca_num, self.segment, self.secs, self.realtime,
-         self.livetime, self.acqtime, self.channoffset, self.nchann) = self.hdr
+        (
+            self.ftype,
+            self.mca_num,
+            self.segment,
+            self.secs,
+            self.realtime,
+            self.livetime,
+            self.acqtime,
+            self.channoffset,
+            self.nchann,
+        ) = self.hdr
 
     @staticmethod
     def readCHN(CHNfile):
-        if isinstance(CHNfile, str): CHNfile = open(CHNfile, 'rb')
+        if isinstance(CHNfile, str):
+            CHNfile = open(CHNfile, "rb")
         raw = CHNfile.read()
         CHNfile.close()
         # the header contains the following: (ftype,mca_num,segment,secs,realtime,livetime,acqtime,channoffset,nchann)
-        hdrfmt = 'h h h 2s i i 12s h h'
+        hdrfmt = "h h h 2s i i 12s h h"
         hdrsize = struct.calcsize(hdrfmt)
         hdr = struct.unpack(hdrfmt, raw[:hdrsize])
-        if hdr[0] != -1: raise ValueError(
-            'The file is not recognised as Ortec CHN format')
-        datfmt = "%ii" % (hdr[8] - hdr[
-            7])  # hdr[8] is the number of channels and hdr[7] is the channel offset
+        if hdr[0] != -1:
+            raise ValueError("The file is not recognised as Ortec CHN format")
+        datfmt = "%ii" % (
+            hdr[8] - hdr[7]
+        )  # hdr[8] is the number of channels and hdr[7] is the channel offset
         datsize = struct.calcsize(datfmt)
-        dat = array(struct.unpack(datfmt, raw[hdrsize:hdrsize + datsize]),
-                    dtype='i')
+        dat = array(struct.unpack(datfmt, raw[hdrsize : hdrsize + datsize]), dtype="i")
         return hdr, dat
 
-    def toASCII(self, ASCIIfile, ncol=1, hdr="", onError='w',
-                writechannel=False):
-        if isinstance(ASCIIfile, str): ASCIIfile = open(ASCIIfile, 'w')
+    def toASCII(self, ASCIIfile, ncol=1, hdr="", onError="w", writechannel=False):
+        if isinstance(ASCIIfile, str):
+            ASCIIfile = open(ASCIIfile, "w")
         ASCIIfile.write(hdr)
         if ncol > 1:
             nrow = self.data.size // ncol
             rm = self.data.size % ncol
             if rm > 0:
                 nrow += 1
-                if onError == 'w':
-                    print('Warning: padded with %i zeros' % (
-                    ncol - rm), file=sys.stderr)
-                elif onError == 'n':
+                if onError == "w":
+                    print(
+                        "Warning: padded with %i zeros" % (ncol - rm), file=sys.stderr
+                    )
+                elif onError == "n":
                     pass
                 else:
-                    raise ValueError(
-                        'Data size does not fit into %i columns' % ncol)
+                    raise ValueError("Data size does not fit into %i columns" % ncol)
             dat = self.data.copy()
             dat.resize(nrow, ncol)
         else:
@@ -72,18 +82,25 @@ class CHN(object):
                 channels.resize(dat.size, 1)
                 dat.resize(dat.size, 1)
                 print("Channel Counts", file=ASCIIfile)
-                savetxt(ASCIIfile, concatenate((channels, dat), axis=1),
-                        fmt='%i')
+                savetxt(ASCIIfile, concatenate((channels, dat), axis=1), fmt="%i")
             else:
                 raise NonImplementedError(
-                    "channel numbers not yet supported for multicolumns")
+                    "channel numbers not yet supported for multicolumns"
+                )
         else:
-            savetxt(ASCIIfile, dat, fmt='%9i')
+            savetxt(ASCIIfile, dat, fmt="%9i")
         ASCIIfile.close()
 
-    def toLT(self, ASCIIfile, description="LT_description",
-             nsperchannel="LT_nsperchannel", key="LT_key", fwhm="LT_fwhm",
-             ncol=1, onError='w'):
+    def toLT(
+        self,
+        ASCIIfile,
+        description="LT_description",
+        nsperchannel="LT_nsperchannel",
+        key="LT_key",
+        fwhm="LT_fwhm",
+        ncol=1,
+        onError="w",
+    ):
         hdr = "%s\n%s\n%s\n%s\n" % (description, nsperchannel, key, fwhm)
         self.toASCII(ASCIIfile, ncol=ncol, hdr=hdr, onError=onError)
 

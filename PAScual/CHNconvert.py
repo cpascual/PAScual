@@ -46,21 +46,28 @@ LT_fwhm = "LT_fwhm"
 #############################################
 ##Do not modify the lines below unless you know what you are doing
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     if len(sys.argv) > 1:
         filenames = sys.argv[1:]
     else:
         filenames = glob.glob(FILES)
     print("Converting %i files..." % len(filenames))
     for f in filenames:
-        print("'%s' " % f, end=' ')
+        print("'%s' " % f, end=" ")
         spectrum = CHNfiles.CHN(f)
-        ASCIIfile = f.rsplit('.', 1)[0] + EXTENSION
+        ASCIIfile = f.rsplit(".", 1)[0] + EXTENSION
         if LTOUTPUT:
-            spectrum.toLT(ASCIIfile, description=LT_description,
-                          nsperchannel=LT_nsperchannel, key=LT_key,
-                          fwhm=LT_fwhm, ncol=COLUMNS, onError='w')
+            spectrum.toLT(
+                ASCIIfile,
+                description=LT_description,
+                nsperchannel=LT_nsperchannel,
+                key=LT_key,
+                fwhm=LT_fwhm,
+                ncol=COLUMNS,
+                onError="w",
+            )
         else:
-            spectrum.toASCII(ASCIIfile, ncol=COLUMNS, hdr="", onError='w',
-                             writechannel=WRITECHANNEL)
+            spectrum.toASCII(
+                ASCIIfile, ncol=COLUMNS, hdr="", onError="w", writechannel=WRITECHANNEL
+            )
         print("--> '%s' (%i columns) " % (ASCIIfile, COLUMNS))

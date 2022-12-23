@@ -1,4 +1,4 @@
-'''
+"""
 	This file is part of PAScual.
     PAScual: Positron Annihilation Spectroscopy data analysis
     Copyright (C) 2007  Carlos Pascual-Izarra < cpascual [AT] users.sourceforge.net >
@@ -15,7 +15,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+"""
 import copy
 import sys
 
@@ -71,17 +71,18 @@ class PASspectraTableModel(QAbstractTableModel):
                 return ncomp
         # CheckState Role
         elif role == Qt.CheckStateRole:
-            if column == SEL: return dp.selected
+            if column == SEL:
+                return dp.selected
 
         elif role == Qt.DecorationRole:
             if column == PSPC:
-                bad = (dp.psperchannel is None)
+                bad = dp.psperchannel is None
             elif column == FWHM:
-                bad = (dp.fwhm is None)
+                bad = dp.fwhm is None
             elif column == C0:
-                bad = (dp.c0 is None)
+                bad = dp.c0 is None
             elif column == BG:
-                bad = (dp.bg is None)
+                bad = dp.bg is None
             else:
                 return None
             if bad:
@@ -94,7 +95,8 @@ class PASspectraTableModel(QAbstractTableModel):
         # Background Color
         elif role == Qt.TextColorRole:
             if column == NAME:
-                if dp.isready(): return QColor(Qt.darkGreen)
+                if dp.isready():
+                    return QColor(Qt.darkGreen)
             if column == COMP:
                 if dp.taulist is None:
                     return QColor(Qt.red)
@@ -137,15 +139,14 @@ class PASspectraTableModel(QAbstractTableModel):
         else:
             return None
 
-    def flags(self,
-              index):  # use this to set the editable flag when fix is selected
+    def flags(self, index):  # use this to set the editable flag when fix is selected
         if not index.isValid():
             return Qt.ItemIsEnabled
         column = index.column()
-        if column == NAME: return Qt.ItemFlags(
-            QAbstractTableModel.flags(self, index))
-        if column == SEL: return Qt.ItemFlags(
-            Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
+        if column == NAME:
+            return Qt.ItemFlags(QAbstractTableModel.flags(self, index))
+        if column == SEL:
+            return Qt.ItemFlags(Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
         return Qt.ItemFlags(Qt.ItemIsEnabled)
 
     def setData(self, index, value=None, role=Qt.EditRole):
@@ -155,28 +156,28 @@ class PASspectraTableModel(QAbstractTableModel):
             if column == SEL:
                 dp.selected = not dp.selected
                 self.selectionChanged.emit(dp, index)
-            self.dataChanged.emit(index,
-                      index)
+            self.dataChanged.emit(index, index)
             return True
         return False
 
     def insertRows(self, position=None, rows=1, index=QModelIndex(), dps=None):
-        if position is None: position = self.rowCount()
+        if position is None:
+            position = self.rowCount()
         self.beginInsertRows(QModelIndex(), position, position + rows - 1)
         if dps is None:
             dps = []
-            for row in range(rows): dps.append(discretepals(name="new"))
+            for row in range(rows):
+                dps.append(discretepals(name="new"))
         for row in range(rows):
             # 			dp=discretepals(name="new")
             self.spectra.insert(position + row, dps[row])
-            self.selectionChanged.emit(dps[row],
-                      self.index(position + row, SEL))
+            self.selectionChanged.emit(dps[row], self.index(position + row, SEL))
         self.endInsertRows()
         return True
 
     def removeRows(self, position, rows=1, index=QModelIndex()):
         self.beginRemoveRows(QModelIndex(), position, position + rows - 1)
-        self.spectra = self.spectra[:position] + self.spectra[position + rows:]
+        self.spectra = self.spectra[:position] + self.spectra[position + rows :]
         self.endRemoveRows()
         return True
 
@@ -225,6 +226,7 @@ class PASspectraTableModel(QAbstractTableModel):
         self.beginResetModel()
         self.endResetModel()
 
+
 # def parent(self, index):
 # 		if index.row()%2: return
 
@@ -244,15 +246,17 @@ class PASspectraTableModel(QAbstractTableModel):
 # 		if index.column()==0:
 # 			print '!!'
 # 			return QItemDelegate.createEditor(self,parent,option,index)
-# 		else: 
+# 		else:
 # 			return QItemDelegate.createEditor(self,parent,option,index)
+
 
 class demo(QDialog):
     def __init__(self, parent=None):
         super(demo, self).__init__(parent)
         # generate fake spectra
         spectra = []
-        for i in range(4): spectra.append(discretepals(name="spect%i" % i))
+        for i in range(4):
+            spectra.append(discretepals(name="spect%i" % i))
 
         self.table = QTableView(self)
         self.model = PASspectraTableModel(spectra)
@@ -293,12 +297,10 @@ class demo(QDialog):
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
 
     def onAdd(self):
-        self.model.insertRows(position=self.posSB.value(),
-                              rows=self.newSB.value())
+        self.model.insertRows(position=self.posSB.value(), rows=self.newSB.value())
 
     def onRem(self):
-        self.model.removeRows(position=self.posSB.value(),
-                              rows=self.newSB.value())
+        self.model.removeRows(position=self.posSB.value(), rows=self.newSB.value())
 
     def onData(self):
         s = self.table.selectionModel().selectedRows()

@@ -1,4 +1,4 @@
-'''
+"""
 	This file is part of PAScual.
     PAScual: Positron Annihilation Spectroscopy data analysis
     Copyright (C) 2007  Carlos Pascual-Izarra < cpascual [AT] users.sourceforge.net >
@@ -15,7 +15,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+"""
 
 import scipy as S
 import sys
@@ -27,15 +27,14 @@ from .PlotGraphWidget import PALSplot
 
 
 class ROISelectorDialog(QDialog):
-    def __init__(self, parent=None, selected=None, title="ROI",
-                 widgetmode=False):
-        ''' defines a roi for each selected spectra from a dictionary.
+    def __init__(self, parent=None, selected=None, title="ROI", widgetmode=False):
+        """defines a roi for each selected spectra from a dictionary.
         "selected" is a list of spectra which are to be assigned a ROI
         The selected items are expected to have at least the .exp member defined
         It stores the chosen ROIs for each spectra in a list (self.roilist) in the same order as selected.
         self.roidict[i]==None if there was a problem with the spectrum in selected[i]
         widgetmode can be set to True to use the dialog as a widget
-        '''
+        """
         super(ROISelectorDialog, self).__init__(parent)
         # 		if selected is None: return
         self.selected = None
@@ -62,8 +61,7 @@ class ROISelectorDialog(QDialog):
         self.upperlimSB = QSpinBox()
         self.upperlimSB.setAccelerated(True)
         self.upperlimRelCB = QCheckBox("Relative to max")
-        self.buttonBox = QDialogButtonBox(
-            QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
 
         mainLayout = QVBoxLayout()
 
@@ -103,7 +101,8 @@ class ROISelectorDialog(QDialog):
         self.selectiondestination = self.upperlimRelCB
 
     def resetSelected(self, selected):
-        if selected is self.selected: return
+        if selected is self.selected:
+            return
         self.selected = selected
         self.refspectrumCB.clear()
         self.refspectrumCB.addItems([dp.name for dp in self.selected])
@@ -122,7 +121,8 @@ class ROISelectorDialog(QDialog):
             self.upperlimSB.setValue(self.refspectrum.exp.size)
 
     def onFocusChanged(self, old, new):
-        if new is self.lowerlimSB or new is self.upperlimSB: self.selectiondestination = new
+        if new is self.lowerlimSB or new is self.upperlimSB:
+            self.selectiondestination = new
 
     def onselection(self, point):
         if self.selectiondestination is self.lowerlimSB:
@@ -147,7 +147,8 @@ class ROISelectorDialog(QDialog):
             self.upperlimSB.setMaximum(self.refspectrum.exp.size - self.cmax)
 
     def onlowerlimRelChange(self, checked):
-        if self.refspectrum is None: return
+        if self.refspectrum is None:
+            return
         if checked:
             self.lowerlimSB.setMinimum(-self.cmax)
             self.lowerlimSB.setValue(self.lowerlimSB.value() - self.cmax)
@@ -158,7 +159,8 @@ class ROISelectorDialog(QDialog):
             self.lowerlimSB.setMinimum(0)
 
     def onupperlimRelChange(self, checked):
-        if self.refspectrum is None: return
+        if self.refspectrum is None:
+            return
         if checked:
             self.upperlimSB.setMinimum(-self.cmax)
             self.upperlimSB.setValue(self.upperlimSB.value() - self.cmax)
@@ -173,40 +175,51 @@ class ROISelectorDialog(QDialog):
         self.roilist = []
         for dp in self.selected:
             self.roimin = self.lowerlimSB.value()
-            if self.lowerlimRelCB.isChecked(): self.roimin += dp.exp.argmax(0)
+            if self.lowerlimRelCB.isChecked():
+                self.roimin += dp.exp.argmax(0)
             self.roimax = self.upperlimSB.value()
-            if self.upperlimRelCB.isChecked(): self.roimax += dp.exp.argmax(0)
+            if self.upperlimRelCB.isChecked():
+                self.roimax += dp.exp.argmax(0)
             if self.roimin >= self.roimax:
                 error = "Lower limit (=%i) must be less than upper limit (=%i)\n" % (
-                self.roimin, self.roimax)
+                    self.roimin,
+                    self.roimax,
+                )
             elif self.roimax > dp.exp.size:
-                error = "The upper limit (%i) cannot be larger than the number of channels (%i)" % (
-                self.roimax, dp.exp.size)
+                error = (
+                    "The upper limit (%i) cannot be larger than the number of channels (%i)"
+                    % (self.roimax, dp.exp.size)
+                )
             else:
                 error = False
             if error:
                 if ignoreerror:
                     continue  # skip this one if it was previously chosen to ignore all
                 else:
-                    answer = QMessageBox.warning(self,
-                                                 "Input error in %s" % dp.name,
-                                                 "Input error in %s :\n %s \nContinue? (skipping this)" % (
-                                                 dp.name, error),
-                                                 QMessageBox.Yes | QMessageBox.YesToAll | QMessageBox.No)
+                    answer = QMessageBox.warning(
+                        self,
+                        "Input error in %s" % dp.name,
+                        "Input error in %s :\n %s \nContinue? (skipping this)"
+                        % (dp.name, error),
+                        QMessageBox.Yes | QMessageBox.YesToAll | QMessageBox.No,
+                    )
                     if answer == QMessageBox.No:
                         return False  # stop processing and return without accepting the dialog (and return False)
                     elif answer == QMessageBox.YesToAll:
                         ignoreerror = True  # it won t ask anymore
                 self.roilist.append(None)
             else:
-                self.roilist.append(S.arange(self.roimin, self.roimax,
-                                             dtype='i'))  # put the selected roi in the dict
-        if not self.widgetmode: self.accept()  # if no errors (or all errors were skipped) the dialog is accepted
+                self.roilist.append(
+                    S.arange(self.roimin, self.roimax, dtype="i")
+                )  # put the selected roi in the dict
+        if not self.widgetmode:
+            self.accept()  # if no errors (or all errors were skipped) the dialog is accepted
         return True
 
 
 def make(app=None):
     from .PAScual import discretepals
+
     # fake data
     dp1 = discretepals(expdata=S.arange(1024))
     dp2 = discretepals(name="fake2", expdata=S.arange(1024) * 2)
@@ -239,5 +252,5 @@ def main(args):
 
 
 # Admire
-if __name__ == '__main__':
+if __name__ == "__main__":
     main(sys.argv)

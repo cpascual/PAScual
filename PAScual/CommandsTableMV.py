@@ -1,4 +1,4 @@
-'''
+"""
 	This file is part of PAScual.
     PAScual: Positron Annihilation Spectroscopy data analysis
     Copyright (C) 2007  Carlos Pascual-Izarra < cpascual [AT] users.sourceforge.net >
@@ -15,7 +15,7 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+"""
 
 import copy
 import sys
@@ -26,15 +26,15 @@ from PyQt5.Qt import *  # TODO
 # set names for column numbers
 _ncolumns = 2
 [CMD, ARGS] = list(range(_ncolumns))
-knowncommands = ['END', 'LOCAL', 'SA', 'BI', 'LOG', 'LOAD', 'SAVE']
+knowncommands = ["END", "LOCAL", "SA", "BI", "LOG", "LOAD", "SAVE"]
 
 
 class command(object):
-    def __init__(self, cmd='', args=''):
+    def __init__(self, cmd="", args=""):
         self.cmd = str(cmd).strip().upper()
         self.args = str(args)
-        if self.cmd not in knowncommands: raise KeyError(
-            'Unknown fitting command (%s)' % cmd)
+        if self.cmd not in knowncommands:
+            raise KeyError("Unknown fitting command (%s)" % cmd)
 
 
 # Commands Table Model
@@ -45,11 +45,13 @@ class CommandTableModel(QAbstractTableModel):
         self.ncolumns = _ncolumns
 
     def loadData(self, commandlist, argslist=None):
-        '''commands must be a list of strings! (not a string)'''
+        """commands must be a list of strings! (not a string)"""
         if argslist is None:
-            argslist = [''] * len(commandlist)
+            argslist = [""] * len(commandlist)
         if len(commandlist) != len(argslist):
-            raise ValueError('CommandTableModel.loadData: commands and args must be the same len')
+            raise ValueError(
+                "CommandTableModel.loadData: commands and args must be the same len"
+            )
         self.beginResetModel()
         self.commands = [command(c, a) for c, a in zip(commandlist, argslist)]
         self.endResetModel()
@@ -80,7 +82,8 @@ class CommandTableModel(QAbstractTableModel):
         # 			return int(Qt.AlignHCenter|Qt.AlignVCenter)
         # Background Color
         elif role == Qt.TextColorRole:
-            if column == ARGS: return QColor(Qt.darkGray)
+            if column == ARGS:
+                return QColor(Qt.darkGray)
         return None
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
@@ -100,8 +103,7 @@ class CommandTableModel(QAbstractTableModel):
         else:
             return int(section + 1)
 
-    def flags(self,
-              index):  # use this to set the editable flag when fix is selected
+    def flags(self, index):  # use this to set the editable flag when fix is selected
         if not index.isValid():
             return Qt.ItemIsEnabled
         # 		return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|Qt.ItemIsEditable )
@@ -118,7 +120,7 @@ class CommandTableModel(QAbstractTableModel):
                     self.removeRows(row + 1, rows=self.rowCount() - row)
                 elif row == (self.rowCount() - 1):
                     self.insertRows(position=self.rowCount(), rows=1)
-                self.setData(self.index(row, ARGS), value='') # clear the args
+                self.setData(self.index(row, ARGS), value="")  # clear the args
             elif column == ARGS:
                 self.commands[row].args = value
             self.dataChanged.emit(index, index)
@@ -128,14 +130,13 @@ class CommandTableModel(QAbstractTableModel):
     def insertRows(self, position=None, rows=1, index=QModelIndex()):
         self.beginInsertRows(QModelIndex(), position, position + rows - 1)
         for row in range(rows):
-            self.commands.insert(position + row, command('END'))
+            self.commands.insert(position + row, command("END"))
         self.endInsertRows()
         return True
 
     def removeRows(self, position, rows=1, index=QModelIndex()):
         self.beginRemoveRows(QModelIndex(), position, position + rows - 1)
-        self.commands = self.commands[:position] + self.commands[
-                                                   position + rows:]
+        self.commands = self.commands[:position] + self.commands[position + rows :]
         self.endRemoveRows()
         self.beginResetModel()
         self.endResetModel()
@@ -174,7 +175,6 @@ class CommandTableModel(QAbstractTableModel):
     # # 	def parent(self, index):
     # # 		if index.row()%2: return
 
-
     # 	def getselectedcommandsindexes(self):
     # 		seldpi=[]
     # 		for r in range(self.rowCount()):
@@ -200,7 +200,8 @@ class commandDelegate(QItemDelegate):
         text = index.model().data(index, Qt.DisplayRole)
         if index.column() == CMD:
             i = editor.findText(text)
-            if i == -1:    i = 0
+            if i == -1:
+                i = 0
             editor.setCurrentIndex(i)
         else:
             QItemDelegate.setEditorData(self, editor, index)
@@ -216,7 +217,7 @@ class demo(QDialog):
     def __init__(self, parent=None):
         super(demo, self).__init__(parent)
         # generate fake commands
-        commands = ['LOCAL', 'SA', 'BI', 'LOG', 'LOAD', 'SAVE']
+        commands = ["LOCAL", "SA", "BI", "LOG", "LOAD", "SAVE"]
         self.table = QTableView(self)
         self.model = CommandTableModel(commands)
         self.table.setModel(self.model)
@@ -249,16 +250,15 @@ class demo(QDialog):
         self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
 
     def onAdd(self):
-        self.model.insertRows(position=self.posSB.value(),
-                              rows=self.newSB.value())
+        self.model.insertRows(position=self.posSB.value(), rows=self.newSB.value())
 
     def onRem(self):
-        self.model.removeRows(position=self.posSB.value(),
-                              rows=self.newSB.value())
+        self.model.removeRows(position=self.posSB.value(), rows=self.newSB.value())
 
     def onData(self):
         cmds = self.model.dumpData()
-        for c in cmds: print(c.cmd, c.args)
+        for c in cmds:
+            print(c.cmd, c.args)
 
 
 if __name__ == "__main__":
