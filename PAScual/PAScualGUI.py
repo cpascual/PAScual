@@ -39,6 +39,7 @@ import os
 import sys
 import copy
 import pickle
+import time
 import numpy as np
 
 from PyQt5 import Qt
@@ -53,7 +54,7 @@ def excepthook(etype, value, tb):
 sys.excepthook = excepthook
 
 
-from .PAScual import emitter, abort, discretepals, distributeinsets, fitpar
+from .PAScual import emitter, abort, discretepals, distributeinsets, fitpar, tee
 from . import CommandsTableMV as CMDTMV
 from . import ComponentTableMV as CTMV
 from . import PASCommandProcess as PCP
