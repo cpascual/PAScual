@@ -4,3 +4,5 @@
 /.idea
 .directory
 *.egg-info
+examples/results.txt
+PAScual/PASoutput.txt
