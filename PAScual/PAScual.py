@@ -99,8 +99,7 @@ class tee(object):
     def __init__(self, *fileobjects):
         self.fileobjects = []
         for ob in fileobjects:
-            if isinstance(ob, file):
-                self.fileobjects.append(ob)
+            self.fileobjects.append(ob)
         self.qtextedit = []
         self.emitEnabled = False
 
@@ -1741,10 +1740,6 @@ class palsset(fitable):
         # 		if ireport: self.showreport(verbosity=1)#DEBUG
         # check if all parameters are within bonds
         minmaxarray = np.array(minmax)
-        print(11111, minmax, minmaxarray)
-        minmaxarray[:, 1] = np.where(
-            minmaxarray[:, 1] != None, minmaxarray[:, 1], np.inf
-        )
         # check if all the itys are negative (not only the free ones)!, in which case they can simply be all multiplied by -1
         if nonfreeitys == 0 and (myx[itys] < 0).all():
             # 			print "!!!!!!!!!!"
