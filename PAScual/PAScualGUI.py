@@ -242,6 +242,17 @@ class FitparWidget(Qt.QWidget):
         gridlayout.addWidget(hdrMax, row, 6)
 
 
+class SingleClickWorkaroundProxy(Qt.QProxyStyle):
+    """Hack to avoid QFileDialog closing on file selection
+    
+    See:https://stackoverflow.com/a/63220266
+    """
+    def styleHint(self, hint, option, widget, data):
+        if hint == self.SH_ItemView_ActivateItemOnSingleClick:
+            return False
+        return super().styleHint(hint, option, widget, data)
+
+
 @UILoadable
 class PAScualGUI(Qt.QMainWindow):
 
@@ -530,7 +541,8 @@ class PAScualGUI(Qt.QMainWindow):
             "Results File Selection",
             self.options.workDirectory + "/PASresults.txt",
             "ASCII (*.txt)\nAll (*)",
-            Qt.QFileDialog.DontConfirmOverwrite | Qt.QFileDialog.DontUseNativeDialog,
+            # Qt.QFileDialog.DontConfirmOverwrite | Qt.QFileDialog.DontUseNativeDialog,
+            options=Qt.QFileDialog.DontConfirmOverwrite,
         )
         if filename:
             self.resultsFileLE.setText(filename)
@@ -541,7 +553,8 @@ class PAScualGUI(Qt.QMainWindow):
             "Output File Selection",
             self.outputFileLE.text(),
             "ASCII (*.txt)\nAll (*)",
-            Qt.QFileDialog.DontConfirmOverwrite | Qt.QFileDialog.DontUseNativeDialog,
+            # Qt.QFileDialog.DontConfirmOverwrite | Qt.QFileDialog.DontUseNativeDialog,
+            options=Qt.QFileDialog.DontConfirmOverwrite,
         )
         if ofile:
             self.outputFileLE.setText(ofile)
@@ -2013,7 +2026,7 @@ class PAScualGUI(Qt.QMainWindow):
             self.options.workDirectory,
             "(*.par *.ps1)",
             "",
-            Qt.QFileDialog.DontUseNativeDialog,
+            options=Qt.QFileDialog.DontUseNativeDialog,
         )
         if filename:
             loader = SpecFiles.PAScualfileLoader()
@@ -2030,7 +2043,7 @@ class PAScualGUI(Qt.QMainWindow):
             self.options.workDirectory + "/PASparams.par",
             "Parameters File (*.par)",
             "",
-            Qt.QFileDialog.DontUseNativeDialog,
+            options=Qt.QFileDialog.DontUseNativeDialog,
         )
 
         if filename:
@@ -2170,6 +2183,7 @@ def main():
     app.setOrganizationName("CPI")
     app.setApplicationName("PAScual")
     app.setApplicationVersion(__version__)
+    app.setStyle(SingleClickWorkaroundProxy())
     form = PAScualGUI()
     form.show()
 
