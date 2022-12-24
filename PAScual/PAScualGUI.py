@@ -799,11 +799,11 @@ class PAScualGUI(Qt.QMainWindow):
                     < dp.chi2 / dp.dof
                     < self.options.warning_chi2_high
                 ):
-                    bgbrush = Qt.QBrush(Qt.Qt.white)  # is chi2 value ok?
+                    # chi2 value within limits
+                    bgbrush = self.resultsTable.palette().base()
                 else:
-                    bgbrush = Qt.QBrush(
-                        Qt.Qt.red
-                    )  # highlight if chi2 is out of normal values
+                     # chi2 out of normal values
+                    bgbrush = Qt.QBrush(Qt.Qt.red) 
                 for c, s in zip(list(range(len(rowitems))), rowitems):
                     item = Qt.QTableWidgetItem(s)
                     item.setBackground(bgbrush)
