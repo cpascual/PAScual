@@ -122,8 +122,8 @@ class FitparWidget(Qt.QWidget):
         self._callbackAuto = callbackAuto
 
         # initialize icon search path
-        # curdir = os.path.dirname(os.path.realpath(__file__))
-        # Qt.QDir.addSearchPath("icons", os.path.join(curdir, "icons"))
+        curdir = os.path.dirname(os.path.realpath(__file__))
+        Qt.QDir.addSearchPath("icons", os.path.join(curdir, "icons"))
 
         if callbackApply is None:
             self.BTApply.setDisabled(True)
@@ -530,7 +530,7 @@ class PAScualGUI(Qt.QMainWindow):
             "Results File Selection",
             self.options.workDirectory + "/PASresults.txt",
             "ASCII (*.txt)\nAll (*)",
-            Qt.QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog,
+            Qt.QFileDialog.DontConfirmOverwrite | Qt.QFileDialog.DontUseNativeDialog,
         )
         if filename:
             self.resultsFileLE.setText(filename)
@@ -541,7 +541,7 @@ class PAScualGUI(Qt.QMainWindow):
             "Output File Selection",
             self.outputFileLE.text(),
             "ASCII (*.txt)\nAll (*)",
-            Qt.QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog,
+            Qt.QFileDialog.DontConfirmOverwrite | Qt.QFileDialog.DontUseNativeDialog,
         )
         if ofile:
             self.outputFileLE.setText(ofile)

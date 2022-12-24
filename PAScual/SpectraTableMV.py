@@ -40,8 +40,9 @@ class PASspectraTableModel(QAbstractTableModel):
         super(PASspectraTableModel, self).__init__()
         self.spectra = spectra
         self.ncolumns = _ncolumns
-        self.redbulletIcon = QIcon(":/Icons/Icons/mine/redbullet.png")
-        self.greenbulletIcon = QIcon(":/Icons/Icons/mine/greenbullet.png")
+        
+        self.redbulletIcon = QIcon("icons:redbullet.png")
+        self.greenbulletIcon = QIcon("icons:greenbullet.png")
 
     def rowCount(self, index=QModelIndex()):
         return len(self.spectra)

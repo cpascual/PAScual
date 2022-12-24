@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>:/Icons/Icons/mine/PAScual-64x64.png</normaloff>:/Icons/Icons/mine/PAScual-64x64.png</iconset>
+    <normaloff>../icons/PAScual-64x64.png</normaloff>../icons/PAScual-64x64.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout">
@@ -152,7 +152,7 @@ p, li { white-space: pre-wrap; }
             </property>
             <property name="icon">
              <iconset>
-              <normaloff>:/Icons/Icons/mine/CRbutton_ok.png</normaloff>:/Icons/Icons/mine/CRbutton_ok.png</iconset>
+              <normaloff>../icons/CRbutton_ok.png</normaloff>../icons/CRbutton_ok.png</iconset>
             </property>
            </widget>
           </item>
@@ -323,7 +323,7 @@ p, li { white-space: pre-wrap; }
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>:/Icons/Icons/mine/CRbutton_ok.png</normaloff>:/Icons/Icons/mine/CRbutton_ok.png</iconset>
+                 <normaloff>../icons/CRbutton_ok.png</normaloff>../icons/CRbutton_ok.png</iconset>
                </property>
               </widget>
              </item>
@@ -402,7 +402,7 @@ p, li { white-space: pre-wrap; }
             </property>
             <property name="icon">
              <iconset>
-              <normaloff>:/Icons/Icons/mine/CRbutton_ok.png</normaloff>:/Icons/Icons/mine/CRbutton_ok.png</iconset>
+              <normaloff>../icons/CRbutton_ok.png</normaloff>../icons/CRbutton_ok.png</iconset>
             </property>
            </widget>
           </item>
@@ -542,7 +542,7 @@ p, li { white-space: pre-wrap; }
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>:/Icons/Icons/mine/CRbutton_ok.png</normaloff>:/Icons/Icons/mine/CRbutton_ok.png</iconset>
+                 <normaloff>../icons/CRbutton_ok.png</normaloff>../icons/CRbutton_ok.png</iconset>
                </property>
                <property name="toolButtonStyle">
                 <enum>Qt::ToolButtonTextBesideIcon</enum>
@@ -647,7 +647,7 @@ p, li { white-space: pre-wrap; }
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>:/Icons/Icons/mine/CRfilesave.png</normaloff>:/Icons/Icons/mine/CRfilesave.png</iconset>
+                 <normaloff>../icons/CRfilesave.png</normaloff>../icons/CRfilesave.png</iconset>
                </property>
               </widget>
              </item>
@@ -824,7 +824,7 @@ p, li { white-space: pre-wrap; }
             </property>
             <property name="icon">
              <iconset>
-              <normaloff>:/Icons/icons/mine/qwtplot.png</normaloff>:/Icons/icons/mine/qwtplot.png</iconset>
+              <normaloff>../icons/qwtplot.png</normaloff>../icons/qwtplot.png</iconset>
             </property>
            </widget>
           </item>
@@ -951,7 +951,7 @@ p, li { white-space: pre-wrap; }
             </property>
             <property name="icon">
              <iconset>
-              <normaloff>:/Icons/Icons/mine/CRfilesave.png</normaloff>:/Icons/Icons/mine/CRfilesave.png</iconset>
+              <normaloff>../icons/CRfilesave.png</normaloff>../icons/CRfilesave.png</iconset>
             </property>
            </widget>
           </item>
@@ -1009,7 +1009,7 @@ p, li { white-space: pre-wrap; }
             </property>
             <property name="icon">
              <iconset>
-              <normaloff>:/Icons/Icons/mine/CRfilesave.png</normaloff>:/Icons/Icons/mine/CRfilesave.png</iconset>
+              <normaloff>../icons/CRfilesave.png</normaloff>../icons/CRfilesave.png</iconset>
             </property>
            </widget>
           </item>
@@ -1244,7 +1244,7 @@ p, li { white-space: pre-wrap; }
          </property>
          <property name="icon">
           <iconset>
-           <normaloff>:/Icons/Icons/mine/checkall.png</normaloff>:/Icons/Icons/mine/checkall.png</iconset>
+           <normaloff>../icons/checkall.png</normaloff>../icons/checkall.png</iconset>
          </property>
         </widget>
        </item>
@@ -1261,7 +1261,7 @@ p, li { white-space: pre-wrap; }
          </property>
          <property name="icon">
           <iconset>
-           <normaloff>:/Icons/Icons/mine/checknone.png</normaloff>:/Icons/Icons/mine/checknone.png</iconset>
+           <normaloff>../icons/checknone.png</normaloff>../icons/checknone.png</iconset>
          </property>
         </widget>
        </item>
@@ -1278,7 +1278,7 @@ p, li { white-space: pre-wrap; }
          </property>
          <property name="icon">
           <iconset>
-           <normaloff>:/Icons/Icons/mine/checkmarked.png</normaloff>:/Icons/Icons/mine/checkmarked.png</iconset>
+           <normaloff>../icons/checkmarked.png</normaloff>../icons/checkmarked.png</iconset>
          </property>
         </widget>
        </item>
@@ -1308,7 +1308,7 @@ p, li { white-space: pre-wrap; }
          </property>
          <property name="icon">
           <iconset>
-           <normaloff>:/Icons/Icons/mine/CRdelete.png</normaloff>:/Icons/Icons/mine/CRdelete.png</iconset>
+           <normaloff>../icons/CRdelete.png</normaloff>../icons/CRdelete.png</iconset>
          </property>
         </widget>
        </item>
@@ -1452,7 +1452,7 @@ p, li { white-space: pre-wrap; }
   <action name="actionRegenerateSets">
    <property name="icon">
     <iconset>
-     <normaloff>:/Icons/Icons/mine/yellowbullet.png</normaloff>:/Icons/Icons/mine/yellowbullet.png</iconset>
+     <normaloff>../icons/yellowbullet.png</normaloff>../icons/yellowbullet.png</iconset>
    </property>
    <property name="text">
     <string>RegenerateSets</string>
@@ -1461,7 +1461,7 @@ p, li { white-space: pre-wrap; }
   <action name="actionSave_Output_as">
    <property name="icon">
     <iconset>
-     <normaloff>:/Icons/Icons/mine/CRfilesave.png</normaloff>:/Icons/Icons/mine/CRfilesave.png</iconset>
+     <normaloff>../icons/CRfilesave.png</normaloff>../icons/CRfilesave.png</iconset>
    </property>
    <property name="text">
     <string>Save Output as...</string>
@@ -1470,7 +1470,7 @@ p, li { white-space: pre-wrap; }
   <action name="actionSave_results_as">
    <property name="icon">
     <iconset>
-     <normaloff>:/Icons/Icons/mine/CRfilesave.png</normaloff>:/Icons/Icons/mine/CRfilesave.png</iconset>
+     <normaloff>../icons/CRfilesave.png</normaloff>../icons/CRfilesave.png</iconset>
    </property>
    <property name="text">
     <string>Save results  as:</string>
@@ -1576,7 +1576,7 @@ p, li { white-space: pre-wrap; }
   <action name="actionPlotFit">
    <property name="icon">
     <iconset>
-     <normaloff>:/Icons/icons/mine/qwtplot.png</normaloff>:/Icons/icons/mine/qwtplot.png</iconset>
+     <normaloff>../icons/qwtplot.png</normaloff>../icons/qwtplot.png</iconset>
    </property>
    <property name="text">
     <string>Plot fit results</string>

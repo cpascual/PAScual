@@ -241,10 +241,10 @@ class ParamWizard(QWizard):
         selected is a list containing spectra to which the settings will apply'''
         super(ParamWizard, self).__init__(parent)
         self.setWindowTitle("PAScual- Parameter setting wizard")
-        # 		self.setWindowIcon(QIcon("qrc:/icons/Icons/mine/PAScual-64x64.png"))
+        # 		self.setWindowIcon(QIcon("../icons/PAScual-64x64.png"))
         # 		self.setWizardStyle(self.ModernStyle)
         # 		logo=QPixmap()
-        # 		logo.load("qrc:/Icons/mine/PAScual-64x64.png")
+        # 		logo.load("../icons/PAScual-64x64.png")
         # 		self.setPixmap(self.LogoPixmap, logo)
 
         self.selected = selected

@@ -15,7 +15,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>:/Icons/icons/mine/TaoEldrup32x32.png</normaloff>:/Icons/icons/mine/TaoEldrup32x32.png</iconset>
+    <normaloff>../icons/TaoEldrup32x32.png</normaloff>../icons/TaoEldrup32x32.png</iconset>
   </property>
   <layout class="QVBoxLayout">
    <item>
@@ -371,7 +371,7 @@ p, li { white-space: pre-wrap; }
   <action name="actionCopy_Results_Selection">
    <property name="icon">
     <iconset>
-     <normaloff>:/Icons/icons/mine/TaoEldrup64x64.png</normaloff>:/Icons/icons/mine/TaoEldrup64x64.png</iconset>
+     <normaloff>../icons/TaoEldrup64x64.png</normaloff>../icons/TaoEldrup64x64.png</iconset>
    </property>
    <property name="text">
     <string>Copy_Results_Selection</string>
