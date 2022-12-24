@@ -558,8 +558,7 @@ class PAScualGUI(Qt.QMainWindow):
             return  # failed to get a valid filename
 
         # Manage the file
-        if not isinstance(ofile, file):
-            ofile = str(ofile)
+        if isinstance(ofile, str):
             openmode = "a"
             if os.path.exists(ofile):
                 answer = Qt.QMessageBox.question(
@@ -1751,26 +1750,25 @@ class PAScualGUI(Qt.QMainWindow):
     def onSaveResults(self):
         # Manage the file
         ofile = str(self.resultsFileLE.text())
-        if not isinstance(ofile, file):
-            ofile = str(ofile)
-            openmode = "a"
-            if os.path.exists(ofile):
-                answer = Qt.QMessageBox.question(
-                    self,
-                    "Append data?",
-                    (
-                        "The selected results File Exists.\n"
-                        + "Append data?\n"
-                        + " (Yes for Append. No for Overwrite)"
-                    ),
-                    Qt.QMessageBox.Yes | Qt.QMessageBox.No | Qt.QMessageBox.Cancel,
-                )
-                if answer == Qt.QMessageBox.Yes:
-                    openmode = "a"
-                elif answer == Qt.QMessageBox.No:
-                    openmode = "w"
-                else:
-                    return
+        openmode = "a"
+        if os.path.exists(ofile):
+            answer = Qt.QMessageBox.question(
+                self,
+                "Append data?",
+                (
+                    "The selected results File Exists.\n"
+                    + "Append data?\n"
+                    + " (Yes for Append. No for Overwrite)"
+                ),
+                Qt.QMessageBox.Yes | Qt.QMessageBox.No | Qt.QMessageBox.Cancel,
+            )
+            if answer == Qt.QMessageBox.Yes:
+                openmode = "a"
+            elif answer == Qt.QMessageBox.No:
+                openmode = "w"
+            else:
+                return
+
             try:
                 ofile = open(ofile, openmode)
             except IOError:
@@ -1780,6 +1778,7 @@ class PAScualGUI(Qt.QMainWindow):
                     "Error opening file. Results won't be written",
                 )
                 return
+
         # Check if there are hidden cells
         hidden = 0
         saveall = True

@@ -1096,7 +1096,7 @@ class discretepals(fitable):
     def saveAs_ASCII(self, f, hdr=None, columns=1, datafmt="%i"):
         """Saves the exp data as ascii with an optional header. It accepts a format string for the data and the number of columns"""
         # TODO: support for multiple columns. Same approach as used in sumpals (Nat)
-        if not isinstance(f, file):
+        if isinstance(f, str):
             f = open(f, "w")
         if hdr is not None:
             f.write(hdr)
