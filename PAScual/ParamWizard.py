@@ -299,4 +299,4 @@ if __name__ == "__main__":
     form = ParamWizard(None, selected)
     app.focusChanged.connect(form.ROIPage.ROIsel.onFocusChanged)  # manage the focus events (needed for mouse selection in ROI)
     form.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

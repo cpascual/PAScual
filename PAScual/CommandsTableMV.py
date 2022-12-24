@@ -266,4 +266,4 @@ if __name__ == "__main__":
     form = demo()
     # 	form.resize(800, 400)
     form.show()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())

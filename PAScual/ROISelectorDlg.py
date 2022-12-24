@@ -232,9 +232,9 @@ def make(app=None):
     # initialisation
     demo = ROISelectorDialog(selected=selected)
     app.focusChanged.connect(demo.onFocusChanged)
-    demo.exec_()
+    demo.exec()
     demo.resetSelected([dp3, dp4])
-    demo.exec_()
+    demo.exec()
     print(demo.result())
     return demo
 
@@ -245,7 +245,7 @@ def make(app=None):
 def main(args):
     app = QApplication(args)
     demo = make(app)
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 
 # main()

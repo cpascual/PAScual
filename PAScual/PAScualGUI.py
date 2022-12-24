@@ -505,7 +505,7 @@ class PAScualGUI(Qt.QMainWindow):
         # make sure that the Dlg is in sync with the options
         self.optionsDlg.setOptions(self.options)
         # launch the options dialog
-        if self.optionsDlg.exec_():
+        if self.optionsDlg.exec():
             # get the options from the dialog
             self.options = self.optionsDlg.getOptions()
         else:
@@ -1353,7 +1353,7 @@ class PAScualGUI(Qt.QMainWindow):
             return
         ROIselector = ROISelectorDialog(self, selected, "ROI")
         app.focusChanged.connect(ROIselector.onFocusChanged)
-        if ROIselector.exec_():
+        if ROIselector.exec():
             for dp, bgroi in zip(selected, ROIselector.roilist):
                 dp.roi = bgroi
             self.spectraTable.resizeColumnToContents(STMV.ROI)
@@ -1583,7 +1583,7 @@ class PAScualGUI(Qt.QMainWindow):
         # launch the dialog in modal mode and execute some code if accepted
         BGselector = ROISelectorDialog(self, selected, "Background")
         app.focusChanged.connect(BGselector.onFocusChanged)
-        if BGselector.exec_():
+        if BGselector.exec():
             for dp, bgroi in zip(selected, BGselector.roilist):
                 val = dp.exp[bgroi].mean()
                 std10 = 10 * max(10, np.sqrt(val), dp.exp[bgroi].std())
@@ -1614,7 +1614,7 @@ class PAScualGUI(Qt.QMainWindow):
         # Todo: do an inteligent identification of files (LT header present?) possibly also get data from the LT header (psperchannel and fwhm)
         fileNames = []
         self.openFilesDlg.setDirectory(self.options.workDirectory)
-        if not self.openFilesDlg.exec_():
+        if not self.openFilesDlg.exec():
             return
         self.options.workDirectory = (
             self.openFilesDlg.directory().path()
@@ -1721,7 +1721,7 @@ class PAScualGUI(Qt.QMainWindow):
             self.saveFilesDlg.selectNameFilter(self.saveFilesDlg.selectedNameFilter())
             self.saveFilesDlg.setAcceptMode(Qt.QFileDialog.AcceptSave)
             self.saveFilesDlg.setViewMode(Qt.QFileDialog.Detail)
-            if not self.saveFilesDlg.exec_():
+            if not self.saveFilesDlg.exec():
                 return None
             filename = str(self.saveFilesDlg.selectedFiles()[0])
             selectedfilter = (
@@ -1954,7 +1954,7 @@ class PAScualGUI(Qt.QMainWindow):
             self.paramWizard.restorelast()
         except:
             pass
-        if not self.paramWizard.exec_():
+        if not self.paramWizard.exec():
             return  # if rejected, stop here
         # If the wizard was accepted, retrieve the settings and apply the parameters
         w = self.paramWizard
@@ -2195,7 +2195,7 @@ def main():
     # defined in PAScual
     abort.abortRequested = form.fitter.isStopped
 
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 
 if __name__ == "__main__":

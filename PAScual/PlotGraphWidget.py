@@ -366,7 +366,7 @@ def pointselected(pos):
 def main(args):
     app = QtGui.QApplication(args)
     demo = make()
-    sys.exit(app.exec_())
+    sys.exit(app.exec())
 
 
 # main()
