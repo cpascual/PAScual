@@ -121,6 +121,10 @@ class FitparWidget(Qt.QWidget):
         self._callbackApply = callbackApply
         self._callbackAuto = callbackAuto
 
+        # initialize icon search path
+        # curdir = os.path.dirname(os.path.realpath(__file__))
+        # Qt.QDir.addSearchPath("icons", os.path.join(curdir, "icons"))
+
         if callbackApply is None:
             self.BTApply.setDisabled(True)
         else:
