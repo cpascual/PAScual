@@ -70,7 +70,7 @@ p, li { white-space: pre-wrap; }
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:8pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="parametersTab">
        <property name="enabled">
@@ -704,7 +704,7 @@ p, li { white-space: pre-wrap; }
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>:/Icons/Icons/mine/CRplayer_play.png</normaloff>:/Icons/Icons/mine/CRplayer_play.png</iconset>
+                 <normaloff>../icons/CRplayer_play.png</normaloff>../icons/CRplayer_play.png</iconset>
                </property>
               </widget>
              </item>
@@ -718,7 +718,7 @@ p, li { white-space: pre-wrap; }
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>:/Icons/Icons/mine/CRplayer_end.png</normaloff>:/Icons/Icons/mine/CRplayer_end.png</iconset>
+                 <normaloff>../icons/CRplayer_end.png</normaloff>../icons/CRplayer_end.png</iconset>
                </property>
               </widget>
              </item>
@@ -732,7 +732,7 @@ p, li { white-space: pre-wrap; }
                </property>
                <property name="icon">
                 <iconset>
-                 <normaloff>:/Icons/Icons/mine/CRplayer_stop.png</normaloff>:/Icons/Icons/mine/CRplayer_stop.png</iconset>
+                 <normaloff>../icons/CRplayer_stop.png</normaloff>../icons/CRplayer_stop.png</iconset>
                </property>
               </widget>
              </item>
@@ -823,7 +823,7 @@ p, li { white-space: pre-wrap; }
              <string>...</string>
             </property>
             <property name="icon">
-             <iconset resource="../PAScual.qrc">
+             <iconset>
               <normaloff>:/Icons/icons/mine/qwtplot.png</normaloff>:/Icons/icons/mine/qwtplot.png</iconset>
             </property>
            </widget>
@@ -1423,7 +1423,7 @@ p, li { white-space: pre-wrap; }
   <action name="actionLoad_Spectra">
    <property name="icon">
     <iconset>
-     <normaloff>:/Icons/Icons/mine/CRfileopen.png</normaloff>:/Icons/Icons/mine/CRfileopen.png</iconset>
+     <normaloff>../icons/CRfileopen.png</normaloff>../icons/CRfileopen.png</iconset>
    </property>
    <property name="text">
     <string>Load Spectra</string>
@@ -1432,7 +1432,7 @@ p, li { white-space: pre-wrap; }
   <action name="actionAbout">
    <property name="icon">
     <iconset>
-     <normaloff>:/Icons/Icons/mine/PAScual-64x64.png</normaloff>:/Icons/Icons/mine/PAScual-64x64.png</iconset>
+     <normaloff>../icons/PAScual-64x64.png</normaloff>../icons/PAScual-64x64.png</iconset>
    </property>
    <property name="text">
     <string>About</string>
@@ -1479,7 +1479,7 @@ p, li { white-space: pre-wrap; }
   <action name="actionWhat_s_This">
    <property name="icon">
     <iconset>
-     <normaloff>:/Icons/Icons/mine/questionmark.png</normaloff>:/Icons/Icons/mine/questionmark.png</iconset>
+     <normaloff>../icons/questionmark.png</normaloff>../icons/questionmark.png</iconset>
    </property>
    <property name="text">
     <string>What's This?</string>
@@ -1487,8 +1487,8 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionManual">
    <property name="icon">
-    <iconset resource="../PAScual.qrc">
-     <normaloff>:/Icons/icons/mine/khelpcenter.png</normaloff>:/Icons/icons/mine/khelpcenter.png</iconset>
+    <iconset>
+     <normaloff>../icons/khelpcenter.png</normaloff>../icons/khelpcenter.png</iconset>
    </property>
    <property name="text">
     <string>Manual</string>
@@ -1496,8 +1496,8 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionLicense">
    <property name="icon">
-    <iconset resource="../PAScual.qrc">
-     <normaloff>:/Icons/icons/mine/package_editors.png</normaloff>:/Icons/icons/mine/package_editors.png</iconset>
+    <iconset>
+     <normaloff>../icons/package_editors.png</normaloff>../icons/package_editors.png</iconset>
    </property>
    <property name="text">
     <string>License</string>
@@ -1506,7 +1506,7 @@ p, li { white-space: pre-wrap; }
   <action name="actionSum_Spectra">
    <property name="icon">
     <iconset>
-     <normaloff>:/Icons/Icons/mine/sigma.png</normaloff>:/Icons/Icons/mine/sigma.png</iconset>
+     <normaloff>../icons/sigma.png</normaloff>../icons/sigma.png</iconset>
    </property>
    <property name="text">
     <string>Sum Spectra</string>
@@ -1514,8 +1514,8 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionSimulate_spectrum">
    <property name="icon">
-    <iconset resource="../PAScual.qrc">
-     <normaloff>:/Icons/icons/mine/kspread.png</normaloff>:/Icons/icons/mine/kspread.png</iconset>
+    <iconset>
+     <normaloff>../icons/kspread.png</normaloff>../icons/kspread.png</iconset>
    </property>
    <property name="text">
     <string>Simulate spectrum</string>
@@ -1528,8 +1528,8 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionTao_Eldrup_Calculator">
    <property name="icon">
-    <iconset resource="../PAScual.qrc">
-     <normaloff>:/Icons/icons/mine/TaoEldrup64x64.png</normaloff>:/Icons/icons/mine/TaoEldrup64x64.png</iconset>
+    <iconset>
+     <normaloff>../icons/TaoEldrup64x64.png</normaloff>../icons/TaoEldrup64x64.png</iconset>
    </property>
    <property name="text">
     <string>Tao Eldrup Calculator</string>
@@ -1548,8 +1548,8 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionParamWizard">
    <property name="icon">
-    <iconset resource="../PAScual.qrc">
-     <normaloff>:/Icons/icons/mine/Wizard.png</normaloff>:/Icons/icons/mine/Wizard.png</iconset>
+    <iconset>
+     <normaloff>../icons/Wizard.png</normaloff>../icons/Wizard.png</iconset>
    </property>
    <property name="text">
     <string>Wizard (parameters)</string>
@@ -1557,8 +1557,8 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionOptions">
    <property name="icon">
-    <iconset resource="../PAScual.qrc">
-     <normaloff>:/Icons/icons/mine/advancedsettings.png</normaloff>:/Icons/icons/mine/advancedsettings.png</iconset>
+    <iconset>
+     <normaloff>../icons/advancedsettings.png</normaloff>../icons/advancedsettings.png</iconset>
    </property>
    <property name="text">
     <string>Options...</string>
@@ -1567,7 +1567,7 @@ p, li { white-space: pre-wrap; }
   <action name="actionSave_Spectra_as">
    <property name="icon">
     <iconset>
-     <normaloff>:/Icons/Icons/mine/CRfilesave.png</normaloff>:/Icons/Icons/mine/CRfilesave.png</iconset>
+     <normaloff>../icons/CRfilesave.png</normaloff>../icons/CRfilesave.png</iconset>
    </property>
    <property name="text">
     <string>Save Spectra as...</string>
@@ -1575,7 +1575,7 @@ p, li { white-space: pre-wrap; }
   </action>
   <action name="actionPlotFit">
    <property name="icon">
-    <iconset resource="../PAScual.qrc">
+    <iconset>
      <normaloff>:/Icons/icons/mine/qwtplot.png</normaloff>:/Icons/icons/mine/qwtplot.png</iconset>
    </property>
    <property name="text">
@@ -1583,8 +1583,6 @@ p, li { white-space: pre-wrap; }
    </property>
   </action>
  </widget>
- <resources>
-  <include location="../PAScual.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

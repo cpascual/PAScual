@@ -201,7 +201,7 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>:/Icons/Icons/mine/CRbutton_ok.png</normaloff>:/Icons/Icons/mine/CRbutton_ok.png</iconset>
+     <normaloff>../icons/CRbutton_ok.png</normaloff>../icons/CRbutton_ok.png</iconset>
    </property>
   </widget>
   <widget class="QToolButton" name="BTAutoFill">
@@ -227,14 +227,11 @@ p, li { white-space: pre-wrap; }
    </property>
    <property name="icon">
     <iconset>
-     <normaloff>:/Icons/Icons/mine/CRcalc.png</normaloff>:/Icons/Icons/mine/CRcalc.png</iconset>
+     <normaloff>../icons/CRcalc.png</normaloff>../icons/CRcalc.png</iconset>
    </property>
   </widget>
  </widget>
- <resources>
-  <include location="../PAScual.qrc"/>
-  <include location="PAScual.qrc"/>
- </resources>
+ <resources/>
  <connections>
   <connection>
    <sender>CBFix</sender>
