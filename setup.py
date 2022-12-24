@@ -46,7 +46,7 @@ setup(
     packages=find_packages(),
     include_package_data=True,
     entry_points=entry_points,
-    install_requires=['numpy', 'scipy', 'PythonQwt'],
+    install_requires=['numpy', 'scipy', 'PythonQwt', 'pyqt5'],
     classifiers=classifiers,
 
 )
