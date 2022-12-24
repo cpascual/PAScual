@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+   # -*- coding: utf-8 -*-
 """
 	PAScualGUI: Graphical User Interface for PAScual
     PAScual: Positron Annihilation Spectroscopy data analysis
@@ -1769,15 +1769,15 @@ class PAScualGUI(Qt.QMainWindow):
             else:
                 return
 
-            try:
-                ofile = open(ofile, openmode)
-            except IOError:
-                Qt.QMessageBox.warning(
-                    self,
-                    "Error opening file",
-                    "Error opening file. Results won't be written",
-                )
-                return
+        try:
+            ofile = open(ofile, openmode)
+        except IOError:
+            Qt.QMessageBox.warning(
+                self,
+                "Error opening file",
+                "Error opening file. Results won't be written",
+            )
+            return
 
         # Check if there are hidden cells
         hidden = 0
