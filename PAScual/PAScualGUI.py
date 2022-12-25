@@ -987,7 +987,7 @@ class PAScualGUI(Qt.QMainWindow):
             # activate the startbutton
             self.goFitBT.setEnabled(True)
             # Copy the current output box to the Previous Fits box and then clear the current one
-            if not self.currentOutputKey is None:
+            if self.currentOutputKey is not None:
                 self.previousOutputDict[
                     self.currentOutputKey
                 ] = (
@@ -1363,7 +1363,7 @@ class PAScualGUI(Qt.QMainWindow):
 
     def applyFitpar(self, caller, selected=None, indexes=None):
         if indexes is None:
-            if not (selected is None):
+            if selected is not None:
                 raise ValueError(
                     'applyFitpar: Ignoring "selected" because "indexes" were not passed'
                 )

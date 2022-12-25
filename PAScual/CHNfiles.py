@@ -18,7 +18,7 @@
 
 import struct
 import sys
-from scipy import array, savetxt, zeros, concatenate, arange
+from scipy import array, savetxt, concatenate, arange
 
 
 class CHN(object):

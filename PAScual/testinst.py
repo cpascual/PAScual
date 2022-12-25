@@ -52,7 +52,6 @@ else:
 print("\nPyQt...", end=" ")
 try:
     import PyQt5.QtCore as t4
-    import PyQt5.QtGui as t4b
 except:
     print("Failed")
 else:

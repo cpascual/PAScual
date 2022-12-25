@@ -23,14 +23,11 @@ import pickle as pickle
 import copy
 import os
 import random
-import scipy as S
-import string
 import sys
 import time
 import numpy as np
 from scipy import optimize
 from scipy.special import erfc
-from shutil import copy2
 
 # FWHM = SIGMA*(2*sqrt(2*log(2))) = SIGMA*2.3548200450309493
 FWHM2SIGMA = 1.0 / (2 * np.sqrt(2 * np.log(2)))
@@ -2553,7 +2550,7 @@ def test_component():
 
 def start():
     try:
-        import pylab
+        pass
     except:
         print(
             "Pylab could not be imported. Graphical output won't be supported",
