@@ -19,18 +19,34 @@
 """
 
 # TODO: Add a reverse selection button to the Spectra selection list
-# TODO: (General) save queue to file before starting and delete file when finished. Check for existence of old files indicating unfinished calcs and offer resume.
-# TODO: (General) implement summary view of sets. A list containing which sets with which spectra each, which fitmode and number of free parameters and names of common parameters
-# TODO: (General) (UPDATE: after v9.9 this seems no longer an issue) . Make more robust localmin (this is to PAScual.py) possibly use pre-fit with leastsq and poor convergence criterion, if that fails, go to pre-fit with bruteforce.
-# TODO: (General) make more robust SA (this is to PAScual.py) possibly using resets to best fits
+# TODO: (General) save queue to file before starting and delete file when finished.
+#   Check for existence of old files indicating unfinished calcs and offer resume.
+# TODO: (General) implement summary view of sets. A list containing which sets with
+#   which spectra each, which fitmode and number of free parameters and names of
+#   common parameters
+# TODO: (General) (UPDATE: after v9.9 this seems no longer an issue) .
+#   Make more robust localmin (this is to PAScual.py) possibly use pre-fit with
+#   leastsq and poor convergence criterion, if that fails, go to pre-fit with
+#   bruteforce.
+# TODO: (General) make more robust SA (this is to PAScual.py) possibly using
+#   resets to best fits
 # TODO: (General) implement plot from columns in results table
 # TODO: (General) Allow set parameters from a row of results table
-# TODO: (General) (UPDATE: with the wizard, it is no longer an issue) offset should be calculated automatically if not set (possible warning).
-# TODO: (General) (UPDATE: Done by Wizard) same for background (e.g. use last 1% of ROI). Call if ROI is set AND the background is not already assigned
-# TODO: (General) (UPDATE: not urgent since Wizard remembers the lims) Implement passing default values to left and right lims in ROISelector. Pass [-5rel,end] for ROI and [ROIright-max(5,0.01*(ROIright-ROIleft)), ROIright] for bgROI
-# TODO: (General) add an animation in the status bar indicating "fit in progress" (possibly the pPs.gif)
+# TODO: (General) (UPDATE: with the wizard, it is no longer an issue) offset should
+#   be calculated automatically if not set (possible warning).
+# TODO: (General) (UPDATE: Done by Wizard) same for background
+#   (e.g. use last 1% of ROI).
+#   Call if ROI is set AND the background is not already assigned
+# TODO: (General) (UPDATE: not urgent since Wizard remembers the lims)
+#   Implement passing default values to left and right lims in ROISelector.
+#   Pass [-5rel,end] for ROI and
+#   [ROIright-max(5,0.01*(ROIright-ROIleft)), ROIright] for bgROI
+# TODO: (General) add an animation in the status bar indicating
+#   "fit in progress" (possibly the pPs.gif)
 # TODO: (General) add estimated time for fit (or at least for BI command)
-# TODO: (General) Incorporate plothistory.py to the GUI. It could also be used to display ellipses taken from the covariance matrix when no history has been stored
+# TODO: (General) Incorporate plothistory.py to the GUI. It could also be
+#   used to display ellipses taken from the covariance matrix when no history
+#   has been stored
 # TODO: (General) make installer?
 
 
@@ -46,14 +62,6 @@ from PyQt5 import Qt
 
 import traceback
 
-
-def excepthook(etype, value, tb):
-    traceback.print_exception(etype, value, tb)
-
-
-sys.excepthook = excepthook
-
-
 from .PAScual import emitter, abort, discretepals, distributeinsets, fitpar, tee
 from . import CommandsTableMV as CMDTMV
 from . import ComponentTableMV as CTMV
@@ -65,6 +73,13 @@ from .ui import UILoadable
 from .PlotGraphWidget import PALSplot, ResPlot
 from .ROISelectorDlg import ROISelectorDialog
 from .release import __version__, __homepage__, __citation_html__
+
+
+def excepthook(etype, value, tb):
+    traceback.print_exception(etype, value, tb)
+
+
+sys.excepthook = excepthook
 
 
 defaultFitModesDict = {
@@ -98,18 +113,21 @@ defaultFitMode = "LOCAL-connected"
 @UILoadable
 class FitparWidget(Qt.QWidget):
     """A composite widget that defines fitpars.
-    It contains: a label, an "auto" button, a "value" edit box, "fixed" and "common" check boxes, minimum and maximum edits and an Apply button
+    It contains: a label, an "auto" button, a "value" edit box,
+    "fixed" and "common" check boxes, minimum and maximum edits and an Apply button
     """
 
     def __init__(
         self, fpkey, parent=None, label="", callbackApply=None, callbackAuto=None
     ):
         """The parameters for initialisation are:
-        the fpkey is the key for the __dict__ of the spectrum that will contain this fitpar: e.g. spectrum.__dict__[fpkey]=...
+        the fpkey is the key for the __dict__ of the spectrum that will contain this
+        fitpar: e.g. spectrum.__dict__[fpkey]=...
         the label to be shown
         The callback for the apply button (the button is disabled if this is None)
         The callback for the auto button (the button is disabled if this is None)
-        Note, the widget is not laid out. Use addtoGridLayout to stack various widgets of this type
+        Note, the widget is not laid out. Use addtoGridLayout to stack various widgets
+        of this type
         """
         super(FitparWidget, self).__init__(parent)
         self.loadUi()
@@ -269,10 +287,10 @@ class PAScualGUI(Qt.QMainWindow):
         self.dirtysets = True
         self.dirtyresults = False
         self.palssetsdict = {}
-        self.settings = (
-            Qt.QSettings()
-        )  # This  gets the settings from wherever they are stored (the storage point is plattform dependent)
-        # 		self.settings.clear()
+        # This  gets the settings from wherever they are stored
+        # (the storage point is plattform dependent)
+        self.settings = Qt.QSettings()
+        # self.settings.clear()
 
         ###add hand-coded widgets and modifications to ui_ widgets here
 
@@ -342,10 +360,8 @@ class PAScualGUI(Qt.QMainWindow):
         self.optionsDlg = None
         self.saveFilesDlg = None
         self.plotfitDlg = None
-        self.LEpsperchannel.setValidator(
-            Qt.QDoubleValidator(0, np.inf, 3, self)
-        )  # add validator to the psperchannel edit
-        # 		self.resultsTable.addActions([self.actionCopy_Results_Selection,self.actionSave_results_as]) #context menu
+        # add validator to the psperchannel edit
+        self.LEpsperchannel.setValidator(Qt.QDoubleValidator(0, np.inf, 3, self))
         self.resultsTable.addActions(
             [self.actionCopy_Results_Selection, self.actionPlotFit]
         )
@@ -567,7 +583,11 @@ class PAScualGUI(Qt.QMainWindow):
             Qt.QMessageBox.warning(
                 self,
                 "Cannot save unfinished fit",
-                "You can only save the output from finished fits. Output won't be written\n Select a different output from the list.",
+                (
+                    "You can only save the output from finished fits."
+                    + " Output won't be written\n"
+                    + " Select a different output from the list."
+                ),
             )
             return
         # if a file is not given, prompt the user for a file name
@@ -582,8 +602,10 @@ class PAScualGUI(Qt.QMainWindow):
                 answer = Qt.QMessageBox.question(
                     self,
                     "Append data?",
-                    "'%s' already exists.\nAppend data?\n (Yes for Append. No for Overwrite)"
-                    % os.path.basename(ofile),
+                    (
+                        f"'{os.path.basename(ofile)}' already exists.\nAppend data?\n"
+                        + " (Yes for Append. No for Overwrite)"
+                    ),
                     Qt.QMessageBox.Yes | Qt.QMessageBox.No | Qt.QMessageBox.Cancel,
                 )
                 if answer == Qt.QMessageBox.Yes:
@@ -620,10 +642,13 @@ class PAScualGUI(Qt.QMainWindow):
         self.plotfit(self.dprow - 1)
 
     def plotfit(self, dprow=0, dplist=None):
-        """Shows a dialog containing: the spectrum, the fit (with separated components), the residuals and the text report.
+        """Shows a dialog containing: the spectrum, the fit
+        (with separated components), the residuals and the text report.
         It does this for a list of discretepals objects that can be browsed in order.
-        dplist is the list of discretepals objects. dprow is the index of that list that is to be reported."""
-        # TODO: This function has grown too much. It should be encapsulated  in a class (suggested name: reportDlg).
+        dplist is the list of discretepals objects. dprow is the index of that list
+        that is to be reported."""
+        # TODO: This function has grown too much.
+        #   It should be encapsulated in a class (suggested name: reportDlg).
         if dplist is None:
             dplist = self.resultsdplist
         self.dprow = dprow
@@ -773,32 +798,42 @@ class PAScualGUI(Qt.QMainWindow):
             )[0]
         )
         self.fitModeCB.addItem(fmname)
-        # copy the <user> entry under a different name and restore the original value of the <user> fit mode
+        # copy the <user> entry under a different name and restore the
+        # original value of the <user> fit mode
         self.fitmodesdict[fmname] = copy.deepcopy(self.fitmodesdict["<user>"])
         self.fitmodesdict["<user>"] = copy.deepcopy(defaultFitModesDict["<user>"])
         pickle.dump(self.fitmodesdict, open(self.fitModeFileName, "wb"), -1)
 
     def onFitterFinished(self, completed):
-        # I think that it is safe to use the completed variable, since it came via the signal mechanism... But if it causes problems, check this
-        if (
-            completed
-        ):  # If the fitter finished its job (i.e. it was not aborted) update things
-            if (
-                self.fitter.isRunning()
-            ):  # extra safety check. Make sure that fitter is not running at this moment
+        # I think that it is safe to use the completed variable,
+        # since it came via the signal mechanism...
+        # But if it causes problems, check this
+        if completed:
+            # If the fitter finished its job (i.e. it was not aborted) update things
+            if self.fitter.isRunning():
+                # extra safety check. Make sure that fitter is not running at
+                # this moment
                 if not self.fitter.wait(1000):
                     Qt.QMessageBox.critical(
                         self,
                         "Race condition",
-                        "Something went wrong. \nThis may be a bug. If you can reproduce it, please report it to the author (REF: RACE1)\nThe fit needs to be stopped and re-started manually",
+                        (
+                            "Something went wrong. \n"
+                            + "This may be a bug. If you can reproduce it, "
+                            + "please report it to the author (REF: RACE1)\n"
+                            + "The fit needs to be stopped and re-started manually"
+                        ),
                         Qt.QMessageBox.Ok,
                     )
                     raise RuntimeError(
                         "onFitterFinished: self.fitter is still running!"
                     )
-                # we know fitter is not running, so we safely access its internal palsset and status
+                # we know fitter is not running, so we safely access its internal
+                # palsset and status
             ps = copy.deepcopy(self.fitter.ps)
-            # 			completed=copy.deepcopy(self.fitter.completed) #deepcopy makes little sense here but... who cares?
+
+            # deepcopy makes little sense here but... who cares?
+            # completed=copy.deepcopy(self.fitter.completed)
             # We add the ps to a list for later use
             self.resultslist.append(ps)
             # now we can use our copies to insert data into the summary
@@ -862,7 +897,12 @@ class PAScualGUI(Qt.QMainWindow):
                 Qt.QMessageBox.critical(
                     self,
                     "Race condition",
-                    "Something went wrong. \nThis may be a bug. If you can reproduce it, please report it to the author (REF: RACE2)\nThe fit needs to be stopped and re-started manually",
+                    (
+                        "Something went wrong. \n"
+                        + "This may be a bug. If you can reproduce it,"
+                        + " please report it to the author (REF: RACE2)\n"
+                        + "The fit needs to be stopped and re-started manually"
+                    ),
                     Qt.QMessageBox.Ok,
                 )
                 raise RuntimeError("onFitterFinished: self.fitter is still running!")
@@ -896,7 +936,7 @@ class PAScualGUI(Qt.QMainWindow):
                 "DEBUG: cannot regenerate the queue while one fit is running"
             )  # TODO: handle this properly
             return
-        # create a filtered version of palssetsdict (remove those which have no commands)
+        # create a filtered version of palssetsdict (remove those with no commands)
         rejected = {}
         accepted = {}
         for ps in list(self.palssetsdict.values()):
@@ -906,16 +946,20 @@ class PAScualGUI(Qt.QMainWindow):
                 accepted[ps.name] = ps
         # Build a queue, sorting the keys in the palssetsdict (the queue is a deepcopy!)
         self.fitqueuedict = copy.deepcopy(accepted)  # The queue is a copy!
-        self.fitqueuekeys = sorted(
-            self.fitqueuedict.keys()
-        )  # note: at some point this could be used to implement user defined sorting (by assigning a preffix that affects the sort)
-        return (
-            accepted,
-            rejected,
-        )  # returns both dictionaries. IMPORTANT: they contain references to the palssets in palssetsdict, not copies!
+        # note: at some point this could be used to implement user defined
+        # sorting (by assigning a preffix that affects the sort)
+        self.fitqueuekeys = sorted(self.fitqueuedict.keys())
+
+        # returns both dictionaries.
+        # IMPORTANT: they contain references to the palssets in palssetsdict,
+        #   not copies!
+        return accepted, rejected
 
     def stopFitter(self, timeout=10000, offerForce=False):
-        """Tries to stop the fitter nicely. If offerforce==True, it also offers to send a terminate signal to the fitter"""
+        """Tries to stop the fitter nicely.
+
+        If offerforce==True, it also offers to send a terminate signal to the fitter
+        """
         # Ask the fitter thread to stop and wait till it does stop
         self.fitter.stop()
         self.statusbar.showMessage(
@@ -928,11 +972,14 @@ class PAScualGUI(Qt.QMainWindow):
             answer = Qt.QMessageBox.warning(
                 self,
                 "Fit not responding",
-                """The fit is not responding to the stop request."""
-                """Your options Are: <ul>"""
-                """<p><li>To force fit termination (<b>the program may crash!</b>)</li>"""
-                """<li>To wait till the fit responds (You cannot do more fits till it finishes, but you can save results)</li></ul></p>"""
-                """<p>Play Russian roulette?  (i.e., force fit termination?)</p>""",
+                """
+                The fit is not responding to the stop request.
+                Your options Are: <ul>
+                <p><li>To force fit termination (<b>the program may crash!</b>)</li>
+                <li>To wait till the fit responds (You cannot do more fits till it 
+                finishes, but you can save results)</li></ul></p>
+                <p>Play Russian roulette?  (i.e., force fit termination?)</p>
+                """,
                 Qt.QMessageBox.Yes | Qt.QMessageBox.No,
             )
             if answer == Qt.QMessageBox.Yes:
@@ -943,22 +990,24 @@ class PAScualGUI(Qt.QMainWindow):
                 self.regenerateFitter(abort)
                 self.statusbar.showMessage("Fit killed!", 0)
                 return True
-        # If we reach this point is because we failed to stop the fit (although we requested a stop which may succeed at any moment)
+        # If we reach this point is because we failed to stop the fit
+        # (although we requested a stop which may succeed at any moment)
         self.statusbar.showMessage("The fit may finish at any moment...", 0)
         return False
 
     def regenerateFitter(self, abortobject):
-        """Restores a the self.fitter object and its connections (use in case of having terminated the fitter thread)
-        abortobject is the handler containing the abortRequested() to which we assign the fitter.isStopped()"""
+        """Restores a the self.fitter object and its connections
+        (use in case of having terminated the fitter thread)
+        abortobject is the handler containing the abortRequested()
+        to which we assign the fitter.isStopped()"""
         self.fitter = PCP.fitter(self)
         self.fitter.endrun.connect(self.onFitterFinished)
         self.fitter.connect(self.setPBar.setValue)
         emitter.initCommandPBar.connect(self.commandPBar.setRange)
         emitter.commandPBarValue.connect(self.commandPBar.setValue)
         emitter.teeOutput.connect(self.outputTE.insertPlainText)
-        abortobject.abortRequested = (
-            self.fitter.isStopped
-        )  # reassign the  abortRequested() method from the abort object defined in PAScual
+        # reassign the  abortRequested() method from the abort object defined in PAScual
+        abortobject.abortRequested = self.fitter.isStopped
 
     def onSkipFit(self):
         """Skips the current fit"""
@@ -967,7 +1016,10 @@ class PAScualGUI(Qt.QMainWindow):
             answer = Qt.QMessageBox.warning(
                 self,
                 "Fit not responding",
-                """The fit is not responding to the skip request. Do you want to try to <b>stop</b> the fit?""",
+                """
+                The fit is not responding to the skip request. 
+                Do you want to try to <b>stop</b> the fit?
+                """,
                 Qt.QMessageBox.Yes | Qt.QMessageBox.No,
             )
             if answer == Qt.QMessageBox.Yes:
@@ -986,7 +1038,8 @@ class PAScualGUI(Qt.QMainWindow):
         if stopped:
             # activate the startbutton
             self.goFitBT.setEnabled(True)
-            # Copy the current output box to the Previous Fits box and then clear the current one
+            # Copy the current output box to the Previous Fits box
+            # and then clear the current one
             if self.currentOutputKey is not None:
                 self.previousOutputDict[
                     self.currentOutputKey
@@ -1017,14 +1070,21 @@ class PAScualGUI(Qt.QMainWindow):
                 answer = Qt.QMessageBox.warning(
                     self,
                     "Estimation of covariance may fail in LOCAL",
-                    "<p>The estimation of uncertainties for <b>intensities</b> in %s may not be good if:</p>"
-                    "<p>a) you use LOCAL minimisation <b>and</b></p>"
-                    "<p>b) some spectra have common intensities, <b>and</b></p>"
-                    "<p>c) not <b>all</b> of the intensities are common for the set."
-                    "<p>Note 1: the uncertainties estimated by the Bayesian Inference algorithm are not affected by this problem</p>"
-                    "<p>Note 2: in any case, the uncertainties given by LOCAL are based on the covariance matrix and should not be blindly trusted (more about this in the help files)</p>"
-                    "<p>(if you choose to ignore, this warning won't be repeated for this fit)<p>"
-                    % ps.name,
+                    (
+                        "<p>The estimation of uncertainties for <b>intensities</b> in "
+                        + f"{ps.name} may not be good if:</p>"
+                        + "<p>a) you use LOCAL minimisation <b>and</b></p>"
+                        + "<p>b) some spectra have common intensities, <b>and</b></p>"
+                        + "<p>c) not <b>all</b> of the intensities are common for the "
+                        + "set."
+                        + "<p>Note 1: the uncertainties estimated by the Bayesian "
+                        + "Inference algorithm are not affected by this problem</p>"
+                        + "<p>Note 2: in any case, the uncertainties given by LOCAL"
+                        + " are based on the covariance matrix and should not be "
+                        + "blindly trusted (more about this in the help files)</p>"
+                        + "<p>(if you choose to ignore, this warning won't be "
+                        + "repeated for this fit)<p>"
+                    ),
                     Qt.QMessageBox.Ignore | Qt.QMessageBox.Cancel,
                 )
                 break  # regardless of the answer, there is no need to continue checking
@@ -1224,19 +1284,23 @@ class PAScualGUI(Qt.QMainWindow):
         self.regenerateSets.emit(False)
 
     def sumspectra(self):
-        """Sums the checked spectra and offers to save them. It inserts the sum in the list"""
+        """Sums the checked spectra and offers to save them.
+        It inserts the sum in the list"""
         # TODO: needs more work on interface
-        # Todo: implement Duplatre's suggestion on fitting with non-poisson noise from splitted spectra:
-        # 	Introduce take into account non-poisson noise
-        # 	This solves issues with the short lifetime artifacts
-        # 	split acq in 500k counts spectra.
-        # 	find stdev of each channel among the chunks
-        # 	find the ratio of real stdev to poisson error of the average spectrum
-        # 	apply the ratio to the deltaexp vector when analysing each spectrum.
+        # TODO: implement Duplatre's suggestion on fitting with non-poisson
+        #   noise from splitted spectra:
+        #     Introduce take into account non-poisson noise
+        #     This solves issues with the short lifetime artifacts
+        #     split acq in 500k counts spectra.
+        #     find stdev of each channel among the chunks
+        #     find the ratio of real stdev to poisson error of the average spectrum
+        #     apply the ratio to the deltaexp vector when analysing each spectrum.
         # alternatively... (think about this):
-        #   take s1,s2,...sn: construct a spectrum with exp=mean(s1.exp, s2.exp,...) and deltaexp=stdev(s1.exp,s2.exp,...) (channel by channel)
+        #   take s1,s2,...sn: construct a spectrum with exp=mean(s1.exp, s2.exp,...)
+        #   and deltaexp=stdev(s1.exp,s2.exp,...) (channel by channel)
         # another possibility:
-        #   Fit s1,s2,sn,...them all simultaneously with ALL parameters common putting deltaexp=nonpoissonratio*poisson for each of them
+        #   Fit s1,s2,sn,...them all simultaneously with ALL parameters common
+        #   putting deltaexp=nonpoissonratio*poisson for each of them
         selected, indexes = self.spectraModel.getselectedspectra()
         if len(selected) < 2:
             Qt.QMessageBox.warning(
@@ -1254,8 +1318,10 @@ class PAScualGUI(Qt.QMainWindow):
             Qt.QMessageBox.warning(
                 self,
                 "Spectra cannot be added ",
-                " When summing spectra, they must have the same number of channels.\n Aborting."
-                "",
+                (
+                    " When summing spectra, they must have the same number "
+                    + "of channels.\n Aborting."
+                ),
             )
             return
         dpsum.initifready(force=True)
@@ -1343,10 +1409,13 @@ class PAScualGUI(Qt.QMainWindow):
         self.compModel.endResetModel()
 
     # TODO: update what is shown in the fitpars Do this by calling a separate function:
-    ##If only one is selected, show the fitpars that are set
-    ##If more than one is selected, show only those which are common and mark in a different way those which are different amongst selection
-    ##Possibly use a color code for background of the LE's: white for those not set, yellow for those set (and same among selection), magenta for those which have different values among selection
-    ##Possibly check if they have common settings and show those
+    #   If only one is selected, show the fitpars that are set
+    #   If more than one is selected, show only those which are common and mark in a
+    #   different way those which are different amongst selection
+    #   Possibly use a color code for background of the LE's: white for those not set,
+    #   yellow for those set (and same among selection), magenta for those which have
+    #   different values among selection
+    #   Possibly check if they have common settings and show those
 
     def setROI(self):
         selected, indexes = self.spectraModel.getselectedspectra()
@@ -1376,8 +1445,10 @@ class PAScualGUI(Qt.QMainWindow):
             Qt.QMessageBox.warning(
                 self,
                 "Invalid input",
-                "'Value' must be a number.\n 'Min' and 'Max' must either be numbers or be empty."
-                "",
+                (
+                    "'Value' must be a number.\n "
+                    + "'Min' and 'Max' must either be numbers or be empty."
+                ),
             )
             return False
         fp.forcelimits()
@@ -1392,7 +1463,6 @@ class PAScualGUI(Qt.QMainWindow):
             idx1 = self.spectraModel.index(idx.row(), 0)
             idx2 = self.spectraModel.index(idx.row(), ncol)
             self.spectraModel.dataChanged.emit(idx1, idx2)
-        # 		print "DEBUG:",fp.name, fp.val, fp.minval, fp.maxval, fp.free, type(fp), caller._fpkey
         # mark that the sets might be dirty now
         self.dirtysets = True
         return True
@@ -1402,12 +1472,13 @@ class PAScualGUI(Qt.QMainWindow):
         if selected == []:
             return False  # if it is empty, then nothing is selected so do nothing
         answer = None
-        # check if the components are already set for this spectrum (TODO: possibly suggest to apply only selected components )
+        # check if the components are already set for this spectrum
+        # TODO: possibly suggest to apply only selected components
         ncomps = self.compModel.rowCount()
         nspect = len(selected)
-        applymatrix = np.zeros(
-            (nspect, ncomps), dtype="bool"
-        )  # The applymatrix is a boolean matrix that says whether to apply a given component to a given spectrum
+        # The applymatrix is a boolean matrix that says whether to apply
+        #  a given component to a given spectrum
+        applymatrix = np.zeros((nspect, ncomps), dtype="bool")
         for i in range(applymatrix.shape[0]):  # go through rows
             dp = selected[i]
             if dp.taulist is None:
@@ -1441,10 +1512,12 @@ class PAScualGUI(Qt.QMainWindow):
                     applymatrix[i, :] = False
             if len(dp.taulist) == 0:
                 dp.taulist = dp.itylist = None
-        # At this point we have an applymatrix and taulist of the correct size. So we can apply the components
+        # At this point we have an applymatrix and taulist of the correct size.
+        # So we can apply the components
         for j in range(ncomps):
             cp = self.compModel.components[j]
-            # We regenerate the components instead of using the existing fitpar because we want to reinitialize them!
+            # We regenerate the components instead of using the existing fitpar
+            # because we want to reinitialize them!
             tau = fitpar(
                 val=cp.tau.val,
                 name="Tau%i" % (j + 1),
@@ -1463,9 +1536,9 @@ class PAScualGUI(Qt.QMainWindow):
                 dp = selected[i]
                 if applymatrix[i, j]:
                     if not cp.tau.common:
-                        tau = copy.deepcopy(
-                            tau
-                        )  # if they are common, we use the same object. If not, we use a copy
+                        # if they are common, we use the same object.
+                        # If not, we use a copy
+                        tau = copy.deepcopy(tau)
                     if not cp.ity.common:
                         ity = copy.deepcopy(ity)
                     dp.taulist[j], dp.itylist[j] = tau, ity
@@ -1506,8 +1579,9 @@ class PAScualGUI(Qt.QMainWindow):
                 self,
                 "Incompatible input",
                 str(
-                    "The AutoOffset function is not compatible with a common Offset parameter\n"
-                    "If you continue, the 'common' option will be unchecked."
+                    "The AutoOffset function is not compatible with a "
+                    + "common Offset parameter\n"
+                    + "If you continue, the 'common' option will be unchecked."
                 ),
                 Qt.QMessageBox.Ok | Qt.QMessageBox.Cancel,
             )
@@ -1519,9 +1593,15 @@ class PAScualGUI(Qt.QMainWindow):
         nerror = error = ignoreerror = False
         for dp in selected:
             if dp.psperchannel is None:
-                error = "The channel width for this spectrum must be defined in order to use AutoOffset\n"
+                error = (
+                    "The channel width for this spectrum must be defined "
+                    + "in order to use AutoOffset\n"
+                )
             elif dp.fwhm is None:
-                error = "The resolution (FWHM) for this spectrum must be defined in order to use AutoOffset\n"
+                error = (
+                    "The resolution (FWHM) for this spectrum must be defined "
+                    + "in order to use AutoOffset\n"
+                )
             else:
                 error = False
             if error:
@@ -1540,7 +1620,8 @@ class PAScualGUI(Qt.QMainWindow):
                     )
                     if answer == Qt.QMessageBox.No:
                         self.statusbar.showMessage("AutoOffset Cancelled", 0)
-                        return  # stop processing and return without accepting the dialog
+                        # stop processing and return without accepting the dialog
+                        return
                     elif answer == Qt.QMessageBox.YesToAll:
                         ignoreerror = True  # it won t ask anymore
             else:
@@ -1572,8 +1653,9 @@ class PAScualGUI(Qt.QMainWindow):
                 self,
                 "Incompatible input",
                 str(
-                    "The Auto Background function is not compatible with a common background parameter\n"
-                    "If you continue, the 'common' option will be unchecked."
+                    "The Auto Background function is not compatible with "
+                    + "a common background parameter\n"
+                    + "If you continue, the 'common' option will be unchecked."
                 ),
                 Qt.QMessageBox.Ok | Qt.QMessageBox.Cancel,
             )
@@ -1612,7 +1694,8 @@ class PAScualGUI(Qt.QMainWindow):
             self.pplot.replot()
 
     def loadSpectra(self):
-        # Todo: do an inteligent identification of files (LT header present?) possibly also get data from the LT header (psperchannel and fwhm)
+        # TODO: do an inteligent identification of files (LT header present?)
+        #   possibly also get data from the LT header (psperchannel and fwhm)
         fileNames = []
         self.openFilesDlg.setDirectory(self.options.workDirectory)
         if not self.openFilesDlg.exec():
@@ -1625,7 +1708,6 @@ class PAScualGUI(Qt.QMainWindow):
         )  # save the new working directory
         fileNames = [str(item) for item in self.openFilesDlg.selectedFiles()]
         dps = []
-        answer = None
         progress = Qt.QProgressDialog(
             "Loading Files...", "Abort load", 0, len(fileNames), self
         )
@@ -1648,7 +1730,7 @@ class PAScualGUI(Qt.QMainWindow):
                 tempdp = fileloader.getDiscretePals(fname)
                 if tempdp is None:
                     expdata = fileloader.expdata(fname)
-            except:
+            except Exception:
                 expected = fileloader.name
                 Qt.QMessageBox.warning(
                     self,
@@ -1656,7 +1738,7 @@ class PAScualGUI(Qt.QMainWindow):
                     "Unexpected format in: %s\n (expected %s format)"
                     % (os.path.basename(fname), expected),
                 )
-                # 				raise #uncomment for debug, but comment out for release to avoid the progress dialog to remain after failure in loading
+                # raise
                 break
             # find a unique key for this file
             usednames = [dp.name for dp in self.spectraModel.spectra]
@@ -1671,7 +1753,8 @@ class PAScualGUI(Qt.QMainWindow):
             tempdp.name = basename
             dps.append(copy.deepcopy(tempdp))
 
-        # Make sure the progress dialog is closed (In case the load didn't finish normally)
+        # Make sure the progress dialog is closed
+        # (In case the load didn't finish normally)
         progress.done(0)
         # Once (if) we have the list of new spectra, make necessary changes in the GUI
         if len(dps) > 0:
@@ -1707,7 +1790,8 @@ class PAScualGUI(Qt.QMainWindow):
                     % (fileloadersdict[k].name, fileloadersdict[k].filenamefilter)
                     for k in ["PAScual", "ASCII", "LT"]
                 ]
-                # needed as a workaround to a bug in selectedNameFilter in the linux dialog
+                # needed as a workaround to a bug in selectedNameFilter
+                # in the linux dialog
                 self.saveFilesDlg.setOption(Qt.QFileDialog.DontUseNativeDialog)
                 self.saveFilesDlg.setNameFilters(filefilters)
                 self.saveFilesDlg.selectNameFilter(fileloadersdict["PAScual"].name)
@@ -1715,7 +1799,7 @@ class PAScualGUI(Qt.QMainWindow):
                 "%s - Save spectrum '%s'"
                 % (Qt.QApplication.applicationName(), spectrum.name)
             )
-            # TODO: horrible hack to deselect previously selected files. Any alternative?
+            # TODO: horrible hack to deselect previously selected files.
             self.saveFilesDlg.setDirectory(self.options.workDirectory + " ")
             self.saveFilesDlg.selectFile(spectrum.name.split(".", 1)[0] + ".ps1")
             # re-select filter to make sure that the extensions is the appropriate
@@ -1891,7 +1975,11 @@ class PAScualGUI(Qt.QMainWindow):
             Qt.QMessageBox.warning(
                 self,
                 "Input error",
-                "Incomplete or bad values for the parameters.\nFill the parameters fields with the desired values\nSimulation aborted",
+                (
+                    "Incomplete or bad values for the parameters.\n"
+                    + "Fill the parameters fields with the desired values\n"
+                    + "Simulation aborted"
+                ),
             )
             self.statusbar.showMessage("Simulation aborted", 0)
             return
@@ -1945,7 +2033,7 @@ class PAScualGUI(Qt.QMainWindow):
             Qt.QMessageBox.warning(
                 self,
                 "No spectrum selected",
-                """No spectrum is selected. The Wizard applies to selected spectra only""",
+                "No spectrum is selected. The Wizard applies to selected spectra only",
             )
             return
         # Reset the selected list and launch the wizard
@@ -1953,7 +2041,7 @@ class PAScualGUI(Qt.QMainWindow):
         self.paramWizard.setSelected(selected)
         try:
             self.paramWizard.restorelast()
-        except:
+        except Exception:
             pass
         if not self.paramWizard.exec():
             return  # if rejected, stop here
@@ -1991,8 +2079,10 @@ class PAScualGUI(Qt.QMainWindow):
             dp.taulist = w.taus.size * [None]
             dp.itylist = w.taus.size * [None]
         for j in range(w.taus.size):
-            cp = self.compModel.components[j]
-            # We regenerate the components instead of using the existing fitpar because we want to reinitialize them!
+            # cp = self.compModel.components[j]
+
+            # We regenerate the components instead of using the existing
+            # fitpar because we want to reinitialize them!
             tau = fitpar(
                 val=w.taus[j],
                 name="Tau%i" % (j + 1),
@@ -2019,7 +2109,10 @@ class PAScualGUI(Qt.QMainWindow):
         self.regenerateSets.emit(False)
 
     def loadParameters(self):
-        """uses a dp to fill the parameters. If no spectra si given, it asks to load a file which is expected to contain a pickled discretepals"""
+        """uses a dp to fill the parameters.
+
+        If no spectra si given, it asks to load a file which is expected
+        to contain a pickled discretepals"""
 
         filename, _ = Qt.QFileDialog.getOpenFileName(
             self,
@@ -2102,7 +2195,11 @@ class PAScualGUI(Qt.QMainWindow):
         manualTB = Qt.QTextBrowser()
         manualTB.setOpenExternalLinks(True)
         extLinkLabel = Qt.QLabel(
-            """For the most up-to-date version of the manual, check the <a href="%s">Online User Manual</a>. You can also <a href="%s">open the local copy in your browser.</a>"""
+            """
+            For the most up-to-date version of the manual, 
+            check the <a href="%s">Online User Manual</a>. 
+            You can also <a href="%s">open the local copy in your browser.</a>
+            """
             % (onlinecopy, localcopy)
         )
         extLinkLabel.setOpenExternalLinks(True)
@@ -2125,15 +2222,16 @@ class PAScualGUI(Qt.QMainWindow):
             self,
             "About PAScual",
             """<b>PAScual</b> v %s
-							<p>Author: Carlos Pascual-Izarra. <cpascual [AT] users.sourceforge.net>
-							<p>Home page: <a href='%s'>%s</a>
-							<p>Copyright &copy; 2008 All rights reserved.
-							<p>See CREDITS.txt for acknowledgements
-							<p>
-							<p>If you use PAScual for your research, please cite:
-							<p>%s
-							<p>
-							<p>Python %s - Qt %s - PyQt %s on %s"""
+            <p>Author: Carlos Pascual-Izarra. <cpascual [AT] users.sourceforge.net>
+            <p>Home page: <a href='%s'>%s</a>
+            <p>Copyright &copy; 2008 All rights reserved.
+            <p>See CREDITS.txt for acknowledgements
+            <p>
+            <p>If you use PAScual for your research, please cite:
+            <p>%s
+            <p>
+            <p>Python %s - Qt %s - PyQt %s on %s
+            """
             % (
                 __version__,
                 __homepage__,
@@ -2150,30 +2248,33 @@ class PAScualGUI(Qt.QMainWindow):
         Qt.QMessageBox.about(
             self,
             "Licensing terms",
-            """<b>PAScual</b> v %s
-							<p>
-							<p>PAScual and PAScualGUI
-							<p>by Carlos Pascual-Izarra <cpascual [AT] users.sourceforge.net>  2007
+            """
+            <b>PAScual</b> v %s
+            <p>
+            <p>PAScual and PAScualGUI
+            <p>by Carlos Pascual-Izarra <cpascual [AT] users.sourceforge.net>  2007
 
-						    <p>Positron Annihilation Spectroscopy data analysis
-						    <p>Copyright (C) 2007  Carlos Pascual-Izarra < cpascual [AT] users.sourceforge.net >
+            <p>Positron Annihilation Spectroscopy data analysis
+            <p>Copyright (C) 2007  Carlos Pascual-Izarra 
+            < cpascual [AT] users.sourceforge.net >
 
-						    <p>This program is free software: you can redistribute it and/or modify
-						    it under the terms of the GNU General Public License as published by
-						    the Free Software Foundation, either version 3 of the License, or
-						    (at your option) any later version.
+            <p>This program is free software: you can redistribute it and/or modify
+            it under the terms of the GNU General Public License as published by
+            the Free Software Foundation, either version 3 of the License, or
+            (at your option) any later version.
 
-						    <p>This program is distributed in the hope that it will be useful,
-						    but WITHOUT ANY WARRANTY; without even the implied warranty of
-						    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-						    GNU General Public License for more details.
+            <p>This program is distributed in the hope that it will be useful,
+            but WITHOUT ANY WARRANTY; without even the implied warranty of
+            MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+            GNU General Public License for more details.
 
-						    <p>You should have received a copy of the GNU General Public License
-						    along with this program.  If not, see  <a href='http://www.gnu.org/licenses/'> http://www.gnu.org/licenses/</a>.
+            <p>You should have received a copy of the GNU General Public License
+            along with this program.  If not, see  
+            <a href='http://www.gnu.org/licenses/'> http://www.gnu.org/licenses/</a>.
 
-						    <p><b>Important:</b> If you use PAScual for your research, please cite:
-						    <p>%s
-							"""
+            <p><b>Important:</b> If you use PAScual for your research, please cite:
+            <p>%s
+            """
             % (__version__, __citation_html__),
         )
 

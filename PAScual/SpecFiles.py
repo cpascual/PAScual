@@ -15,13 +15,12 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-"""
 
-"""
+
 Some convenience classes are defined to work with loading spectra in various formats.
 """
 
-import scipy as S
+import numpy as np
 
 
 class spectrumFileLoader(object):
@@ -36,7 +35,8 @@ class spectrumFileLoader(object):
     def expdata(self, fname):
         """This function has to be implemented in the derived classes.
         It gets the file name of the file to read
-        It must return an array of doubles containing the spectrum yields (or None if it couldn t load)"""
+        It must return an array of doubles containing the spectrum yields
+        (or None if it couldn t load)"""
         return None
 
     def getDiscretePals(self, fname):
@@ -59,7 +59,7 @@ class MAESTROfileLoader(spectrumFileLoader):
         from . import CHNfiles
 
         hdr, expdata = CHNfiles.CHN.readCHN(fname)
-        return S.array(expdata, dtype="d")
+        return np.array(expdata, dtype="d")
 
 
 class ASCIIfileloader(spectrumFileLoader):
@@ -91,17 +91,19 @@ class ASCIIfileloader(spectrumFileLoader):
             self.needExtraInput = True
         if self.needExtraInput:
             self.askExtraInput()
-        expdata = S.loadtxt(fname, skiprows=self.hdrlns, dtype="d").flatten()
+        expdata = np.loadtxt(fname, skiprows=self.hdrlns, dtype="d").flatten()
         return expdata
 
     def askExtraInput(self, mode="t"):
-        """It asks for the header lines to skip using either text (mode="t")or Qt (mode="qt") interface."""
+        """It asks for the header lines to skip using either text (mode="t")
+        or Qt (mode="qt") interface."""
         if self.askmode == "t":
             # asks in text mode
             self.hdrlns = self.int(input("Number of lines to skip in the header?"))
             okflag = True
         if self.askmode == "qt":
-            # Asks via a qt dialog. This assumes that Qt is installed. You must provide a parent for the dialog
+            # Asks via a qt dialog. This assumes that Qt is installed.
+            # You must provide a parent for the dialog
             from PyQt5.QtWidgets import QInputDialog
 
             if self.hdrlns is None:
@@ -134,4 +136,4 @@ class PAScualfileLoader(spectrumFileLoader):
 
     def expdata(self, fname):
         dp = self.getDiscretePals(fname)
-        return S.array(dp.exp, dtype="d")
+        return np.array(dp.exp, dtype="d")

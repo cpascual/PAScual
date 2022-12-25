@@ -1,20 +1,20 @@
 """
-	This file is part of PAScual.
-    PAScual: Positron Annihilation Spectroscopy data analysis
-    Copyright (C) 2007  Carlos Pascual-Izarra < cpascual [AT] users.sourceforge.net >
+This file is part of PAScual.
+PAScual: Positron Annihilation Spectroscopy data analysis
+Copyright (C) 2007  Carlos Pascual-Izarra < cpascual [AT] users.sourceforge.net >
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 # from PAScual import __version__
@@ -29,12 +29,11 @@ import numpy as np
 from scipy import optimize
 from scipy.special import erfc
 
-# FWHM = SIGMA*(2*sqrt(2*log(2))) = SIGMA*2.3548200450309493
-FWHM2SIGMA = 1.0 / (2 * np.sqrt(2 * np.log(2)))
-
-
 # if qt is present, we will use it to emit signals
 from PyQt5.QtCore import QObject, pyqtSignal
+
+# FWHM = SIGMA*(2*sqrt(2*log(2))) = SIGMA*2.3548200450309493
+FWHM2SIGMA = 1.0 / (2 * np.sqrt(2 * np.log(2)))
 
 
 class _Emitter(QObject):
@@ -54,14 +53,17 @@ class aborthelper(object):
     """A class that provides a method for requesting the calculation to finish"""
 
     def abortRequested(self):
-        """This is a dummy function that can be overwritten by an external module that wants to stop a calculation in the middle.
-        Note: do not reimplement the method definition in the class. Do it in a specific instance instead."""
+        """This is a dummy function that can be overwritten by an external
+        module that wants to stop a calculation in the middle.
+        Note: do not reimplement the method definition in the class.
+        Do it in a specific instance instead.
+        """
         return False
 
 
-abort = (
-    aborthelper()
-)  # this object is the instance whose abortRequested() method should be changed externally if needed
+# this object is the instance whose abortRequested() method should
+# be changed externally if needed
+abort = aborthelper()
 
 
 class newcolor(object):
@@ -83,7 +85,6 @@ class newcolor(object):
         self.i0 = i0
 
     def __next__(self):
-        result = self.colorlist[self.i]
         self.i += 1
         if self.i >= len(self.colorlist):
             self.i = self.i0
@@ -103,11 +104,15 @@ class tee(object):
     # 		for ob in self.fileobjects:
     # 			if isinstance(ob,str): ob=open(ob,'w')
     def setEmitEnabled(self, flag):
-        """use this to set the tee to emit a QT signal with the string whenever write() is called"""
+        """use this to set the tee to emit a QT signal with the
+        string whenever write() is called
+        """
         self.emitEnabled = flag
 
     def prnt(self, string):
-        """this method is useful if you dont want to permanently redirect sys.stdout but want a print-like behaviour"""
+        """this method is useful if you dont want to permanently
+        redirect sys.stdout but want a print-like behaviour
+        """
         for fileobject in self.fileobjects:
             print(string, file=fileobject)
 
@@ -125,10 +130,16 @@ class tee(object):
 
 
 def updatestats(m_old, S2_old, n, x_new):
-    '''Calculates the new mean and variance after adding a new state
-         See algorithm III in http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance (20060919), or
-    Donald E. Knuth (1998). The Art of Computer Programming, volume 2: Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.
-    IMPORTANT: We are calculating the variance, which is the "error" squared. In other words. the result for a parameter should be quoted as mean "+/- sqrt(S2)"'''
+    """Calculates the new mean and variance after adding a new state
+    See algorithm III in
+    http://en.wikipedia.org/wiki/Algorithms_for_calculating_variance (20060919) ,
+    or
+    Donald E. Knuth (1998). The Art of Computer Programming, volume 2:
+      Seminumerical Algorithms, 3rd edn., p. 232. Boston: Addison-Wesley.
+
+    IMPORTANT: We are calculating the variance, which is the "error" squared.
+    In other words. the result for a parameter should be quoted as mean "+/- sqrt(S2)"
+    """
     delta = (x_new - m_old) * 1.0
     mean = m_old + delta / (n + 1)
     S2 = (S2_old * (n - 1) + (x_new - mean) * delta) / n
@@ -147,7 +158,8 @@ def objectindex(object, listtosearch):
 
 
 def unique(s):
-    """returns a list of unique elements, where the uniqueness is established via its repr() string"""
+    """returns a list of unique elements, where the uniqueness
+    is established via its repr() string"""
     try:
         return list(set(s))
     except TypeError:
@@ -188,7 +200,8 @@ class fitable(object):
         return
 
     def _update_(self, caller):
-        """This takes care of notifying that this object changed to any other object that might depend on it"""
+        """This takes care of notifying that this object changed to any
+        other object that might depend on it"""
         failcount = 0
         for ob in self.updatelist:
             failcount += ob.on_update(self)
@@ -235,9 +248,13 @@ class fitable(object):
             return False
 
     def perturbate(self, npert=1, fitmember=[], direct=False):
-        """Produces a change in a fitable member of the spectrum (same probability to all)
-        fitmember , if passed, must be a list. All of the objects in fitmember will be perturbated, but in a random order.
-        TODO: in the case of passing a fitmember not in the perturbablelist, it should raise a warning"""
+        """Produces a change in a fitable member of the spectrum (same probability
+        to all)
+        fitmember , if passed, must be a list. All of the objects in fitmember
+        will be perturbated, but in a random order.
+
+        TODO: in the case of passing a fitmember not in the perturbablelist,
+        it should raise a warning"""
         if not npert:
             npert = random.randint(self.npertmin, self.npertmax)
         changedobjectlist = []
@@ -282,7 +299,6 @@ class fitpar_original(fitable):
         name=None,
     ):
         fitable.__init__(self, free=free, name=name)
-        # 		super(fitpar_original,self).__init__(free=free,name=name) # This line is a more elegant way of doing: fitable.__init__(self,free=free,name=name)
         self.val = val
         if minval is None:
             minval = float("-inf")
@@ -341,12 +357,16 @@ class fitpar_original(fitable):
         return [self]
 
     def randsum(self):
-        """symmetric additive random change. Does not actually change, but only generates a proposed self.new. See confirmnew()"""
+        """symmetric additive random change.
+        Does not actually change, but only generates a
+        proposed self.new. See confirmnew()"""
         self.val = random.gauss(self.val, self.sstep)
         return [self]
 
     def randmult(self):
-        """symmetric multiplicative random change. Does not actually change, but only generates a proposed self.new. See confirmnew()"""
+        """symmetric multiplicative random change.
+        Does not actually change, but only generates a
+        proposed self.new. See confirmnew()"""
         gauss_rnd = random.gauss(0, self.mstep)
         if gauss_rnd > 0.0:
             self.val = self.val * (1.0 + gauss_rnd)
@@ -364,7 +384,8 @@ class fitpar_original(fitable):
             return []
 
     def get_initargs(self):
-        """returns a tuple that can be used to initialyse a fitpar "similar" to this one"""
+        """returns a tuple that can be used to initialyse a
+        fitpar "similar" to this one"""
         return (
             self.val,
             self.minval,
@@ -384,7 +405,6 @@ class fitpar(fitpar_original):
         fitpar_original.__init__(
             self, val=val, minval=minval, maxval=maxval, free=free, name=name
         )
-        # 		super(fitpar,self).__init__(val=val,minval=minval, maxval=maxval, free=free,name=name)
         self.clearstats()
         self.NNRLA_delta = 0.0
         self.NNRLA_sigma = 0.1 * val
@@ -399,8 +419,13 @@ class fitpar(fitpar_original):
 
     def perturbate(self, npert=1, direct=True):
         """produces a NNRLA perturbation.
-        Note that it is always direct, so self.NNRLA_delta must be 0 in case a symmetric perturbation is desired
-        NOTE: direct and npert are ignored here (only one perturbation and always "direct" since the non-direct is a particular case of direct with self.NNRLA_delta=0!!"""
+        Note that it is always direct, so self.NNRLA_delta
+        must be 0 in case a symmetric perturbation is desired
+
+        NOTE: direct and npert are ignored here (only one
+        perturbation and always "direct" since the non-direct
+        is a particular case of direct with self.NNRLA_delta=0!!
+        """
         self.val = random.gauss(
             self.val + self.NNRLA_delta, self.NNRLA_sigma * self.NNRLA_sigmamult
         )
@@ -413,7 +438,7 @@ class fitpar(fitpar_original):
             try:
                 self.hist[self.n - 1] = self.val
             except:
-                raise  # TODO: using this exception control, a disk dump could be implemented.
+                raise  # TODO: a disk dump could be implemented.
         self.n += 1
 
     def clearstats(self):
@@ -439,7 +464,8 @@ class fitpar(fitpar_original):
         )
 
     def importval(self, val, onlyfree=False):
-        """Changes the value only if it is within limits. If onlyfree is True, the parameter is only changed if it is free
+        """Changes the value only if it is within limits.
+        If onlyfree is True, the parameter is only changed if it is free
         returns True if it was changed. False otherwise"""
         if onlyfree and not self.free:
             return False
@@ -467,7 +493,8 @@ class discretepals(fitable):
         fake=False,
     ):
         # 		self.checklist={'name'=(3>4),
-        """This is a pre-initialisation method. The real init is called __real_init(), and is called if all the needed parameters are present.
+        """This is a pre-initialisation method. The real init is
+        called __real_init(), and is called if all the needed parameters are present.
         This allows to perform initialisation in various steps"""
         self.name = name
         self.exp = expdata
@@ -534,15 +561,18 @@ class discretepals(fitable):
         """
         An object that contains exp and sim spectrum.
         Arguments:
-                name: the name for this spectrum (a string)
-                expdata: a list/array containing the exp spectrum
-                roi: a list/array containing the Region Of Interest (channels that will be fitted)
-                taulist: a list of fitpars for lifetimes
-                itylist: a list of fitpars for intensities. Must be same len than taulist
-                background: a fitpar for background
-                fwhm: a fitpar for the resolution
-                c0: a fitpar for the offset of the calibration
-                psperchannel: The ps/channel (not a fitpar, just a number). Should be known from calibration
+            name: the name for this spectrum (a string)
+            expdata: a list/array containing the exp spectrum
+            roi: a list/array containing the Region Of Interest
+                (channels that will be fitted)
+            taulist: a list of fitpars for lifetimes
+            itylist: a list of fitpars for intensities.
+                Must be same len than taulist
+            background: a fitpar for background
+            fwhm: a fitpar for the resolution
+            c0: a fitpar for the offset of the calibration
+            psperchannel: The ps/channel (not a fitpar, just a number).
+                Should be known from calibration
         """
         # Check the inputs and store them in self
         fitable.__init__(self, name=name)
@@ -585,7 +615,8 @@ class discretepals(fitable):
         )
 
         # Include this instance of discretepals in the updatelist of each fitpar
-        # (this means that every time any of these fitpars is undone, this instance will be undone too)
+        # (this means that every time any of these fitpars is undone,
+        # this instance will be undone too)
         for ob in self.perturbablelist:
             ob.updatelist.append(self)
 
@@ -602,31 +633,27 @@ class discretepals(fitable):
             )  # filling the tau and ity vectors
             if self.itylist[i].free:
                 self.freeityindexes.append(i)
-        self.freeityindexes = np.array(
-            self.freeityindexes, dtype="i"
-        )  # this contains the indexes of those itys which vary (need normalising)
-        self.fixeditysum = (
-            self.ity.sum() - self.ity[self.freeityindexes].sum()
-        )  # the sum of the fixed itys (which won't vary unless the 'free' status of an ity varies)
+        # this contains the indexes of those itys which vary (need normalising)
+        self.freeityindexes = np.array(self.freeityindexes, dtype="i")
+        # the sum of the fixed itys (which won't vary unless the 'free' status
+        # of an ity varies)
+        self.fixeditysum = self.ity.sum() - self.ity[self.freeityindexes].sum()
+        # channel times
         self.channeltimes = self.calculate_channeltimes(
             self.roi, self.c0.val, self.psperchannel
-        )  # channel times
-        self.M = self.calculate_M(
-            self.channeltimes, self.tau, self.fwhm.val, M=None
-        )  # calculating the M matrix
+        )
+        # calculating the M matrix
+        self.M = self.calculate_M(self.channeltimes, self.tau, self.fwhm.val, M=None)
         self.M_dot_a = np.dot(
             self.M, self.normalizeity(self.ity, self.freeityindexes, self.fixeditysum)
         )
         if self.exp.sum() == 0:
-            self.exp[
-                self.roi
-            ] = (
-                self.fake()
-            )  # If no expdata was given, create a fake spectrum and use it as exp data
-        self.deltaexp = np.where(
-            self.exp < 4, 2.0, np.sqrt(self.exp)
-        )  # A quite good approximation to Poisson statistics (error=2 for 0-3 counts and Gaussian approx for the rest)
-        self.deltaexp2 = self.deltaexp ** 2
+            # If no expdata was given, create a fake spectrum and use it as exp data
+            self.exp[self.roi] = self.fake()
+        # A quite good approximation to Poisson statistics
+        # (error=2 for 0-3 counts and Gaussian approx for the rest)
+        self.deltaexp = np.where(self.exp < 4, 2.0, np.sqrt(self.exp))
+        self.deltaexp2 = self.deltaexp**2
         self.NNRLA_S0 = (1.0 / self.deltaexp2[self.roi]).sum()
         self.exparea = float(
             self.exp[self.roi].sum()
@@ -645,8 +672,10 @@ class discretepals(fitable):
         return self.chi2 != self.chi2_old
 
     def confirm(self, savehist=False):
-        """confirm the various elements that may change and then proceed to the standard _confirm_()"""
-        # TODO implement history keeping ??: Answer: Not here. hist makes sense only for the fitpar and palsset classes
+        """confirm the various elements that may change and
+        then proceed to the standard _confirm_()"""
+        # TODO implement history keeping ??:
+        #   Answer: Not here. hist makes sense only for the fitpar and palsset classes
         self.chi2_old = self.chi2
         (
             self.sim_old,
@@ -666,7 +695,8 @@ class discretepals(fitable):
         self._confirm_(savehist)
 
     def undo(self):
-        """undo the various elements that may have changed and then proceed to the standard _undo_()"""
+        """undo the various elements that may have changed
+        and then proceed to the standard _undo_()"""
         if self.undo_lock or not self.changed():
             return 0
         self.chi2 = self.chi2_old
@@ -681,7 +711,9 @@ class discretepals(fitable):
         return self._undo_()
 
     def updatestats_ity(self):
-        """updates the statistics on the itys (which are not fitpar dependent but spectrum dependent due to the normalisation)"""
+        """updates the statistics on the itys
+        (which are not fitpar dependent but spectrum
+        dependent due to the normalisation)"""
         itynorm = self.normalizeity()
         # 		print 'DEBUG: !!!!!!!!!!!!!!!!', self.ity,'\n:::::::',self.ity_mean
         self.ity_mean, self.ity_var = updatestats(
@@ -697,12 +729,12 @@ class discretepals(fitable):
     def fake(self, area=None, noise=True, filename=None):
         """Generates a fake spectrum by simulation and addition of Poisson noise"""
         if area is None:
-            area = (
-                self.bg.val * self.channeltimes.size * 20
-            )  # if no area is given, it is calculated so that the total background is ~5% of the counts
+            # if no area is given, it is calculated so that the total
+            # background is ~5% of the counts
+            area = self.bg.val * self.channeltimes.size * 20
         sim = self.calculate_sim(self.bg.val, area, self.channeltimes, self.M_dot_a)
         if noise:
-            sim = numpy.random.poisson(sim)
+            sim = np.random.poisson(sim)
         return sim
 
     def normalizeity(self, ity=None, freeityindexes=None, fixeditysum=None):
@@ -730,10 +762,15 @@ class discretepals(fitable):
         return factor
 
     def recalculate_chi2(self, full_output=False, forcecalc=False):
-        """Recalculates the chi2 by calculating any needed intermediate step only if required.
+        """Recalculates the chi2 by calculating any needed
+        intermediate step only if required.
+
         If full_output is True, it returns the intermediate quantities too
-        Note that it makes changes in self.chi2, self.tau, self.ity, self.sim, self.M , self.M_dot_a, self.channeltimes.
-        These changes can be confirmed or undone afterwards by calling self.confirm() or self.undo().
+        Note that it makes changes in
+        self.chi2, self.tau, self.ity, self.sim, self.M, self.M_dot_a, self.channeltimes
+
+        These changes can be confirmed or undone afterwards by calling self.confirm()
+        or self.undo().
         """
         # first of all check if anything changed in any member of the perturbablelist
         somechange = forcecalc
@@ -764,9 +801,9 @@ class discretepals(fitable):
                 recalc_M.append(i)
             if self.itylist[i].changed():
                 self.ity[i] = self.itylist[i].val
-                # 				print "::::::::::::::::::",i, self.itylist[i].name,self.itylist[i].val,self.ity
                 recalc_M_dot_a = True
-        # cap the recalc_M to a max of ncomp components (if there are more is because c0 or fwhm were varied)
+        # cap the recalc_M to a max of ncomp components
+        # (if there are more is because c0 or fwhm were varied)
         if len(recalc_M) > self.ncomp:
             recalc_M = recalc_M[: self.ncomp]
         # Recalculate M if needed
@@ -798,27 +835,36 @@ class discretepals(fitable):
             return self.chi2
 
     def calculate_sim(self, bg, exparea, channeltimes, M_dot_a):
-        """adds the background and scales the M_dot_a vector to obtain the simulated spectrum"""
+        """adds the background and scales the M_dot_a vector
+        to obtain the simulated spectrum"""
         area = M_dot_a.sum()
         return bg + ((exparea - bg * np.size(channeltimes)) / area) * M_dot_a
 
     def calculate_channeltimes(self, roi, c0, psperchannel):
-        """calculates the time corresponding to the center of each channel of a ROI"""
-        return (
-            roi - c0
-        ) * psperchannel  # this returns the times in the boundaries between channels
+        """calculates the time corresponding to the center of
+        each channel of a ROI"""
+        # this returns the times in the boundaries between channels
 
-    # 		return (roi+(0.5-c0))*psperchannel	#this would return the times in the middle of the channels
+        return (roi - c0) * psperchannel
 
     def calculate_convoluted_decay(self, t, tau=1.0, intsty=1.0, sigma=1.0):
-        """Calculate one component of a PALS spectrum. Exponential decay (starting at time 0) convolved with a Gaussian.
-        result(t)=convolution(G,E) , where G is a Gaussian and E is a exponential decay starting at 0.
-        t: times for which the decay is calculated (a scipy one-dimensional array) or other sequence
+        """Calculate one component of a PALS spectrum.
+
+        Exponential decay (starting at time 0) convolved with a Gaussian.
+
+        result(t)=convolution(G,E) , where G is a Gaussian and E is a
+        exponential decay starting at 0.
+
+        t: times for which the decay is calculated (a scipy one-dimensional array)
+          or other sequence
         tau: decay time
-        intsty: intensity of that component (the area below the curve for the given component)
+        intsty: intensity of that component (the area below the curve for the
+          given component)
         sigma: gaussian width (standard deviation)
-        The formula used is the one from [Kirkegaard & Eldrup, Computer Physics Communications 3 (1972) 240-255], with T0=0, and a redefinition of sigma
-        IMPORTANT
+
+        The formula used is the one from
+          Kirkegaard & Eldrup, Computer Physics Communications 3 (1972) 240-255],
+          with T0=0, and a redefinition of sigma
         """
         K = (intsty * 0.5 / tau) * (np.exp(sigma * sigma * 0.5 / (tau * tau)))
         return (
@@ -828,38 +874,27 @@ class discretepals(fitable):
         )
 
     def calculate_convoluted_decay_integCh(self, t, tau=1.0, intsty=1.0, sigma=1.0):
-        """like calculate_convoluted_decay but it integrates time over the channel width instead of using just the given times.
+        """like calculate_convoluted_decay but it integrates time over the channel
+        width instead of using just the given times.
         In other words, eq.4 of Kirkegaard instead of eq.3
-        IMPORTANT: this function is optimized assuming that t is a vector of channel times from a compact and homogeneous ROI
-                   (i.e. no gaps between channels and  constant --or very slow varying-- channel width))
-                   If these premises are not fulfilled, this function wont work"""
-        # extend the t vector with one extra time using the channelwidth calculated from the same t (assumes constant channel width!)
+        IMPORTANT: this function is optimized assuming that t is a
+          vector of channel times from a compact and homogeneous ROI
+          (i.e. no gaps between channels and  constant -
+          --or very slow varying-- channel width))
+          If these premises are not fulfilled, this function wont work
+        """
+        # extend the t vector with one extra time using the channelwidth
+        # calculated from the same t (assumes constant channel width!)
         t_extd = np.concatenate(
             (t, (2 * t[-1] - t[-2],))
         )  # the trick is that t_n+Deltat=2*t_n-t_(n-1)
         s = np.sqrt(2.0) * sigma
-        # Calculate in one go all the values for Y(tau,tk,s)+phi(tk,s)  of eq. 5 of Kirkegaard
+        # Calculate in one go all the values for Y(tau,tk,s)+phi(tk,s)
+        # of eq. 5 of Kirkegaard
         YplusPhi = np.exp(s * s * 0.25 / (tau * tau)) * erfc(
             (s / (2.0 * tau)) - (t_extd / s)
         ) * np.exp(-t_extd / tau) + erfc(t_extd / s)
         return 0.5 * intsty * (YplusPhi[:-1] - YplusPhi[1:])
-
-    def calculate_convoluted_decay_with_tails(
-        self, t, tau=1.0, tauL=0.0, tauR=0.0, intsty=1.0, sigma=1.0
-    ):
-        """Calculate one component of a PALS spectrum. Exponential decay (starting at time 0) convolved with a Gaussian+exponential tails.
-        result(t)=convolution(GT,E) , where GT is a Gaussian+tails and E is a exponential decay starting at 0.
-        t: times for which the decay is calculated (a scipy one-dimensional array) or other sequence
-        tau: decay time
-        intsty: intensity of that component (the area below the curve for the given component)
-        sigma: Gaussian width (standard deviation)
-        The formula used is eq. 6 from [J.Kansy, Nucl. Instr. and Meth. A 374 (1996), 235-244]
-        """
-        alpha = tau * tau / ((tau + tauL)(tau - tauR))
-        alphaL = tauL * tauL / ((tau + tauL)(tauR + tauL))
-        alphaR = tauR * tauR / ((tauR - tau)(tauR + tauL))
-
-    # 		return= intsty*(calculate_convoluted_decay(t,tau=tau,sigma=sigma,intsty=alpha) + calculate_convoluted_decay(-t,tau=tauL,sigma=sigma,intsty=alphaL) + calculate_convoluted_decay(t,tau=tauR,sigma=sigma,intsty=alphaR) )
 
     def calculate_M(self, t, gridtau, fwhm, M=None, indexarray=None):
         """Calculates the M matrix. If M is given, it will be reused"""
@@ -878,15 +913,16 @@ class discretepals(fitable):
 
     def showreport_1row(self, file=None, min_ncomp=None, silent=False):
         """Outputs the following to a file:
-        name, chi2, autocorr, Set(s), ROImin, ROImax, ROIchann, integral, FWHM, dev, c0, dev, bg,dev, ity1, dev, ity2, dev, ..., tau1, dev, tau2, dev,...
+
+        name, chi2, autocorr, Set(s), ROImin, ROImax, ROIchann, integral,
+        FWHM, dev, c0, dev, bg,dev, ity1, dev, ity2, dev, ..., tau1, dev, tau2, dev,...
+
         At least min_ncomp components are written (padded with ## if nonexistent)
         """
         if file is None:
             file = sys.stdout
         if min_ncomp is None:
             min_ncomp = self.ncomp
-        # 		itynorm=100./np.sum([ob.mean for ob in self.itylist])
-        # 		itynorm=100.*self.normalizeityfactor(ity=np.array([ob.mean for ob in self.itylist]))
         itymean = 100.0 * self.ity_mean
         ityerr = 100.0 * np.sqrt(self.ity_var)
         self.autocorr = self.calculate_residuals_local_correlation()
@@ -911,7 +947,8 @@ class discretepals(fitable):
             np.sqrt(self.bg.var),
         )
         npad = min_ncomp - self.ncomp
-        # 		for ity,i in zip(self.itylist,range(len(self.itylist))): retval+="%9g\t%9g\t"%(ity.mean*itynorm[i], np.sqrt(ity.var)*itynorm[i])
+        # for ity,i in zip(self.itylist,range(len(self.itylist))):
+        #     retval+="%9g\t%9g\t"%(ity.mean*itynorm[i], np.sqrt(ity.var)*itynorm[i])
         for i in range(self.ncomp):
             retval += "%9g\t%9g\t" % (itymean[i], ityerr[i])
         retval += (2 * npad) * ("%9g\t" % 0)
@@ -924,9 +961,13 @@ class discretepals(fitable):
         return retval
 
     def showreport(self, silent=False):
-        """prints a report of the status of this discretepals spectrum (and also returns the string)
-        Note that what it prints is human readable (i.e.) some output is processed before printing"""
-        # 		itynorm=100.*self.normalizeityfactor(ity=np.array([ob.mean for ob in self.itylist]))
+        """prints a report of the status of this discretepals
+        spectrum (and also returns the string)
+        Note that what it prints is human readable (i.e.) some
+        output is processed before printing"""
+        # itynorm = 100.0 * self.normalizeityfactor(
+        #     ity=np.array([ob.mean for ob in self.itylist])
+        # )
         itymean = 100.0 * self.ity_mean
         ityerr = 100.0 * np.sqrt(self.ity_var)
         result = ""
@@ -955,7 +996,14 @@ class discretepals(fitable):
         result += "Intensities [%]       Lifetimes [ps]\n"
         for i in range(self.ncomp):
             ity, tau = self.itylist[i], self.taulist[i]
-            # 			result+= "%4.1f (%4.1f) [%s]         %5i (%i) [%s]\n"%(ity.mean*itynorm[i], np.sqrt(ity.var)*itynorm[i], ity.freetag, tau.mean, np.sqrt(tau.var), tau.freetag)
+            # result += "%4.1f (%4.1f) [%s]         %5i (%i) [%s]\n" % (
+            #     ity.mean * itynorm[i],
+            #     np.sqrt(ity.var) * itynorm[i],
+            #     ity.freetag,
+            #     tau.mean,
+            #     np.sqrt(tau.var),
+            #     tau.freetag,
+            # )
             result += "%4.1f (%4.1f) [%s]         %5i (%i) [%s]\n" % (
                 itymean[i],
                 ityerr[i],
@@ -978,7 +1026,8 @@ class discretepals(fitable):
 
     def calculate_residuals_local_correlation(self, residuals=None, locallength=None):
         """It is a crude estimator of local correlations
-        Defined as the (normalised) sum of squared correlation coeffs in small boxes of the residuals"""
+        Defined as the (normalised) sum of squared correlation
+        coeffs in small boxes of the residuals"""
         if residuals is None:
             residuals = (self.sim - self.exp[self.roi]) / self.deltaexp[self.roi]
         if locallength is None:
@@ -1001,7 +1050,8 @@ class discretepals(fitable):
         self._save_best_()
 
     def calculate_fprime(self, fp, alpha=1e-4):
-        """calculates the numerical derivative of the simulated spectrum with respect to fp"""
+        """calculates the numerical derivative of the simulated
+        spectrum with respect to fp"""
         # calculate sim for a sigma*(1+dr)
         fp.confirm()
         fp.val *= 1 + alpha
@@ -1012,17 +1062,22 @@ class discretepals(fitable):
 
     def calculate_NNRLA_SZ(self, fp, direct=False):
         """This function calculates S0,S1,S2,Z, for the given fitpar.
-        They are intermediate quantities for the calculation of NNRLA_delta and NNRLA_sigma
-        for a given spectrum, NNRLA_delta= Z/S2 and NNRLA_sigma=sqrt(S0/(S0S2-S1S1))
-        Note that S0,S1,S2,Z are different for each free fitpar of which this spectrum depends.
-        This intermediate quantities allow for an easy generalisation of the NNRLA to multiple spectra because:
-        Xgeneral=sum(X) where X is one of {S0, S1, S2, Z} and the sum is done over the various spectra."""
+        They are intermediate quantities for the calculation of
+        NNRLA_delta and NNRLA_sigma for a given spectrum,
+        NNRLA_delta= Z/S2 and NNRLA_sigma=sqrt(S0/(S0S2-S1S1))
+
+        Note that S0,S1,S2,Z are different for each free fitpar of
+        which this spectrum depends.
+        This intermediate quantities allow for an easy generalisation
+        of the NNRLA to multiple spectra because:
+        Xgeneral=sum(X) where X is one of {S0, S1, S2, Z}
+        and the sum is done over the various spectra."""
         fprime = self.calculate_fprime(fp)
         S0 = (
             self.NNRLA_S0
         )  # Warning: if you change self.roi, you must recalculate self.NNRLA_S0!!
         S1 = (fprime / self.deltaexp2[self.roi]).sum()
-        S2 = ((fprime ** 2) / self.deltaexp2[self.roi]).sum()
+        S2 = ((fprime**2) / self.deltaexp2[self.roi]).sum()
         if direct:
             Z = (
                 ((self.exp[self.roi] - self.sim) / self.deltaexp2[self.roi]) * fprime
@@ -1038,7 +1093,7 @@ class discretepals(fitable):
                 TODO: maybe implement other compatibility checks?
         """
         res = {}
-        res["ncomp"] = temp = self.ncomp == other.ncomp
+        res["ncomp"] = self.ncomp == other.ncomp
         if detail:
             return res
         else:
@@ -1047,9 +1102,12 @@ class discretepals(fitable):
     def importvalues(self, other, onlyfree=False, flexicomp=False):
         """Fills values of the fitpars taking them from a compatible spectrum.
         The return value is True only if all the imports were ok. False otherwise
-        If onlyfree==True, it only attempts to import the values for fitpars that are free in self
-        If flexicomp==True, the method deals automagically with a differing number of components.
-        If it is false and the number of components doesnt match, it doesnt change any component at all
+        If onlyfree==True, it only attempts to import the values for fitpars
+        that are free in self
+        If flexicomp==True, the method deals automagically with a differing
+        number of components.
+        If it is false and the number of components doesnt match, it doesnt
+        change any component at all
         (but it does change  bg,c0 and fwhm) and returns False"""
         success = flexicomp or self.ncomp == other.ncomp
         if self.ncomp == other.ncomp:
@@ -1079,10 +1137,13 @@ class discretepals(fitable):
                 other.taulist[: self.ncomp - 1] + [mergedtau],
                 other.itylist[: self.ncomp - 1] + [mergedity],
             )
-        else:  # This is the case in which flexicomp is false and the ncomp don't match. No components are changed
+        else:
+            # This is the case in which flexicomp is false and the ncomp don't match.
+            #  No components are changed
             t1 = i1 = t2 = i2 = []
             success = False
-        # now the components are matched, construct the lists of fitpars that are going to be imported
+        # now the components are matched, construct the lists of fitpars that are
+        # going to be imported
         fpl1 = t1 + i1 + [self.bg, self.fwhm, self.c0]
         fpl2 = t2 + i2 + [other.bg, other.fwhm, other.c0]
         for ob1, ob2 in zip(fpl1, fpl2):
@@ -1091,7 +1152,10 @@ class discretepals(fitable):
         return success
 
     def saveAs_ASCII(self, f, hdr=None, columns=1, datafmt="%i"):
-        """Saves the exp data as ascii with an optional header. It accepts a format string for the data and the number of columns"""
+        """Saves the exp data as ascii with an optional header.
+
+        It accepts a format string for the data and the number of columns
+        """
         # TODO: support for multiple columns. Same approach as used in sumpals (Nat)
         if isinstance(f, str):
             f = open(f, "w")
@@ -1115,8 +1179,11 @@ class discretepals(fitable):
 class palsset(fitable):
     """This class  defines sets of PALS spectra.
     Design considerations:
-    A set defines which spectra are to be fit simultaneously (Those that have common fitting parameters).
-    TODO: Ideally, it should hold a common interface so that discretepals and gridpals could be used together
+    A set defines which spectra are to be fit simultaneously
+    (Those that have common fitting parameters).
+
+    TODO: Ideally, it should hold a common interface so that
+      discretepals and gridpals could be used together
 
     """
 
@@ -1138,16 +1205,21 @@ class palsset(fitable):
         """It returns True if the ity errors can be calculated properly"""
         # Trivial cases
         if self.spectralist == 0:
-            return False  # if there are not spectra, the trivial answer is that the errors cannot be calculated (BAD)
+            # if there are not spectra, the trivial answer is that the errors
+            # cannot be calculated (BAD)
+            return False
         if self.spectralist == 1:
-            return True  # if there is just one spectrum, there is not incompatibility (GOOD)
+            # if there is just one spectrum, there is not incompatibility (GOOD)
+            return True
         if self.spectralist[0].ncomp < 1:
-            return False  # the first spectrum has no components (BAD)
+            # the first spectrum has no components (BAD)
+            return False
         # Check that all spectra in the set are have the same number of free components
         for dp in self.spectralist[1:]:
             if dp.freeityindexes.size != self.spectralist[0].freeityindexes.size:
                 return False
-        # then check that the itys are either completely independent or completely dependent (i.e. all common or none common)
+        # then check that the itys are either completely independent or completely
+        # dependent (i.e. all common or none common)
         common = 0
         itysA = [
             self.spectralist[0].itylist[i] for i in self.spectralist[0].freeityindexes
@@ -1164,7 +1236,9 @@ class palsset(fitable):
         elif len(unique(allitys)) == len(allitys):
             return True  # there are not common itys at all (GOOD)
         else:
-            return False  # If none of the previous conditions was met, it means that there are both common and independent itys (BAD)
+            # If none of the previous conditions was met, it means that there are both
+            # common and independent itys (BAD)
+            return False
 
     def register_spectrum(self, spectrum):
         """Registers a spectrum in the set"""
@@ -1183,30 +1257,34 @@ class palsset(fitable):
     # 	def upgrade_spectrum(self,
 
     def confirm(self, savehist=False):
-        """confirm the various elements that may change and then proceed to the standard _confirm_()"""
+        """confirm the various elements that may change and then proceed
+        to the standard _confirm_()"""
         for ob in self.fitparlist:
-            ob.updatestats(
-                savehist=savehist
-            )  # update stats for all fitpars (including the ity pars, which is a waste)
+            # update stats for all fitpars (including the ity pars, which is a waste)
+            ob.updatestats(savehist=savehist)
         for ob in self.spectralist:
-            ob.updatestats_ity()  # update stats on itys (this must be done for each spectrum separately)
+            # update stats on itys (this must be done for each spectrum separately)
+            ob.updatestats_ity()
         self.chi2_old = self.chi2
+        # if savehist: self.chi2_hist[self.n]=self.chi2
         self.chi2_mean, self.chi2_var = updatestats(
             self.chi2_mean, self.chi2_var, self.n, self.chi2
         )
-        # 		if savehist: self.chi2_hist[self.n]=self.chi2
+
         self.n += 1
         self._confirm_(savehist)
 
     def undo(self):
-        """undo the various elements that may have changed and then proceed to the standard _undo_()"""
+        """undo the various elements that may have changed
+        and then proceed to the standard _undo_()"""
         if self.undo_lock or not self.changed():
             return 0
         self.chi2 = self.chi2_old
         return self._undo_()
 
     def calculate_chi2(self, recalc=True):
-        """Important: this returns the chi2 normalised by the degrees of freedom!!!"""
+        """Important: this returns the chi2 normalised by
+        the degrees of freedom!!!"""
         chi2 = 0
         if recalc:
             for ob in self.spectralist:
@@ -1230,13 +1308,11 @@ class palsset(fitable):
             deltaold = fp.NNRLA_delta
             sigmaold = fp.NNRLA_sigma
             SZ = np.zeros(4, dtype="d")
-            for (
-                ob
-            ) in (
-                fp.updatelist
-            ):  # TODO: This assumes that the fitpar's updatelist only contains discretepals instances!
+            for ob in fp.updatelist:
+                # TODO: This assumes that the fitpar's updatelist only contains
+                # discretepals instances!
                 SZ += ob.calculate_NNRLA_SZ(fp, direct)
-            # 				SZ[0]=0
+            # SZ[0]=0
             # now SZ contains the GENERALISED S0,S1,S2,Z for this fp
             if direct:
                 # calculate the delta
@@ -1262,12 +1338,21 @@ class palsset(fitable):
                 )
             )
             diff += fp.NNRLA_diff
-        # 			print "DEBUG:%s %g %g (%g) %g (%g)"%( fp.name,fp.val, fp.NNRLA_delta, SZ[3]/SZ[2],fp.NNRLA_sigma, np.sqrt(SZ[0]/(SZ[0]*SZ[2]-SZ[1]*SZ[1])))
+        # print(
+        #     "DEBUG:%s %g %g (%g) %g (%g)"
+        #     % (
+        #         fp.name,
+        #         fp.val,
+        #         fp.NNRLA_delta,
+        #         SZ[3] / SZ[2],
+        #         fp.NNRLA_sigma,
+        #         np.sqrt(SZ[0] / (SZ[0] * SZ[2] - SZ[1] * SZ[1])),
+        #     )
+        # )
         try:
             diff /= len(self.fitparlist)
-        except:
+        except Exception:
             pass
-        # 		print ':::::::::::::::::::::::::',diff
         return diff
 
     def clearstats(self):
@@ -1275,9 +1360,11 @@ class palsset(fitable):
         self.chi2_mean = self.chi2_old = self.chi2
         self.chi2_var = 0.0
         for ob in self.fitparlist:
-            ob.clearstats()  # reset the mean, var, n, etc. for each fitpar
+            # reset the mean, var, n, etc. for each fitpar
+            ob.clearstats()
         for ob in self.spectralist:
-            ob.clearstats_ity()  # reset the mean, var and n  for the itys in each spectrum
+            # reset the mean, var and n  for the itys in each spectrum
+            ob.clearstats_ity()
 
     def MCMC_generate(
         self,
@@ -1290,12 +1377,22 @@ class palsset(fitable):
         factor=1,
         iemit=-1,
     ):
-        """Generates an MonteCarlo Markov Chain (MCMC) from this set. It modifies the set itself.
+        """Generates an MonteCarlo Markov Chain (MCMC) from this set.
+
+        It modifies the set itself.
+
         LM is the MCMC length (number of accepted transitions)
-        Only additive transitions are used (the step can be regulated by hand or by means of NNRLA calculations).
-        Note that if direct=True, the chain fails to be of a Markov type (probabilities are not symmetric) (therefore, for BI, direct must be False)
-        factor is a number that will be multiplied to the following inputs: LM, ireport, NNRLA (if not auto).
-        The intended use of factor is to be able to write something like factor=len(self.unfold_perturbablelist()) to make the fits more uniform
+        Only additive transitions are used (the step can be regulated by
+        hand or by means of NNRLA calculations).
+
+        Note that if direct=True, the chain fails to be of a Markov type
+        (probabilities are not symmetric) (therefore, for BI, direct must be False)
+        factor is a number that will be multiplied to the following inputs:
+
+        LM, ireport, NNRLA (if not auto).
+
+        The intended use of factor is to be able to write something like
+        factor=len(self.unfold_perturbablelist()) to make the fits more uniform
         """
         if LM is None:
             LM = len(self.unfold_perturbablelist())
@@ -1345,9 +1442,7 @@ class palsset(fitable):
             self.calculate_chi2()
             # Metropolis algorithm:
             negDX2 = self.chi2_old - self.chi2
-            # 			print "DEBUG: %e,%e,%e,%i,%i"%(self.chi2,self.chi2_old,negDX2,acc,increase_acc)
-            # 			for ob in myitylist:ob.showreport()
-            # 			raw_input()
+
             if negDX2 > 0:
                 acceptflag = True
             elif random.random() < np.exp(negDX2 * self.dof / T):
@@ -1368,9 +1463,9 @@ class palsset(fitable):
                 # calculate NNRLA when it is time
                 if icalcNNRLA == 0:
                     NNRLA_diff = self.calculate_NNRLA(direct)
-                    if (
-                        autoNNRLA
-                    ):  # If the auto adjustment of NNRLA is required, do it . TODO: the thressholds are quite arbitrary (fix?)
+                    if autoNNRLA:
+                        # If the auto adjustment of NNRLA is required, do it .
+                        # TODO: the thresholds are quite arbitrary (fix?)
                         if NNRLA_diff > 0.2:
                             NNRLA = max(1, NNRLA / 2)
                         elif NNRLA_diff < 0.05:
@@ -1438,6 +1533,8 @@ class palsset(fitable):
             for ob in self.fitparlist:
                 ob.showreport()
         if verbosity > 2:
+            import pylab
+
             kk = self.spectralist[0]
             pylab.cla()
             pylab.gca().set_yscale("log")
@@ -1446,6 +1543,8 @@ class palsset(fitable):
         print("*********************************************")
 
     def graph_report(self, filename=None, show=True):
+        import pylab
+
         newclr = newcolor(i0=2)
         # plot of spectra (exp, fit)
         pylab.subplot(211)
@@ -1593,9 +1692,12 @@ class palsset(fitable):
             factor=factor,
             iemit=iemit,
         )
+        # check if we should abort
         if abort.abortRequested():
-            return  # check if we should abort
-        # at the end, put the mean values as the val for all parameters (because THAT is the real result of the BI, not the one from the last iteration)
+            return
+        # at the end, put the mean values as the val for all parameters
+        # (because THAT is the real result of the BI, not the one from
+        # the last iteration)
         self.chi2 = self.chi2_mean
         for ob in self.fitparlist:
             ob.val = ob.mean
@@ -1608,7 +1710,10 @@ class palsset(fitable):
             self.showreport(acc=LM * factor, verbosity=1)
         # Show the values for the BEST fit
         print(
-            'Results for the "BEST chi2" state found in %i BI iterations:\n(non-normized intensities!)'
+            (
+                'Results for the "BEST chi2" state found in %i BI iterations:'
+                + "\n(non-normized intensities!)"
+            )
             % (LM * factor)
         )
         print("Best chi2: %5e" % (self.chi2_best))
@@ -1633,7 +1738,8 @@ class palsset(fitable):
         self.confirm()
 
     def downhill(self, maxiter=np.inf, tolerance=None, ireport=-1):
-        """DO NOT USE. It performs a naive downhill minimisation. Only valid when very close to the min. Use localmin better"""
+        """DO NOT USE. It performs a naive downhill minimisation.
+        Only valid when very close to the min. Use localmin better"""
         self.confirm()
         self.n = 1
         self.chi2_mean = self.chi2
@@ -1649,11 +1755,9 @@ class palsset(fitable):
             istats -= 1
             fp = random.choice(self.fitparlist)
             SZ = np.zeros(4, dtype="d")
-            for (
-                ob
-            ) in (
-                fp.updatelist
-            ):  # TODO: This assumes that the fitpar's updatelist only contains discretepals instances!
+            for ob in fp.updatelist:
+                # TODO: This assumes that the fitpar's updatelist only contains
+                # discretepals instances!
                 SZ += ob.calculate_NNRLA_SZ(fp, direct=True)
             fp.NNRLA_delta = SZ[3] / SZ[2]
             fp.NNRLA_sigma = 0
@@ -1677,18 +1781,28 @@ class palsset(fitable):
                 istats = nstats
 
     def localmin(self, maxunbound=0, ireport=False, forcelimits=True):
-        """It uses functions of the scipy.optimize module to perform a local minimisation
-        It tries to use a Levenberg-Marquardt Algorithm (LMA) but if the result is not within the limits, it
-        packs the LMA between two L-BFGS-B algorithms (which are constrained multivariate minimisation algorithms).
+        """It uses functions of the scipy.optimize module to
+        perform a local minimisation
+
+        It tries to use a Levenberg-Marquardt Algorithm (LMA) but if the
+        result is not within the limits, it packs the LMA between two
+        L-BFGS-B algorithms (which are constrained multivariate minimisation
+        algorithms).
+
         Estimation of errors:
-          The estimation of errors is based on the diagonal of the covariance matrix returned by the LMA.
-          In the case of the intensity parameters, the variances are normalised by the Frobenius norm of the intensities covariances
-          (this is done because of the way the intensity parameters are handled in the code)
-          Note that these errors aren t trustable at all. Use them only as indicators.
+            The estimation of errors is based on the diagonal of the covariance
+            matrix returned by the LMA.
+            In the case of the intensity parameters, the variances are normalised
+            by the Frobenius norm of the intensities covariances
+            (this is done because of the way the intensity parameters are handled
+            in the code)
+
+            Note that these errors aren t trustable at all. Use them only as indicators.
+
         For info on the L-BFGS-B algorithm, see:
-                        * C. Zhu, R. H. Byrd and J. Nocedal. L-BFGS-B: Algorithm 778: L-BFGS-B,
-                        FORTRAN routines for large scale bound constrained optimization (1997),
-                        ACM Transactions on Mathematical Software, Vol 23, Num. 4, pp. 550 - 560.
+            * C. Zhu, R. H. Byrd and J. Nocedal. L-BFGS-B: Algorithm 778: L-BFGS-B,
+            FORTRAN routines for large scale bound constrained optimization (1997),
+            ACM Transactions on Mathematical Software, Vol 23, Num. 4, pp. 550 - 560.
         """
         emitter.initCommandPBar.emit(0, 5)
         # start from a clean point
@@ -1712,9 +1826,11 @@ class palsset(fitable):
         nitys = len(itys)
         for i in range(nitys):
             itys[i] = objectindex(itys[i], myargs)
-        # itys now contains the indexes for the parameters that are intensities in myargs
+        # itys now contains the indexes for the parameters that are
+        # intensities in myargs
         itys = np.array(itys)
-        # Try to do a (relatively fast) *unbounded* minimisation using a Levenberg-Marquardt algorithm
+        # Try to do a (relatively fast) *unbounded* minimisation using a
+        # Levenberg-Marquardt algorithm
         if ireport:
             print("\nTrying a Levenberg-Marquardt (LMA) fit\n")
         emitter.commandPBarValue.emit(1)
@@ -1737,10 +1853,11 @@ class palsset(fitable):
         # 		if ireport: self.showreport(verbosity=1)#DEBUG
         # check if all parameters are within bonds
         minmaxarray = np.array(minmax)
-        # check if all the itys are negative (not only the free ones)!, in which case they can simply be all multiplied by -1
+        # check if all the itys are negative (not only the free ones)!,
+        # in which case they can simply be all multiplied by -1
         if nonfreeitys == 0 and (myx[itys] < 0).all():
-            # 			print "!!!!!!!!!!"
-            # the covariance matrix does not need to be converted because it is invariant under this change of sign
+            # the covariance matrix does not need to be converted because
+            # it is invariant under this change of sign
             myx[itys] *= -1.0
             for i in itys:
                 myargs[i].val = myargs[i].mean = myx[i]
@@ -1785,7 +1902,6 @@ class palsset(fitable):
                 if abort.abortRequested():
                     return  # check if we should abort
                 i += 1
-                # 				myx,chi2,iter,fcalls,warnflag=optimize.fmin(self.interfacefunction,myx,myargs,disp=False, full_output=True)
                 myx, cov_x, infodict, mesg, ier = optimize.leastsq(
                     self.interfacefunction_leastsq,
                     myx,
@@ -1823,50 +1939,50 @@ class palsset(fitable):
         # Confirm and show the results
         emitter.commandPBarValue.emit(5)
         self.calculate_chi2(recalc=True)
-        self.confirm()  # by doing this confirm, the .val of each parameter is copied to the .mean
+        self.confirm()  # the .val of each parameter is copied to the .mean
         self.clearstats()
         err = np.diag(cov_x)
         # put errors for the raw parameters
         for i in range(len(err)):
             myargs[i].var = err[i]
-        # now caculate the errors for the intensities after normalisation for each espectrum independently
+        # now caculate the errors for the intensities after normalisation for
+        # each espectrum independently
         for dp in self.spectralist:
             if dp.freeityindexes.size > 0:
                 # find the indexes for the free intensities for this spectrum
                 aindexes = np.zeros(dp.freeityindexes.size, dtype="i")
                 for i, j in zip(dp.freeityindexes, range(aindexes.size)):
-                    # aindexes contains the indexes (in myargs) of the free intensities for this spectrum
+                    # aindexes contains the indexes (in myargs) of the free
+                    # intensities for this spectrum
                     aindexes[j] = objectindex(dp.itylist[i], myargs)
                 a = myx[aindexes]
                 asum = a.sum()
                 # find the jacobian of the parameters transformation:
-                Jac = np.identity(
-                    len(myargs)
-                )  # for most of the parameters, there is no transformation
+                Jac = np.identity(len(myargs))
                 for i in aindexes:
-                    Jac[i, aindexes] = myx[
-                        i
-                    ]  # the row corresponding to the intensity a_i is all equal to a_i...
-                    Jac[
-                        i, i
-                    ] -= asum  # ...except for the diagonal, where it is (a_i-sum{a})
-                    Jac[i, aindexes] *= (1 - dp.fixeditysum) / (
-                        asum ** 2
-                    )  # Jac_ij= (norm_free/sum_k{a_k})(a_i-dirac_ij*sum_k{a_k})    ... for i,j,k running over the free intensities
+                    # the row corresponding to the intensity a_i is all equal to a_i...
+                    Jac[i, aindexes] = myx[i]
+                    # ...except for the diagonal, where it is (a_i-sum{a})
+                    Jac[i, i] -= asum
+                    # Jac_ij= (norm_free/sum_k{a_k})(a_i-dirac_ij*sum_k{a_k})
+                    #  ... for i,j,k running over the free intensities
+                    Jac[i, aindexes] *= (1 - dp.fixeditysum) / (asum**2)
                 # The new covariance matrix is given by cov_new=J.cov.J^T
                 cov_new = np.dot(Jac, np.dot(cov_x, Jac.T))
-                dp.ity_var[dp.freeityindexes] = np.diag(cov_new)[
-                    aindexes
-                ]  # fill the ity_var array for each spectrum
+                # fill the ity_var array for each spectrum
+                dp.ity_var[dp.freeityindexes] = np.diag(cov_new)[aindexes]
         if ireport:
             self.showreport(verbosity=1)
-        return infodict  # returns the output dictionary from the last call to the L-BFGS-B algorithm
+        # returns the output dictionary from the last call to the L-BFGS-B algorithm
+        return infodict
 
     def compatible(self, other, detail=False):
         """Tests compatibility of two palssets.
+
         Compatible means:
-                same number of spectra (key "nesp")
-                same number of components in each spectra (assumes same ordering of spectra !)
+            same number of spectra (key "nesp")
+            same number of components in each spectra
+            (assumes same ordering of spectra !)
         """
         res = {}
         res["nesp"] = len(self.spectralist) == len(other.spectralist)
@@ -1892,11 +2008,15 @@ class palsset(fitable):
         return success
 
     def addcomponent(self, tau, commontau=False, commonity=False):
-        """returns another palsset which is similar to itself but whose spectra ALL have an extra component
-        The new spectra are initialysed using discretepals.importvalues() with the flexicomp option.
+        """returns another palsset which is similar to itself
+        but whose spectra ALL have an extra component
+
+        The new spectra are initialysed using discretepals.importvalues() with the
+        flexicomp option.
+
         In the case of palsset having more than one spectra:
-                If commontau=True, the new component lifetime is common among all spectra
-                If commontau=True, the new component lifetime is common among all spectra
+            If commontau=True, the new component lifetime is common among all spectra
+            If commontau=True, the new component lifetime is common among all spectra
         """
         pass
 
@@ -1915,8 +2035,10 @@ class palsset(fitable):
 
     def interfacefunction_leastsq(self, x, *args):
         """An interface function be called from scpy.optimize.leastsq()
-        It expects just one argument from the *args tuple:  xmap: a list of fitpar objects of which x are its vals
-        Returns a vector containing a concatenation of the residuals of each spectrum in this set"""
+        It expects just one argument from the *args tuple:
+        xmap: a list of fitpar objects of which x are its vals
+        Returns a vector containing a concatenation of the residuals
+        of each spectrum in this set"""
         # decode args
         xmap = args
         # decode x
@@ -1924,20 +2046,23 @@ class palsset(fitable):
             xmap[i].val = x[i]
         # calculate the residuals of each spectrum
         res = []
-        for (
-            ob
-        ) in (
-            self.spectralist
-        ):  # TODO: Optimize code (eliminate append, maybe calculate residuals without callng recalculate_chi2(), and so...)
+        for ob in self.spectralist:
+            # TODO: Optimize code (eliminate append,
+            # maybe calculate residuals without callng recalculate_chi2(), and so...)
             chi2, residuals = ob.recalculate_chi2(full_output=True)
             res.append(residuals)
         return np.concatenate(res)
 
     def get_fitpars(self, val=True, minmax=True, onlyfree=True):
         """returns a list of fitpars related with this palsset instance.
+
         If val=True, (or minmax==True) returns also an array with the fitpars val
-        If minmax==True returns also two other arrays containing the lower and upper bounds
-        If onlyfree==True, only the perturbable fitpars are included in the output"""
+
+        If minmax==True returns also two other arrays containing
+        the lower and upper bounds
+
+        If onlyfree==True, only the perturbable fitpars are included in the output
+        """
         if onlyfree:
             fpmap = self.unfold_perturbablelist()
         else:
@@ -1957,44 +2082,11 @@ class palsset(fitable):
             return fpmap
 
 
-# class partial_discretepals(object):
-# 	''' This class provides a way of storing the quantities that are required for initialising a discretepals object.
-# 	It has a method that can be used to check wether all the required quantities are already defined'''
-# 	def __init__(self, name=None, expdata=None, roi=None, taulist=None, itylist=None, bg=None, fwhm=None, c0=None, psperchannel=None, area=None):
-# #		self.checklist={'name'=(3>4),
-# #		                'expdata'=expdata is not None,
-# #		                'roi'=roi is not None,
-# #		                'taulist'=taulist is not None,
-# #		                'itylist'=itylist is not None,
-# #		                'bg'=bg is not None,
-# #		                'fwhm'=fwhm is not None,
-# #		                'c0'=c0 is not None,
-# #		                'psperchannel'=psperchannel is not Nonelse,
-# #		                'area'=area is not None}
-# 		self.name=name
-# 		self.expdata= expdata
-# 		self.roi=roi
-# 		self.taulist=taulist
-# 		self.itylist=itylist
-# 		self.bg =bg
-# 		self.fwhm =fwhm
-# 		self.c0 =c0
-# 		self.psperchannel =psperchannel
-# 		self.area =area
-# 	def isready(self, fulloutput=False):
-# 		if ((self.expdata is None) or (self.taulist is None)  or (self.itylist is None)  or (self.bg is None)  or (self.fwhm is None)
-# 		    (self.c0 is None) or (self.psperchannel is None) ): return False
-#
-#
-#
-# 		#TODO
-# #		(self, name=None, expdata=None, roi=None, taulist=None, itylist=None, bg=None, fwhm=None, c0=None, psperchannel=1, area=1.)
-
-
 def MELTlikeROI(expdata, headerlines=0, left_of_max=5, stopdat=None):
-    """generates a ROI that goes from left_of_max channels before the peak max to the channel stopdat"""
+    """generates a ROI that goes from left_of_max channels before
+    the peak max to the channel stopdat"""
     if isinstance(expdata, str):
-        # 		cmax=np.array(pylab.load(expfilename,skiprows=headerlines),dtype='d').argmax(0)
+        # cmax=np.array(pylab.load(expfilename,skiprows=headerlines),dtype='d').argmax(0)
         cmax = np.loadtxt(fname, skiprows=hdrlns, dtype="d").argmax(0)
     else:
         cmax = np.array(expdata, dtype="d").argmax(0)
@@ -2016,11 +2108,17 @@ def to_list(N, parameter):
 
 def assignfitpar(v, namedpars=None):
     """it returns a fitpar.
-    If v is a tuple containing (val,min,max), it is instantiated as a new free parameter.
+
+    If v is a tuple containing (val,min,max), it is instantiated as a
+    new free parameter.
     If v is a single value, it is instantiated as a FIXED fitpar
     If v is the name of a named parameter, it is taken from the namedpars dictionary
-    if using a named parameter with an * appended it returns the SAME parameter (so it can be common)
-    if the * is not appended, it returns a unique COPY (so it won t be common)"""
+
+    if using a named parameter with an * appended it returns the SAME parameter
+    (so it can be common)
+
+    if the * is not appended, it returns a unique COPY (so it wil not be common)
+    """
     if isinstance(v, str):
         if v[-1] == "*":
             return namedpars[v[:-1]]  # returns the named parameter
@@ -2033,32 +2131,36 @@ def assignfitpar(v, namedpars=None):
 
 
 def findconnectedspectra(spectrum):
-    """returns a list of spectra instances that are connected (directly or indirectly) to the given one by means of common parameters"""
+    """returns a list of spectra instances that are connected
+    (directly or indirectly) to the given one by means of common parameters"""
     L1 = [spectrum]  # we start with the given spectrum
     n_old = 0
     n = 1
-    while (
-        n_old < n
-    ):  # This is done while the list is growing (i.e., while new connected spectra ar found)
+    while n_old < n:
+        # This is done while the list is growing
+        # (i.e., while new connected spectra are found)
         for el in L1:  # go through all elements in the connected list
             for fp in el.perturbablelist:  # and go through all their fitpars
-                if (
-                    len(fp.updatelist) > 1
-                ):  # note, if len<1 then the only element must be "el" so we don't waste time adding it
-                    L1 += (
-                        fp.updatelist
-                    )  # include in L1 all spectra that depend on each given fitpar
+                if len(fp.updatelist) > 1:
+                    # note, if len<1 then the only element must be "el" so
+                    # we don't waste time adding it
+
+                    # include in L1 all spectra that depend on each given fitpar
+                    L1 += fp.updatelist
             L1 = unique(L1)  # After including them, clean the list of repetitions
         n_old = n
         n = len(L1)
-    # when we exit from previous loop, it means no additional connected spectra are found
+    # when we exit from previous loop, it means no additional connected
+    # spectra are found
     return L1
 
 
 def distributeinsets(dplist):
-    """gets a list of discretepals instances and analyses the interdependences in their free parameters to group them in palssets
+    """gets a list of discretepals instances and analyses the interdependences
+    in their free parameters to group them in palssets
     It returns a list of pals sets
-    Note: simple algorithm but very innefficient (although I dont care because it is done only once)"""
+    Note: simple algorithm but very innefficient
+    (although I dont care because it is done only once)"""
     connections = [
         findconnectedspectra(dp) for dp in dplist
     ]  # find the connection groups for each spectrum in the list
@@ -2067,9 +2169,9 @@ def distributeinsets(dplist):
     for i in range(len(connections)):
         if not exclude.count(i):  # if i is not amongst the already excluded
             for j in range(i + 1, len(connections)):
-                if len(connections[i]) == len(
-                    unique(connections[i] + connections[j])
-                ):  # this is true only the elements of connections[j] are the same as those of  connections[i]
+                if len(connections[i]) == len(unique(connections[i] + connections[j])):
+                    # this is true only the elements of connections[j] are
+                    # the same as those of  connections[i]
                     exclude.append(j)
     # Now we eliminate the connections which aren't unique
     exclude = unique(exclude)
@@ -2089,7 +2191,8 @@ def distributeinsets(dplist):
 
 
 def printwarning(message, wait=False):
-    """It prints a warning, returns it for logging and, optionally, waits for user acknowledgement"""
+    """It prints a warning, returns it for logging and, optionally,
+    waits for user acknowledgement"""
     if isinstance(message, list):
         if len(message) > 0:
             print(
@@ -2116,31 +2219,39 @@ def mainprogram(warningslog=[]):
     # import the input info
     from PAScual import PAScual_input as userinput
 
-    time.process_time()  # Set start of time measuring (we ignore the import time for scipy and pylab)   )
-    np.random.seed(userinput.seed)  # Seeding the random generators.
+    # Set start of time measuring (we ignore the import time for scipy and pylab)
+    time.process_time()
+
+    # Seeding the random generators.
+    np.random.seed(userinput.seed)
 
     # initialise a tee for output
     outputfile = None
     if userinput.outputfile:
         outputfile = open(userinput.outputfile, "w")
         sys.stdout = tee(sys.stdout, outputfile)
-        fnamepreffix = userinput.outputfile.rsplit(".", 1)[0]  # Outputfilenames preffix
+        fnamepreffix = userinput.outputfile.rsplit(".", 1)[
+            0
+        ]  # Outputfilenames preffix  # noqa
     else:
-        fnamepreffix = "~dpout"
+        fnamepreffix = "~dpout"  # noqa
 
     # saving a copy of the input file for future refference
 
-    # first instantiate the named parameters. (And replace the tuple by the instance in the namedpars dictionary)
+    # first instantiate the named parameters.
+    # (And replace the tuple by the instance in the namedpars dictionary)
     try:
         temp = userinput.namedparameters
     except AttributeError:
         userinput.namedparameters = {}
     namedpars = {}
-    # note that the diff beetween namedpars and userinput.namedparameters is that the former will only contain already instantiated fitpars
+    # note that the diff beetween namedpars and userinput.namedparameters
+    # is that the former will only contain already instantiated fitpars
     for k in list(userinput.namedparameters.keys()):
         if isinstance(userinput.namedparameters[k], str):
             warningslog += printwarning(
-                "Defining a named parameter using another named parameter may lead to problems. You are warned.",
+                "Defining a named parameter using another named parameter "
+                + "may lead to problems. You are warned.",
                 wait=True,
             )
         namedpars[k] = userinput.namedparameters[k] = assignfitpar(
@@ -2181,7 +2292,6 @@ def mainprogram(warningslog=[]):
         if fname is None:
             expdata.append(None)  # No exp data is given (we will only simulate)
         else:
-            # 			expdata.append(np.array(pylab.load(fname,skiprows=hdrlns),dtype='d').flatten()) # load datafile: ascii format
             expdata.append(np.loadtxt(fname, skiprows=hdrlns, dtype="d").flatten())
         #
         # 	for es in expdata:
@@ -2193,7 +2303,9 @@ def mainprogram(warningslog=[]):
     ###Now some more complex input processing:
     try:
         userinput.roi = to_list(nspectra, userinput.roi)  # explicit ROI definition
-    except AttributeError:  # if roi is not explicitely defined, we expect MELT-like parameters (otherwise it is an error).
+    except AttributeError:
+        # if roi is not explicitely defined, we expect MELT-like parameters
+        # (otherwise it is an error).
         userinput.left_of_max = to_list(nspectra, userinput.left_of_max)
         userinput.stopdat = to_list(nspectra, userinput.stopdat)
         userinput.roi = []
@@ -2329,13 +2441,14 @@ def mainprogram(warningslog=[]):
         print()
         # parse commands for this set
         for text in userinput.fitmode[iset]:
-            try:  # This try-except block is here to catch CTRL+C presses while executing a given program
+            try:
+                # This try-except block is here to catch CTRL+C presses
+                # while executing a given program
                 text = text.split(None, 1)
                 cmd = text[0].upper()  # the commands are case insensitive.
                 if len(text) == 2:
-                    args = text[
-                        1
-                    ]  # the arguments are not case insensitive *by default*
+                    # the arguments are not case insensitive *by default*
+                    args = text[1]
                 else:
                     args = None
                 # LOAD command
@@ -2489,14 +2602,17 @@ def mainprogram(warningslog=[]):
                         "Command not recognised (%s). Skipping\n" % cmd
                     )
                 # after each command, autosave the last state of the palsset
-                saveslot_auto = copy.deepcopy(palssetslist[iset])
+                saveslot_auto = copy.deepcopy(palssetslist[iset])  # noqa
                 if outputfile:
                     outputfile.flush()
             # Handle Keyboard interrupts
             except KeyboardInterrupt:
                 warningslog += printwarning(
-                    " %s command interrupted. \nPress CTRL+C again to exit completely (or ENTER to skip this command only)"
-                    % cmd,
+                    (
+                        f" {cmd} command interrupted. \n"
+                        + "Press CTRL+C again to exit completely "
+                        + "(or ENTER to skip this command only)"
+                    ),
                     wait=True,
                 )
                 pass
@@ -2526,6 +2642,8 @@ def safemain():
 
 
 def test_component():
+    import pylab
+
     dpp = discretepals()
     pps = 50.0
     ch = np.arange(1024, dtype="d")
@@ -2550,8 +2668,8 @@ def test_component():
 
 def start():
     try:
-        pass
-    except:
+        import pylab  # noqa
+    except ImportError:
         print(
             "Pylab could not be imported. Graphical output won't be supported",
             file=sys.stderr,

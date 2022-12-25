@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 """
-PlotGraphWidget: Widget for plotting spectra. Originally based on an example code from Qwt documentation
+PlotGraphWidget: Widget for plotting spectra. 
+  Originally based on an example code from Qwt documentation
 
 	This file is part of PAScual.
     PAScual: Positron Annihilation Spectroscopy data analysis
@@ -49,7 +50,9 @@ plotcolors_dark = [
 
 class cycliclist(object):
     """this class provides an effectively cyclic list.
-    It can be used, e.g., for storing colors or pen properties to be changed automatically in a plot"""
+
+    It can be used, e.g., for storing colors or pen properties
+    to be changed automatically in a plot"""
 
     def __init__(self, itemlist=[]):
         self.setItemList(itemlist)
@@ -188,7 +191,7 @@ class PALSplot(Qwt.QwtPlot):
             try:  # check if the file is actually writable
                 f = open(fileName, "w")
                 f.close()
-            except:
+            except Exception:
                 self.error("Can't write to '%s'" % fileName)
                 QtGui.QMessageBox.warning(
                     self,
@@ -299,7 +302,7 @@ class ResPlot(Qwt.QwtPlot):
                          a file name.
         """
         if fileName is None:
-            fileName, _ = QFileDialog.getSaveFileName(
+            fileName, _ = QtWidgets.QFileDialog.getSaveFileName(
                 self,
                 "Export File Name",
                 "plot.pdf",
@@ -312,7 +315,7 @@ class ResPlot(Qwt.QwtPlot):
             try:  # check if the file is actually writable
                 f = open(fileName, "w")
                 f.close()
-            except:
+            except Exception:
                 self.error("Can't write to '%s'" % fileName)
                 QtGui.QMessageBox.warning(
                     self,
@@ -333,10 +336,10 @@ def make():
     demo = PALSplot()
     demo.resize(600, 400)
     # Some fake data
-    x = arange(-2 * pi, 2 * pi, 0.01)
-    y = 10 + pi * sin(x)
+    x = np.arange(-2 * np.pi, 2 * np.pi, 0.01)
+    y = 10 + np.pi * np.sin(x)
     y[-1] = 0  # to check the log
-    z = 10 + 4 * pi * cos(x) * cos(x) * sin(x)
+    z = 10 + 4 * np.pi * np.cos(x) * np.cos(x) * np.sin(x)
     demo.attachCurve(
         x,
         z,
@@ -349,7 +352,7 @@ def make():
     demo.show()
 
     demo2 = ResPlot()
-    y = sin(10 * x)
+    y = np.sin(10 * x)
     demo2.attachCurve(x, y)
     demo2.show()
 
@@ -365,7 +368,7 @@ def pointselected(pos):
 
 def main(args):
     app = QtGui.QApplication(args)
-    demo = make()
+    make()
     sys.exit(app.exec())
 
 

@@ -42,7 +42,8 @@ class CHN(object):
             CHNfile = open(CHNfile, "rb")
         raw = CHNfile.read()
         CHNfile.close()
-        # the header contains the following: (ftype,mca_num,segment,secs,realtime,livetime,acqtime,channoffset,nchann)
+        # the header contains the following: 
+        # (ftype,mca_num,segment,secs,realtime,livetime,acqtime,channoffset,nchann)
         hdrfmt = "h h h 2s i i 12s h h"
         hdrsize = struct.calcsize(hdrfmt)
         hdr = struct.unpack(hdrfmt, raw[:hdrsize])
@@ -84,7 +85,7 @@ class CHN(object):
                 print("Channel Counts", file=ASCIIfile)
                 savetxt(ASCIIfile, concatenate((channels, dat), axis=1), fmt="%i")
             else:
-                raise NonImplementedError(
+                raise NotImplementedError(
                     "channel numbers not yet supported for multicolumns"
                 )
         else:
@@ -103,19 +104,3 @@ class CHN(object):
     ):
         hdr = "%s\n%s\n%s\n%s\n" % (description, nsperchannel, key, fwhm)
         self.toASCII(ASCIIfile, ncol=ncol, hdr=hdr, onError=onError)
-
-        #
-        # if __name__ == '__main__':
-        # 	filename ='C:\\Documents and Settings\\pas064\\My Documents\\PaLS\\phytantriol\\phyt-t20/28_080.CHN'
-        # 	spectrum=CHN(filename)
-        # 	print spectrum.hdr
-        # 	print spectrum.data
-        # # 	import pylab
-        # # 	pylab.plot(spectrum.data)
-        # # 	pylab.show()
-        # 	spectrum.toLT('kk.txt',ncol=7, onError='w')
-        # 	raw_input()
-        # 	f=open('kk.txt')
-        # 	a=f.read()
-        # 	print a
-        # 	f.close()

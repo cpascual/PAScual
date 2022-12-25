@@ -24,7 +24,7 @@ print("Testing the required Python packages")
 print("\nnumpy...", end=" ")
 try:
     import numpy as t1
-except:
+except Exception:
     print("Failed")
 else:
     print("ok, version:", t1.version.version)
@@ -32,7 +32,7 @@ else:
 print("\nscipy...", end=" ")
 try:
     import scipy as t2
-except:
+except Exception:
     print("Failed")
 else:
     print("ok, version:", t2.version.version)
@@ -42,7 +42,7 @@ else:
 print("\nmatplotlib...", end=" ")
 try:
     import matplotlib as t3
-except:
+except Exception:
     print("Failed")
 else:
     print("ok, version:", t3.__version__)
@@ -52,7 +52,7 @@ else:
 print("\nPyQt...", end=" ")
 try:
     import PyQt5.QtCore as t4
-except:
+except Exception:
     print("Failed")
 else:
     print("ok, version:", t4.PYQT_VERSION_STR)
@@ -60,7 +60,7 @@ else:
 print("\nPythonQwt...", end=" ")
 try:
     import qwt as t5
-except:
+except Exception:
     print("Failed")
 else:
     print("ok, version:", t5.__version__)
@@ -68,7 +68,7 @@ else:
 print("\n\nTesting PAScual.py", end=" ")
 try:
     from . import PAScual as t6
-except:
+except Exception:
     print("Failed")
 else:
     print("ok, version:", t6.__version__)
@@ -76,7 +76,7 @@ else:
 print("\n\nTesting PAScualGUI.py", end=" ")
 try:
     from . import PAScualGUI as t7
-except:
+except Exception:
     print("Failed")
 else:
     print("ok, version:", t7.__version__)
