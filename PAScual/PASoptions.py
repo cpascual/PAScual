@@ -17,7 +17,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from PyQt5.Qt import *  # TODO
+from PyQt5 import Qt
 
 
 from .ui import UILoadable
@@ -59,8 +59,8 @@ class Options(object):
             5e2,
             False,
             "",
-            str(QDir.currentPath()),
-            str(QDir.currentPath()) + "/html/User Manual.html",
+            str(Qt.QDir.currentPath()),
+            str(Qt.QDir.currentPath()) + "/html/User Manual.html",
             12345,
             0.6,
             1.4,
@@ -80,17 +80,17 @@ class Options(object):
 
 
 @UILoadable
-class OptionsDlg(QDialog):
+class OptionsDlg(Qt.QDialog):
     """Dialog containing options for PAScual. The options are members of this object."""
 
     def __init__(self, parent=None):
         super(OptionsDlg, self).__init__(parent)
         self.loadUi()
         # set validators
-        self.BI_lengthLE.setValidator(QDoubleValidator(self))
-        self.BI_stabLE.setValidator(QDoubleValidator(self))
-        self.BI_reportLE.setValidator(QDoubleValidator(self))
-        self.seedLE.setValidator(QIntValidator(self))
+        self.BI_lengthLE.setValidator(Qt.QDoubleValidator(self))
+        self.BI_stabLE.setValidator(Qt.QDoubleValidator(self))
+        self.BI_reportLE.setValidator(Qt.QDoubleValidator(self))
+        self.seedLE.setValidator(Qt.QIntValidator(self))
         # connections
         self.buttonBox.clicked.connect(self.onclicked)
         self.manualFilePB.clicked.connect(self.onChangeManualFile)
@@ -101,7 +101,7 @@ class OptionsDlg(QDialog):
         self.reset()
 
     def onChangeWorkDirectory(self):
-        filename = QFileDialog.getExistingDirectory(
+        filename = Qt.QFileDialog.getExistingDirectory(
             self,
             "Select work directory (it must be user-writable)",
             self.workDirectoryLE.text(),
@@ -110,25 +110,25 @@ class OptionsDlg(QDialog):
             self.workDirectoryLE.setText(filename)
 
     def onChangeManualFile(self):
-        filename, _ = QFileDialog.getOpenFileName(
+        filename, _ = Qt.QFileDialog.getOpenFileName(
             self, "Select User Manual File", self.manualFileLE.text(), "(*.html *.htm)"
         )
         if filename:
             self.manualFileLE.setText(filename)
 
     def onChangeHistoryFile(self):
-        filename, _ = QFileDialog.getSaveFileName(
+        filename, _ = Qt.QFileDialog.getSaveFileName(
             self,
             "BI history File Selection",
             self.BI_savehistLE.text(),
             "ASCII (*.txt)\nAll (*)",
-            QFileDialog.DontConfirmOverwrite | QFileDialog.DontUseNativeDialog,
+            Qt.QFileDialog.DontConfirmOverwrite | Qt.QFileDialog.DontUseNativeDialog,
         )
         if filename:
             self.BI_savehistLE.setText(filename)
 
     def onclicked(self, button):
-        if self.buttonBox.buttonRole(button) == QDialogButtonBox.ResetRole:
+        if self.buttonBox.buttonRole(button) == Qt.QDialogButtonBox.ResetRole:
             self.reset()
 
     def reset(self):
@@ -138,39 +138,38 @@ class OptionsDlg(QDialog):
         """returns an options object filled with values from the dialog"""
         options = Options()
         # LOCAL
-        options.LOCAL_maxUnbound = int(
-            self.LOCAL_maxUnboundSB.value()
-        )  # Max number of unbound LMA runs between L-BFGS-B optimisations (this only takes place if first LMA is outside bounds)
+        # Max number of unbound LMA runs between L-BFGS-B optimisations
+        # (this only takes place if first LMA is outside bounds)
+        options.LOCAL_maxUnbound = int(self.LOCAL_maxUnboundSB.value())
         # SA
-        options.SA_minaccratio = float(
-            self.SA_minaccratioSB.value()
-        )  # If the acceptance ratio drps below this value, the SA stops.
-        options.SA_tol = float(self.SA_tolSB.value())  # Tolerance for stopping the SA
-        options.SA_stopT = float(
-            self.SA_stopTSB.value()
-        )  # Stop temperature for SA (put to 0 to disable). (SA_stopT>1 is not recommended)
-        options.SA_maxiter = int(
-            self.SA_maxiterSB.value()
-        )  # Max number of iterations in the SimAnn fit
-        options.SA_meltratio = float(
-            self.SA_meltratioSB.value()
-        )  # The "melting" phase of the SA will stop when this acceptance ratio is reached
-        options.SA_direct = bool(
-            self.SA_directCB.isChecked()
-        )  # Whether to use the direct mode in NNRLA for SA (asymetrical transit prob).
+        # If the acceptance ratio drps below this value, the SA stops.
+        options.SA_minaccratio = float(self.SA_minaccratioSB.value())
+        # Tolerance for stopping the SA
+        options.SA_tol = float(self.SA_tolSB.value())
+        # Stop temperature for SA (put to 0 to disable). (SA_stopT>1 is not recommended)
+        options.SA_stopT = float(self.SA_stopTSB.value())
+        # Max number of iterations in the SimAnn fit
+        options.SA_maxiter = int(self.SA_maxiterSB.value())
+        # The "melting" phase of the SA will stop when this acceptance ratio is reached
+        options.SA_meltratio = float(self.SA_meltratioSB.value())
+        # Whether to use the direct mode in NNRLA for SA (asymetrical transit prob)
+        options.SA_direct = bool(self.SA_directCB.isChecked())
         # BI
-        options.BI_stab = float(
-            self.BI_stabLE.text()
-        )  # This many steps (multiplied by the order of the searching space!) of BI will be done and not considered for statistical purposes. Put this to 0 to skip stabilisation.
-        options.BI_length = float(
-            self.BI_lengthLE.text()
-        )  # This many steps (multiplied by the order of the searching space) will be calculated by BI.
-        options.BI_report = float(
-            self.BI_reportLE.text()
-        )  # A report will be shown every this steps during BI (put to -1 for no reports). Be Careful: too much reports may slow down the calc.
-        # This controls wheter the fitpar history should be saved (=FileName) or not (=False).
-        # Caution!: this will increase the RAM requeriments. Approximately by 11Bytes*BI_length*(3+2*NC)^2 , where NC is the number of components!
+        # This many steps (multiplied by the order of the searching space!) of BI
+        # will be done and not considered for statistical purposes.
+        # Put this to 0 to skip stabilisation.
+        options.BI_stab = float(self.BI_stabLE.text())
+        # This many steps (multiplied by the order of the searching space)
+        # will be calculated by BI
+        options.BI_length = float(self.BI_lengthLE.text())
+        # A report will be shown every this steps during BI (put to -1 for no reports).
+        # Be Careful: too much reports may slow down the calc.
+        options.BI_report = float(self.BI_reportLE.text())
+        # This controls wheter the fitpar history should be saved (=FileName)
+        # or not (=False).
         options.BI_savehist = bool(self.BI_savehistCB.isChecked())
+        # Caution!: this will increase the RAM requeriments approximately by
+        # 11Bytes*BI_length*(3+2*NC)^2 , where NC is the number of components!
         options.BI_histFile = str(self.BI_savehistLE.text())
         # PATHS
         options.workDirectory = str(self.workDirectoryLE.text())
@@ -212,7 +211,7 @@ class OptionsDlg(QDialog):
 if __name__ == "__main__":
     import sys
 
-    app = QApplication(sys.argv)
+    app = Qt.QApplication(sys.argv)
     form = OptionsDlg(None)
     form.show()
     sys.exit(app.exec())

@@ -19,44 +19,42 @@
 import copy
 import sys
 
-from PyQt5.Qt import *  # TODO
+from PyQt5 import Qt
 
-from .PAScual import discretepals, palsset
+from .PAScual import discretepals
 
 # set names for column numbers
 _ncolumns = 8
 [SEL, NAME, ROI, PSPC, FWHM, BG, C0, COMP] = list(range(_ncolumns))
 
-# from . import PAScual_rc  # TODO: replace icons
-
 
 # Spectra Table Model
-class PASspectraTableModel(QAbstractTableModel):
+class PASspectraTableModel(Qt.QAbstractTableModel):
 
     # this is a custom signal to warn that the 'hard' selection changed
-    selectionChanged = pyqtSignal(object, object)
+    selectionChanged = Qt.pyqtSignal(object, object)
 
     def __init__(self, spectra=[]):
         super(PASspectraTableModel, self).__init__()
         self.spectra = spectra
         self.ncolumns = _ncolumns
-        
-        self.redbulletIcon = QIcon("icons:redbullet.png")
-        self.greenbulletIcon = QIcon("icons:greenbullet.png")
 
-    def rowCount(self, index=QModelIndex()):
+        self.redbulletIcon = Qt.QIcon("icons:redbullet.png")
+        self.greenbulletIcon = Qt.QIcon("icons:greenbullet.png")
+
+    def rowCount(self, index=Qt.QModelIndex()):
         return len(self.spectra)
 
-    def columnCount(self, index=QModelIndex()):
+    def columnCount(self, index=Qt.QModelIndex()):
         return self.ncolumns
 
-    def data(self, index, role=Qt.DisplayRole):
+    def data(self, index, role=Qt.Qt.DisplayRole):
         if not index.isValid() or not (0 <= index.row() < self.rowCount()):
             return None
         dp = self.spectra[index.row()]
         column = index.column()
         # Display Role
-        if role == Qt.DisplayRole:
+        if role == Qt.Qt.DisplayRole:
             if column == NAME:
                 return dp.name
             elif column == ROI:
@@ -71,11 +69,11 @@ class PASspectraTableModel(QAbstractTableModel):
                     ncomp = len(dp.taulist)
                 return ncomp
         # CheckState Role
-        elif role == Qt.CheckStateRole:
+        elif role == Qt.Qt.CheckStateRole:
             if column == SEL:
                 return dp.selected
 
-        elif role == Qt.DecorationRole:
+        elif role == Qt.Qt.DecorationRole:
             if column == PSPC:
                 bad = dp.psperchannel is None
             elif column == FWHM:
@@ -91,35 +89,35 @@ class PASspectraTableModel(QAbstractTableModel):
             else:
                 return self.greenbulletIcon
         # Alignment
-        # 		elif role == Qt.TextAlignmentRole:
-        # 			int(Qt.AlignHCenter|Qt.AlignVCenter)
+        # 		elif role == Qt.Qt.TextAlignmentRole:
+        # 			int(Qt.Qt.AlignHCenter|Qt.Qt.AlignVCenter)
         # Background Color
-        elif role == Qt.TextColorRole:
+        elif role == Qt.Qt.TextColorRole:
             if column == NAME:
                 if dp.isready():
-                    return QColor(Qt.darkGreen)
+                    return Qt.QColor(Qt.Qt.darkGreen)
             if column == COMP:
                 if dp.taulist is None:
-                    return QColor(Qt.red)
+                    return Qt.QColor(Qt.Qt.red)
                 elif len(dp.taulist) == 0:
-                    return QColor(Qt.red)
+                    return Qt.QColor(Qt.Qt.red)
                 else:
-                    return QColor(Qt.green)
-        elif role == Qt.UserRole:
+                    return Qt.QColor(Qt.Qt.green)
+        elif role == Qt.Qt.UserRole:
             return dp
         return None
 
-    def headerData(self, section, orientation, role=Qt.DisplayRole):
-        if role == Qt.TextAlignmentRole:
-            if orientation == Qt.Horizontal:
-                return int(Qt.AlignLeft | Qt.AlignVCenter)
-            return int(Qt.AlignRight | Qt.AlignVCenter)
-        # 		elif role == Qt.CheckStateRole :
-        # 			if not orientation == Qt.Horizontal: return True
-        if role != Qt.DisplayRole:
+    def headerData(self, section, orientation, role=Qt.Qt.DisplayRole):
+        if role == Qt.Qt.TextAlignmentRole:
+            if orientation == Qt.Qt.Horizontal:
+                return int(Qt.Qt.AlignLeft | Qt.Qt.AlignVCenter)
+            return int(Qt.Qt.AlignRight | Qt.Qt.AlignVCenter)
+        # 		elif role == Qt.Qt.CheckStateRole :
+        # 			if not orientation == Qt.Qt.Horizontal: return True
+        if role != Qt.Qt.DisplayRole:
             return None
         # So this is DisplayRole...
-        if orientation == Qt.Horizontal:
+        if orientation == Qt.Qt.Horizontal:
             if section == SEL:
                 return "Sel"
             elif section == NAME:
@@ -142,15 +140,15 @@ class PASspectraTableModel(QAbstractTableModel):
 
     def flags(self, index):  # use this to set the editable flag when fix is selected
         if not index.isValid():
-            return Qt.ItemIsEnabled
+            return Qt.Qt.ItemIsEnabled
         column = index.column()
         if column == NAME:
-            return Qt.ItemFlags(QAbstractTableModel.flags(self, index))
+            return Qt.Qt.ItemFlags(Qt.QAbstractTableModel.flags(self, index))
         if column == SEL:
-            return Qt.ItemFlags(Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
-        return Qt.ItemFlags(Qt.ItemIsEnabled)
+            return Qt.Qt.ItemFlags(Qt.Qt.ItemIsEnabled | Qt.Qt.ItemIsUserCheckable)
+        return Qt.Qt.ItemFlags(Qt.Qt.ItemIsEnabled)
 
-    def setData(self, index, value=None, role=Qt.EditRole):
+    def setData(self, index, value=None, role=Qt.Qt.EditRole):
         if index.isValid() and (0 <= index.row() < self.rowCount()):
             dp = self.spectra[index.row()]
             column = index.column()
@@ -161,10 +159,10 @@ class PASspectraTableModel(QAbstractTableModel):
             return True
         return False
 
-    def insertRows(self, position=None, rows=1, index=QModelIndex(), dps=None):
+    def insertRows(self, position=None, rows=1, index=Qt.QModelIndex(), dps=None):
         if position is None:
             position = self.rowCount()
-        self.beginInsertRows(QModelIndex(), position, position + rows - 1)
+        self.beginInsertRows(Qt.QModelIndex(), position, position + rows - 1)
         if dps is None:
             dps = []
             for row in range(rows):
@@ -176,8 +174,8 @@ class PASspectraTableModel(QAbstractTableModel):
         self.endInsertRows()
         return True
 
-    def removeRows(self, position, rows=1, index=QModelIndex()):
-        self.beginRemoveRows(QModelIndex(), position, position + rows - 1)
+    def removeRows(self, position, rows=1, index=Qt.QModelIndex()):
+        self.beginRemoveRows(Qt.QModelIndex(), position, position + rows - 1)
         self.spectra = self.spectra[:position] + self.spectra[position + rows :]
         self.endRemoveRows()
         return True
@@ -239,19 +237,19 @@ class PASspectraTableModel(QAbstractTableModel):
 # 		return seldpi
 
 # 	#Delegate
-# class mydelegate(QItemDelegate):
+# class mydelegate(Qt.QItemDelegate):
 # 	def __init__(self, parent=None):
 # 		super(mydelegate,self).__init__(parent)
 # 	def createEditor(self,parent,option,index):
 # 		print 'AAAAAAAAAAA',index.column()
 # 		if index.column()==0:
 # 			print '!!'
-# 			return QItemDelegate.createEditor(self,parent,option,index)
+# 			return Qt.QItemDelegate.createEditor(self,parent,option,index)
 # 		else:
-# 			return QItemDelegate.createEditor(self,parent,option,index)
+# 			return Qt.QItemDelegate.createEditor(self,parent,option,index)
 
 
-class demo(QDialog):
+class demo(Qt.QDialog):
     def __init__(self, parent=None):
         super(demo, self).__init__(parent)
         # generate fake spectra
@@ -259,25 +257,25 @@ class demo(QDialog):
         for i in range(4):
             spectra.append(discretepals(name="spect%i" % i))
 
-        self.table = QTableView(self)
+        self.table = Qt.QTableView(self)
         self.model = PASspectraTableModel(spectra)
         self.table.setModel(self.model)
 
-        self.tree = QTreeWidget(self)
+        self.tree = Qt.QTreeWidget(self)
         self.tree.setColumnCount(1)
         self.tree.setHeaderLabels(["Name"])
         # 		sets
 
         # 		self.table.setItemDelegate(mydelegate(self))
 
-        self.posSB = QSpinBox()
-        self.newSB = QSpinBox()
-        self.addBT = QPushButton("Add")
-        self.remBT = QPushButton("Rem")
-        self.dataBT = QPushButton("Data")
-        self.allBT = QPushButton("Check All")
+        self.posSB = Qt.QSpinBox()
+        self.newSB = Qt.QSpinBox()
+        self.addBT = Qt.QPushButton("Add")
+        self.remBT = Qt.QPushButton("Rem")
+        self.dataBT = Qt.QPushButton("Data")
+        self.allBT = Qt.QPushButton("Check All")
 
-        mainLayout = QGridLayout()
+        mainLayout = Qt.QGridLayout()
         mainLayout.addWidget(self.table, 0, 0)
         mainLayout.addWidget(self.tree, 0, 1)
         mainLayout.addWidget(self.posSB, 1, 0)
@@ -295,7 +293,7 @@ class demo(QDialog):
         self.table.resizeColumnsToContents()
         # 		self.tree.resizeColumnsToContents()
         self.table.setShowGrid(False)
-        self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.table.setSelectionBehavior(Qt.QAbstractItemView.SelectRows)
 
     def onAdd(self):
         self.model.insertRows(position=self.posSB.value(), rows=self.newSB.value())
@@ -306,12 +304,12 @@ class demo(QDialog):
     def onData(self):
         s = self.table.selectionModel().selectedRows()
         for idx in s:
-            dp = self.model.data(idx, role=Qt.UserRole)
+            dp = self.model.data(idx, role=Qt.Qt.UserRole)
             print(dp.name)
 
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
+    app = Qt.QApplication(sys.argv)
     form = demo()
     # 	form.resize(800, 400)
     form.show()

@@ -1,5 +1,5 @@
 """
-	This file is part of PAScual.
+    This file is part of PAScual.
     PAScual: Positron Annihilation Spectroscopy data analysis
     Copyright (C) 2007  Carlos Pascual-Izarra < cpascual [AT] users.sourceforge.net >
 
@@ -20,7 +20,7 @@
 import copy
 import sys
 
-from PyQt5.Qt import *  # TODO
+from PyQt5 import Qt
 
 
 # set names for column numbers
@@ -38,7 +38,7 @@ class command(object):
 
 
 # Commands Table Model
-class CommandTableModel(QAbstractTableModel):
+class CommandTableModel(Qt.QAbstractTableModel):
     def __init__(self, commandlist=[], argslist=None):
         super(CommandTableModel, self).__init__()
         self.loadData(commandlist, argslist)
@@ -60,41 +60,41 @@ class CommandTableModel(QAbstractTableModel):
         # 		for c in self.commands: print 'DEBUG:',c.cmd
         return copy.deepcopy(self.commands)
 
-    def rowCount(self, index=QModelIndex()):
+    def rowCount(self, index=Qt.QModelIndex()):
         return len(self.commands)
 
-    def columnCount(self, index=QModelIndex()):
+    def columnCount(self, index=Qt.QModelIndex()):
         return self.ncolumns
 
-    def data(self, index, role=Qt.DisplayRole):
+    def data(self, index, role=Qt.Qt.DisplayRole):
         if not index.isValid() or not (0 <= index.row() < self.rowCount()):
             return None
         row = index.row()
         column = index.column()
         # Display Role
-        if role == Qt.DisplayRole:
+        if role == Qt.Qt.DisplayRole:
             if column == CMD:
                 return self.commands[row].cmd
             elif column == ARGS:
                 return self.commands[row].args
         # Alignment
-        # 		elif role == Qt.TextAlignmentRole:
-        # 			return int(Qt.AlignHCenter|Qt.AlignVCenter)
+        # 		elif role == Qt.Qt.TextAlignmentRole:
+        # 			return int(Qt.Qt.AlignHCenter|Qt.Qt.AlignVCenter)
         # Background Color
-        elif role == Qt.TextColorRole:
+        elif role == Qt.Qt.TextColorRole:
             if column == ARGS:
-                return QColor(Qt.darkGray)
+                return Qt.QColor(Qt.Qt.darkGray)
         return None
 
-    def headerData(self, section, orientation, role=Qt.DisplayRole):
-        if role == Qt.TextAlignmentRole:
-            if orientation == Qt.Horizontal:
-                return int(Qt.AlignLeft | Qt.AlignVCenter)
-            return int(Qt.AlignRight | Qt.AlignVCenter)
-        if role != Qt.DisplayRole:
+    def headerData(self, section, orientation, role=Qt.Qt.DisplayRole):
+        if role == Qt.Qt.TextAlignmentRole:
+            if orientation == Qt.Qt.Horizontal:
+                return int(Qt.Qt.AlignLeft | Qt.Qt.AlignVCenter)
+            return int(Qt.Qt.AlignRight | Qt.Qt.AlignVCenter)
+        if role != Qt.Qt.DisplayRole:
             return None
         # So this is DisplayRole...
-        if orientation == Qt.Horizontal:
+        if orientation == Qt.Qt.Horizontal:
             if section == CMD:
                 return "Command"
             elif section == ARGS:
@@ -105,11 +105,10 @@ class CommandTableModel(QAbstractTableModel):
 
     def flags(self, index):  # use this to set the editable flag when fix is selected
         if not index.isValid():
-            return Qt.ItemIsEnabled
-        # 		return Qt.ItemFlags(QAbstractTableModel.flags(self, index)|Qt.ItemIsEditable )
-        return Qt.ItemFlags(Qt.ItemIsEnabled | Qt.ItemIsEditable)
+            return Qt.Qt.ItemIsEnabled
+        return Qt.Qt.ItemFlags(Qt.Qt.ItemIsEnabled | Qt.Qt.ItemIsEditable)
 
-    def setData(self, index, value=None, role=Qt.EditRole):
+    def setData(self, index, value=None, role=Qt.Qt.EditRole):
         if index.isValid() and (0 <= index.row() < self.rowCount()):
             row = index.row()
             column = index.column()
@@ -127,110 +126,69 @@ class CommandTableModel(QAbstractTableModel):
             return True
         return False
 
-    def insertRows(self, position=None, rows=1, index=QModelIndex()):
-        self.beginInsertRows(QModelIndex(), position, position + rows - 1)
+    def insertRows(self, position=None, rows=1, index=Qt.QModelIndex()):
+        self.beginInsertRows(Qt.QModelIndex(), position, position + rows - 1)
         for row in range(rows):
             self.commands.insert(position + row, command("END"))
         self.endInsertRows()
         return True
 
-    def removeRows(self, position, rows=1, index=QModelIndex()):
-        self.beginRemoveRows(QModelIndex(), position, position + rows - 1)
+    def removeRows(self, position, rows=1, index=Qt.QModelIndex()):
+        self.beginRemoveRows(Qt.QModelIndex(), position, position + rows - 1)
         self.commands = self.commands[:position] + self.commands[position + rows :]
         self.endRemoveRows()
         self.beginResetModel()
         self.endResetModel()
         return True
 
-    # 	def getselectedcommands(self):
-    # 		seldp=[]
-    # 		seldpi=[]
-    # 		for r in range(self.rowCount()):
-    # 			if self.commands[r].selected:
-    # 				seldp.append(self.commands[r])
-    # 				seldpi.append(self.index(r,NAME))
-    # 		return seldp,seldpi
-    # 	def checkAll(self,value=True):
-    # 		if self.commands==[]:return
-    # 		indexlist=[self.index(i,SEL) for i in range(len(self.commands))]
-    # 		for dp,idx in zip (self.commands, indexlist):
-    # 			if dp.selected!=value:
-    # 				dp.selected=value
-    # 				self.emit(SIGNAL("selectionChanged"),dp,idx)
-    # 		self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"),indexlist[0], indexlist[-1])
-    # 	def removeChecked(self):
-    # 		temp=[]
-    # 		for dp in self.commands:
-    # 			if dp.selected:
-    # 				dp.selected=False
-    # 				self.emit(SIGNAL("selectionChanged"),dp,None)
-    # 			else: temp.append(dp)
-    # 		self.commands=temp
-    # 		self.reset()
-    # 	def dumpData(self):
-    # 		return copy.deepcopy(self.commands)
-    # 	def loadData(self,data):
-    # 		self.commands=data
-    # 		self.reset()
-    # # 	def parent(self, index):
-    # # 		if index.row()%2: return
 
-    # 	def getselectedcommandsindexes(self):
-    # 		seldpi=[]
-    # 		for r in range(self.rowCount()):
-    # 			if self.commands[r].selected: seldpi.append(self.index(r,NAME))
-    # 		return seldpi
-
-    # Delegate
-
-
-class commandDelegate(QItemDelegate):
+class commandDelegate(Qt.QItemDelegate):
     def __init__(self, parent=None):
         super(commandDelegate, self).__init__(parent)
 
     def createEditor(self, parent, option, index):
         if index.column() == CMD:
-            combobox = QComboBox(parent)
+            combobox = Qt.QComboBox(parent)
             combobox.addItems(knowncommands)
             return combobox
         else:
-            return QItemDelegate.createEditor(self, parent, option, index)
+            return Qt.QItemDelegate.createEditor(self, parent, option, index)
 
     def setEditorData(self, editor, index):
-        text = index.model().data(index, Qt.DisplayRole)
+        text = index.model().data(index, Qt.Qt.DisplayRole)
         if index.column() == CMD:
             i = editor.findText(text)
             if i == -1:
                 i = 0
             editor.setCurrentIndex(i)
         else:
-            QItemDelegate.setEditorData(self, editor, index)
+            Qt.QItemDelegate.setEditorData(self, editor, index)
 
     def setModelData(self, editor, model, index):
         if index.column() == CMD:
             model.setData(index, editor.currentText())
         else:
-            QItemDelegate.setModelData(self, editor, model, index)
+            Qt.QItemDelegate.setModelData(self, editor, model, index)
 
 
-class demo(QDialog):
+class demo(Qt.QDialog):
     def __init__(self, parent=None):
         super(demo, self).__init__(parent)
         # generate fake commands
         commands = ["LOCAL", "SA", "BI", "LOG", "LOAD", "SAVE"]
-        self.table = QTableView(self)
+        self.table = Qt.QTableView(self)
         self.model = CommandTableModel(commands)
         self.table.setModel(self.model)
         self.table.setItemDelegate(commandDelegate(self))
 
-        self.posSB = QSpinBox()
-        self.newSB = QSpinBox()
-        self.addBT = QPushButton("Add")
-        self.remBT = QPushButton("Rem")
-        self.dataBT = QPushButton("Data")
-        self.allBT = QPushButton("Check All")
+        self.posSB = Qt.QSpinBox()
+        self.newSB = Qt.QSpinBox()
+        self.addBT = Qt.QPushButton("Add")
+        self.remBT = Qt.QPushButton("Rem")
+        self.dataBT = Qt.QPushButton("Data")
+        self.allBT = Qt.QPushButton("Check All")
 
-        mainLayout = QGridLayout()
+        mainLayout = Qt.QGridLayout()
         mainLayout.addWidget(self.table, 0, 0, 1, 2)
         mainLayout.addWidget(self.posSB, 1, 0)
         mainLayout.addWidget(self.newSB, 1, 1)
@@ -243,11 +201,11 @@ class demo(QDialog):
         self.addBT.clicked.connect(self.onAdd)
         self.remBT.clicked.connect(self.onRem)
         self.dataBT.clicked.connect(self.onData)
-        # 		QObject.connect(self.allBT,SIGNAL("clicked()"),self.model.checkAll)
+        # 		Qt.QObject.connect(self.allBT,SIGNAL("clicked()"),self.model.checkAll)
         self.table.resizeColumnsToContents()
         # 		self.tree.resizeColumnsToContents()
         self.table.setShowGrid(False)
-        self.table.setSelectionBehavior(QAbstractItemView.SelectRows)
+        self.table.setSelectionBehavior(Qt.QAbstractItemView.SelectRows)
 
     def onAdd(self):
         self.model.insertRows(position=self.posSB.value(), rows=self.newSB.value())
@@ -262,7 +220,7 @@ class demo(QDialog):
 
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
+    app = Qt.QApplication(sys.argv)
     form = demo()
     # 	form.resize(800, 400)
     form.show()

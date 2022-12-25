@@ -1,31 +1,42 @@
 """
 TEcalc, Tao-Eldrup calculator (text mode interface).
 
-Translates oPs lifetime into pore size using the Tao-Eldrup model and also the "Rectangular Tao-Eldrup model"
+Translates oPs lifetime into pore size using the Tao-Eldrup model and also 
+the "Rectangular Tao-Eldrup model"
 
 See: TL Dull et al., J. Phys Chem B 105, 4657 (2001) 
+
+
+This file is part of PAScual.
+PAScual: Positron Annihilation Spectroscopy data analysis
+Copyright (C) 2007  Carlos Pascual-Izarra < cpascual [AT] users.sourceforge.net >
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 """
-"""
-	This file is part of PAScual.
-    PAScual: Positron Annihilation Spectroscopy data analysis
-    Copyright (C) 2007  Carlos Pascual-Izarra < cpascual [AT] users.sourceforge.net >
 
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+from .pyTaoEldrup import (
+    TE_radius,
+    TE_softwall,
+    RTE_cube,
+    RTE_channel,
+    RTE_sheet,
+    RectangularTaoEldrup,
+    TaoEldrup,
+)
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
-"""
-
-from .pyTaoEldrup import *
+import numpy as np
 
 
 def raw_inputdflt(prompt, dflt=None):
@@ -56,8 +67,8 @@ def TEcalc():
             if tau < 15.0:
                 R = TE_radius(tau)
                 print(
-                    "\nOriginal TE model: Sphere radius= %.5lg nm or %.5lg nm (hard sphere) "
-                    % (R, R + TE_softwall)
+                    f"\nOriginal TE model: Sphere radius= {R:%.5g} nm"
+                    + f" or {R + TE_softwall:%.5g} nm (hard sphere) "
                 )
             else:
                 print("Original TE model: (out of range)")
@@ -65,8 +76,8 @@ def TEcalc():
             print("RTE model: Cube side= %.5lg nm" % a)
             R = a / 2.0 - TE_softwall
             print(
-                "RTE model: Equivalent sphere radius= %.5lg nm or %.5lg nm (hard sphere) "
-                % (R, R + TE_softwall)
+                f"RTE model: Equivalent sphere radius= {R:.5g} nm "
+                + f"or {R + TE_softwall:.5g} nm (hard sphere) "
             )
             print("RTE model: Square channel side= %.5lg nm" % RTE_channel(tau, T))
             print("RTE model: Sheet spacing= %.5lg nm\n" % RTE_sheet(tau, T))
@@ -79,28 +90,29 @@ def PlotCurves():
         import pylab
     except ImportError:
         print(
-            "\nError: you need http://matplotlib.sourceforge.net/ installed on your computer for PlotCurves to work"
+            "\nError: you need http://matplotlib.sourceforge.net/ installed"
+            + " on your computer for PlotCurves to work"
         )
         print("See http://matplotlib.sourceforge.net/\n")
         return
     T = 298.0
-    mfp = S.concatenate(
-        (S.arange(0.3, 10, 0.1), S.arange(10, 100, 1.0), S.arange(100, 500, 10))
+    mfp = np.concatenate(
+        (np.arange(0.3, 10, 0.1), np.arange(10, 100, 1.0), np.arange(100, 500, 10))
     )
     R = (3.0 / 4.0) * mfp - TE_softwall
     a_cube = mfp * 1.5
     a_chann = mfp
     a_sheet = 0.5 * mfp
-    v_RTE = S.vectorize(RectangularTaoEldrup)
-    v_TE = S.vectorize(TaoEldrup)
+    v_RTE = np.vectorize(RectangularTaoEldrup)
+    v_TE = np.vectorize(TaoEldrup)
     lim = 25
     pylab.ylabel("oPs lifetime (ns)")
     pylab.xlabel("Mean free path(nm)")
     pylab.gca().set_xscale("log")
     pylab.plot(mfp[:lim], v_TE(R[:lim]), "r-.")
     pylab.plot(mfp, v_RTE(a_cube, a_cube, a_cube, T), "-")
-    pylab.plot(mfp, v_RTE(a_chann, a_chann, S.inf, T), ":")
-    pylab.plot(mfp, v_RTE(a_sheet, S.inf, S.inf, T), "--")
+    pylab.plot(mfp, v_RTE(a_chann, a_chann, np.inf, T), ":")
+    pylab.plot(mfp, v_RTE(a_sheet, np.inf, np.inf, T), "--")
     pylab.show()
 
 

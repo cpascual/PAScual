@@ -1,4 +1,4 @@
-   # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 """
 	PAScualGUI: Graphical User Interface for PAScual
     PAScual: Positron Annihilation Spectroscopy data analysis
@@ -244,9 +244,10 @@ class FitparWidget(Qt.QWidget):
 
 class SingleClickWorkaroundProxy(Qt.QProxyStyle):
     """Hack to avoid QFileDialog closing on file selection
-    
+
     See:https://stackoverflow.com/a/63220266
     """
+
     def styleHint(self, hint, option, widget, data):
         if hint == self.SH_ItemView_ActivateItemOnSingleClick:
             return False
@@ -819,8 +820,8 @@ class PAScualGUI(Qt.QMainWindow):
                     # chi2 value within limits
                     bgbrush = self.resultsTable.palette().base()
                 else:
-                     # chi2 out of normal values
-                    bgbrush = Qt.QBrush(Qt.Qt.red) 
+                    # chi2 out of normal values
+                    bgbrush = Qt.QBrush(Qt.Qt.red)
                 for c, s in zip(list(range(len(rowitems))), rowitems):
                     item = Qt.QTableWidgetItem(s)
                     item.setBackground(bgbrush)

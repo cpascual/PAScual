@@ -20,18 +20,19 @@
 import scipy as S
 import sys
 
-from PyQt5.Qt import *  # TODO
+from PyQt5 import Qt
 
 
 from .PlotGraphWidget import PALSplot
 
 
-class ROISelectorDialog(QDialog):
+class ROISelectorDialog(Qt.QDialog):
     def __init__(self, parent=None, selected=None, title="ROI", widgetmode=False):
         """defines a roi for each selected spectra from a dictionary.
         "selected" is a list of spectra which are to be assigned a ROI
         The selected items are expected to have at least the .exp member defined
-        It stores the chosen ROIs for each spectra in a list (self.roilist) in the same order as selected.
+        It stores the chosen ROIs for each spectra in a list (self.roilist) in the
+        same order as selected.
         self.roidict[i]==None if there was a problem with the spectrum in selected[i]
         widgetmode can be set to True to use the dialog as a widget
         """
@@ -45,33 +46,35 @@ class ROISelectorDialog(QDialog):
         # initialise widgets
         self.plotarea = PALSplot()
 
-        self.ctrlsGB = QGroupBox("%s Limits" % title)
+        self.ctrlsGB = Qt.QGroupBox("%s Limits" % title)
 
-        refspectrumLabel = QLabel("Re&ference Spectrum:")
-        self.refspectrumCB = QComboBox()
+        refspectrumLabel = Qt.QLabel("Re&ference Spectrum:")
+        self.refspectrumCB = Qt.QComboBox()
 
         refspectrumLabel.setBuddy(self.refspectrumCB)
-        self.cmaxLabel = QLabel("")
+        self.cmaxLabel = Qt.QLabel("")
 
-        lowerlimLB = QLabel("Lower lim:")
-        upperlimLB = QLabel("Upper lim:")
-        self.lowerlimSB = QSpinBox()
+        lowerlimLB = Qt.QLabel("Lower lim:")
+        upperlimLB = Qt.QLabel("Upper lim:")
+        self.lowerlimSB = Qt.QSpinBox()
         self.lowerlimSB.setAccelerated(True)
-        self.lowerlimRelCB = QCheckBox("Relative to max")
-        self.upperlimSB = QSpinBox()
+        self.lowerlimRelCB = Qt.QCheckBox("Relative to max")
+        self.upperlimSB = Qt.QSpinBox()
         self.upperlimSB.setAccelerated(True)
-        self.upperlimRelCB = QCheckBox("Relative to max")
-        self.buttonBox = QDialogButtonBox(QDialogButtonBox.Ok | QDialogButtonBox.Cancel)
+        self.upperlimRelCB = Qt.QCheckBox("Relative to max")
+        self.buttonBox = Qt.QDialogButtonBox(
+            Qt.QDialogButtonBox.Ok | Qt.QDialogButtonBox.Cancel
+        )
 
-        mainLayout = QVBoxLayout()
+        mainLayout = Qt.QVBoxLayout()
 
-        refLayout = QHBoxLayout()
+        refLayout = Qt.QHBoxLayout()
         refLayout.addWidget(refspectrumLabel)
         refLayout.addWidget(self.refspectrumCB)
         refLayout.addWidget(self.cmaxLabel)
         refLayout.addStretch()
 
-        self.ctrlsLayout = QGridLayout()
+        self.ctrlsLayout = Qt.QGridLayout()
         self.ctrlsLayout.addLayout(refLayout, 0, 0, 1, 7)
         self.ctrlsLayout.addWidget(lowerlimLB, 1, 0)
         self.ctrlsLayout.addWidget(self.lowerlimSB, 1, 1)
@@ -187,8 +190,8 @@ class ROISelectorDialog(QDialog):
                 )
             elif self.roimax > dp.exp.size:
                 error = (
-                    "The upper limit (%i) cannot be larger than the number of channels (%i)"
-                    % (self.roimax, dp.exp.size)
+                    f"The upper limit ({self.roimax}) cannot be larger than "
+                    + f"the number of channels {dp.exp.size}"
                 )
             else:
                 error = False
@@ -196,16 +199,18 @@ class ROISelectorDialog(QDialog):
                 if ignoreerror:
                     continue  # skip this one if it was previously chosen to ignore all
                 else:
-                    answer = QMessageBox.warning(
+                    answer = Qt.QMessageBox.warning(
                         self,
                         "Input error in %s" % dp.name,
                         "Input error in %s :\n %s \nContinue? (skipping this)"
                         % (dp.name, error),
-                        QMessageBox.Yes | QMessageBox.YesToAll | QMessageBox.No,
+                        Qt.QMessageBox.Yes
+                        | Qt.QMessageBox.YesToAll
+                        | Qt.QMessageBox.No,
                     )
-                    if answer == QMessageBox.No:
-                        return False  # stop processing and return without accepting the dialog (and return False)
-                    elif answer == QMessageBox.YesToAll:
+                    if answer == Qt.QMessageBox.No:
+                        return False  # stop processing and return without accepting
+                    elif answer == Qt.QMessageBox.YesToAll:
                         ignoreerror = True  # it won t ask anymore
                 self.roilist.append(None)
             else:
@@ -213,7 +218,7 @@ class ROISelectorDialog(QDialog):
                     S.arange(self.roimin, self.roimax, dtype="i")
                 )  # put the selected roi in the dict
         if not self.widgetmode:
-            self.accept()  # if no errors (or all errors were skipped) the dialog is accepted
+            self.accept()  # accept if no errors (or all errors were skipped)
         return True
 
 
@@ -221,7 +226,7 @@ def make(app=None):
     from .PAScual import discretepals
 
     # fake data
-    dp1 = discretepals(expdata=S.arange(1024))
+    # dp1 = discretepals(expdata=S.arange(1024))
     dp2 = discretepals(name="fake2", expdata=S.arange(1024) * 2)
     dp3 = discretepals(name="fake3", expdata=S.arange(1024) * 3)
     dp4 = discretepals(name="fake4", expdata=S.arange(1024) * 4)
@@ -243,8 +248,8 @@ def make(app=None):
 
 
 def main(args):
-    app = QApplication(args)
-    demo = make(app)
+    app = Qt.QApplication(args)
+    make(app)
     sys.exit(app.exec())
 
 

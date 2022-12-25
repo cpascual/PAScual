@@ -21,25 +21,23 @@
 import pickle as pickle
 import copy
 
-from PyQt5.Qt import *  # TODO
+from PyQt5 import Qt  # TODO
 
 
 from .PAScual import printwarning
 
 
-class fitter(QThread):
+class fitter(Qt.QThread):
     """The fitter is an object that will fit sets of spectra (one set at a time)
     in a different thread to that of the main program"""
 
-    endrun = pyqtSignal(bool)
-    command_done = pyqtSignal(int)
+    endrun = Qt.pyqtSignal(bool)
+    command_done = Qt.pyqtSignal(int)
 
     def __init__(self, parent=None):
         super(fitter, self).__init__(parent)
         self.stopped = False
-        self.mutex = (
-            QMutex()
-        )  # this mutex is used to ensure that the self.stopped variable is accessed properly
+        self.mutex = Qt.QMutex()  # ensure that `self.stopped` is accessed properly
         self.ps = None
         self.completed = False
         self.saveslot = self.saveslot_auto = self.saveslot_user = None
@@ -62,9 +60,7 @@ class fitter(QThread):
     def isStopped(self):
         try:
             self.mutex.lock()
-            return (
-                self.stopped
-            )  # even with this 'return' here, the 'finally:' block is executed before exiting!
+            return self.stopped
         finally:
             self.mutex.unlock()
 
@@ -74,11 +70,14 @@ class fitter(QThread):
         self.endrun.emit(self.completed)
 
     def launchFit(self, ps):
-        """This launches the fit (called via the run method). For the given palsset, it interpretes the commands and calls the appropriate functions"""
+        """This launches the fit (called via the run method). For the given palsset,
+        it interpretes the commands and calls the appropriate functions
+        """
         self.completed = False
         for ob, icmd in zip(ps.commands, list(range(len(ps.commands)))):
             if self.isStopped():
-                return  # This makes possible to respond to a request of stopping the fit
+                # make possible to respond to a request of stopping the fit
+                return
             cmd = ob.cmd
             args = ob.args
             # SA command

@@ -1,4 +1,4 @@
-'''
+"""
 	This file is part of PAScual.
     PAScual: Positron Annihilation Spectroscopy data analysis
     Copyright (C) 2007  Carlos Pascual-Izarra < cpascual [AT] users.sourceforge.net >
@@ -15,19 +15,20 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-'''
+"""
 
 import scipy as S
 import sys
 
-from PyQt5.Qt import *  # TODO
+from PyQt5 import Qt
 
 
 from .ui import UILoadable
 from .ROISelectorDlg import ROISelectorDialog
 
+
 @UILoadable()
-class AddCompsWidget(QWidget):
+class AddCompsWidget(Qt.QWidget):
     def __init__(self, parent=None):
         super(AddCompsWidget, self).__init__(parent)
         self.loadUi()
@@ -54,21 +55,21 @@ class AddCompsWidget(QWidget):
             raise RuntimeError("Unknown sender")
 
     def getComps(self):
-        '''parses the text in the selectionsTE and extract an array of lifetimes and of min and max values'''
-        self.comps = str(self.selectionsTE.toPlainText()).strip().split(
-            '\n')
+        """parses the text in the selectionsTE and extract an array of
+        lifetimes and of min and max values"""
+        self.comps = str(self.selectionsTE.toPlainText()).strip().split("\n")
         self.taus = []
         self.mintaus = []
         self.maxtaus = []
         try:
             for c in self.comps:
-                s = c.strip().split(',')
-                if s == ['']:
+                s = c.strip().split(",")
+                if s == [""]:
                     pass
                 elif len(s) == 1:
                     self.taus.append(float(s[0]))
-                    self.mintaus.append(1.)
-                    self.maxtaus.append(142000.)
+                    self.mintaus.append(1.0)
+                    self.maxtaus.append(142000.0)
                 elif len(s) == 3:
                     self.taus.append(float(s[0]))
                     self.mintaus.append(float(s[1]))
@@ -82,37 +83,46 @@ class AddCompsWidget(QWidget):
             return False
 
 
-class GainAndFWHMPage(QWizardPage):
-    def __init__(self, parent=None, psperchannel=50., FWHM=300.):
-        super(QWizardPage, self).__init__(parent)
+class GainAndFWHMPage(Qt.QWizardPage):
+    def __init__(self, parent=None, psperchannel=50.0, FWHM=300.0):
+        super(Qt.QWizardPage, self).__init__(parent)
         self.setTitle("Channel Width")
         self.setSubTitle(
-            """Please enter the Channel width (aka "ps per channel" or "gain") and the resolution (aka "FWHM") for your experimental set-up.""")
+            """Please enter the Channel width (aka "ps per channel" or "gain") and the 
+            resolution (aka "FWHM") for your experimental set-up.
+            """
+        )
 
         # The spinbox
-        self.psperchannelSB = QDoubleSpinBox()
+        self.psperchannelSB = Qt.QDoubleSpinBox()
         self.psperchannelSB.setRange(0, 1000)
         self.psperchannelSB.setDecimals(1)
         self.psperchannelSB.setValue(psperchannel)
 
-        self.FWHMSB = QDoubleSpinBox()
+        self.FWHMSB = Qt.QDoubleSpinBox()
         self.FWHMSB.setRange(0, 9999)
         self.FWHMSB.setDecimals(1)
         self.FWHMSB.setValue(FWHM)
 
-        layout = QGridLayout()
-        layout.addWidget(QLabel("Channel width [ps/ch]: "), 0, 0, 1, 1,
-                         Qt.AlignRight)
-        layout.addWidget(self.psperchannelSB, 0, 1, 1, 1, Qt.AlignLeft)
-        layout.addWidget(QLabel("FWHM [ps]: "), 1, 0, 1, 1, Qt.AlignRight)
-        layout.addWidget(self.FWHMSB, 1, 1, 1, 1, Qt.AlignLeft)
+        layout = Qt.QGridLayout()
+        layout.addWidget(
+            Qt.QLabel("Channel width [ps/ch]: "), 0, 0, 1, 1, Qt.Qt.AlignRight
+        )
+        layout.addWidget(self.psperchannelSB, 0, 1, 1, 1, Qt.Qt.AlignLeft)
+        layout.addWidget(Qt.QLabel("FWHM [ps]: "), 1, 0, 1, 1, Qt.Qt.AlignRight)
+        layout.addWidget(self.FWHMSB, 1, 1, 1, 1, Qt.Qt.AlignLeft)
         self.setLayout(layout)
 
         # register fields
-        self.registerField("psperchannel", self.psperchannelSB, "value",
-                           self.psperchannelSB.valueChanged["double"])
-        self.registerField("FWHM", self.FWHMSB, "value",
-                           self.FWHMSB.valueChanged["double"])
+        self.registerField(
+            "psperchannel",
+            self.psperchannelSB,
+            "value",
+            self.psperchannelSB.valueChanged["double"],
+        )
+        self.registerField(
+            "FWHM", self.FWHMSB, "value", self.FWHMSB.valueChanged["double"]
+        )
 
     def validatePage(self):
         w = self.wizard()
@@ -121,13 +131,14 @@ class GainAndFWHMPage(QWizardPage):
         return True
 
 
-class ROIPage(QWizardPage):
+class ROIPage(Qt.QWizardPage):
     def __init__(self, parent=None, selected=None):
-        super(QWizardPage, self).__init__(parent)
+        super(Qt.QWizardPage, self).__init__(parent)
 
         self.setTitle("Region of Interest")
         self.setSubTitle(
-            """Please set the required Region Of Interest for the spectra.""")
+            """Please set the required Region Of Interest for the spectra."""
+        )
 
         self.ROIsel = ROISelectorDialog(selected=selected, widgetmode=True)
         # We don't want the OK|Cancel buttons of the ROI selector.
@@ -137,7 +148,7 @@ class ROIPage(QWizardPage):
         # the signal is passed to the wizard
         self.ROIsel.rejected.connect(parent.reject)
 
-        layout = QHBoxLayout()
+        layout = Qt.QHBoxLayout()
         layout.addWidget(self.ROIsel)
         self.setLayout(layout)
 
@@ -161,21 +172,25 @@ class ROIPage(QWizardPage):
         return self.ROIsel.checkAndApply()
 
 
-class AddCompsPage(QWizardPage):
+class AddCompsPage(Qt.QWizardPage):
     def __init__(self, parent=None, selected=None):
-        super(QWizardPage, self).__init__(parent)
+        super(Qt.QWizardPage, self).__init__(parent)
 
         self.setTitle("Components")
         self.setSubTitle("""Please add components""")
         self.AddCompsWidget = AddCompsWidget()
 
-        layout = QVBoxLayout()
+        layout = Qt.QVBoxLayout()
         layout.addWidget(self.AddCompsWidget)
         self.setLayout(layout)
 
         # register fields
-        self.registerField("comps", self.AddCompsWidget.selectionsTE, "text",
-                           self.AddCompsWidget.selectionsTE.textChanged)
+        self.registerField(
+            "comps",
+            self.AddCompsWidget.selectionsTE,
+            "text",
+            self.AddCompsWidget.selectionsTE.textChanged,
+        )
 
     def validatePage(self):
         okflag = self.AddCompsWidget.getComps()
@@ -188,18 +203,20 @@ class AddCompsPage(QWizardPage):
         return okflag
 
 
-class SummaryPage(QWizardPage):
+class SummaryPage(Qt.QWizardPage):
     def __init__(self, parent=None, selected=None):
-        super(QWizardPage, self).__init__(parent)
+        super(Qt.QWizardPage, self).__init__(parent)
 
         self.setTitle("Summary")
         self.setSubTitle(
-            """Review the results from your choices and finish if you agree.\n Note: you can modify everything later from the Parameters Tab""")
+            """Review the results from your choices and finish if you agree.
+            \n Note: you can modify everything later from the Parameters Tab"""
+        )
 
-        self.summary = QTextEdit("!!!!")
+        self.summary = Qt.QTextEdit("!!!!")
         self.summary.setReadOnly(True)
 
-        layout = QVBoxLayout()
+        layout = Qt.QVBoxLayout()
         layout.addWidget(self.summary)
 
         self.setLayout(layout)
@@ -213,37 +230,46 @@ class SummaryPage(QWizardPage):
         for i in range(len(w.selected)):
             nbgroi = min(10, 0.1 * w.roilist[i].size)
             w.bg[i] = w.selected[i].exp[w.roilist[i][-nbgroi:]].mean()
-            w.deltabg[i] = 10 * max(10, S.sqrt(w.bg[i]), w.selected[i].exp[
-                w.roilist[i][-nbgroi:]].std())
+            w.deltabg[i] = 10 * max(
+                10, S.sqrt(w.bg[i]), w.selected[i].exp[w.roilist[i][-nbgroi:]].std()
+            )
         # set the summary
         self.summary.setText(self.buildSummary())
 
     def buildSummary(self):
         w = self.wizard()
-        summary = "According to your selections, the following parameters will be set:<ul>"
+        summary = (
+            "According to your selections, the following parameters will be set:<ul>"
+        )
         for i in range(len(w.selected)):
-            summary += "<li><b>%s</b>: %.1f ps/ch  ; FWHM=%.1f; ROI: %i-%i  ; bg=%.0f  ; %i comps</li>" % (
-            w.selected[i].name, float(w.psperchannel),
-            float(w.FWHM), w.roilist[i][0], w.roilist[i][-1], w.bg[i],
-            w.taus.size)
+            summary += (
+                f"<li><b>{w.selected[i].name}</b>: {float(w.psperchannel):.1f} ps/ch  ;"
+                + f" FWHM={w.FWHM:.1f};"
+                + f" ROI: {w.roilist[i][0]}-{w.roilist[i][-1]}  ;"
+                + f" bg={w.bg[i]:.0f}  ;"
+                + f" {w.taus.size} comps</li>"
+            )
         summary += "</ul>"
         summary += "<p>The components to be used are (tau [min,max]):<ul>"
-        for i in range(
-            w.taus.size): summary += "<li>%.0f  [%.0f-%.0f]</li>" % (
-        w.taus[i], w.mintaus[i], w.maxtaus[i])
+        for i in range(w.taus.size):
+            summary += "<li>%.0f  [%.0f-%.0f]</li>" % (
+                w.taus[i],
+                w.mintaus[i],
+                w.maxtaus[i],
+            )
         summary += "</ul></p>"
         return summary
 
 
-class ParamWizard(QWizard):
-    def __init__(self, parent, selected=None, psperchannel=50., FWHM=300.):
-        '''A wizard for setting some parameters of spectra.
-        selected is a list containing spectra to which the settings will apply'''
+class ParamWizard(Qt.QWizard):
+    def __init__(self, parent, selected=None, psperchannel=50.0, FWHM=300.0):
+        """A wizard for setting some parameters of spectra.
+        selected is a list containing spectra to which the settings will apply"""
         super(ParamWizard, self).__init__(parent)
         self.setWindowTitle("PAScual- Parameter setting wizard")
-        # 		self.setWindowIcon(QIcon("../icons/PAScual-64x64.png"))
+        # 		self.setWindowIcon(Qt.QIcon("../icons/PAScual-64x64.png"))
         # 		self.setWizardStyle(self.ModernStyle)
-        # 		logo=QPixmap()
+        # 		logo=Qt.QPixmap()
         # 		logo.load("../icons/PAScual-64x64.png")
         # 		self.setPixmap(self.LogoPixmap, logo)
 
@@ -253,8 +279,7 @@ class ParamWizard(QWizard):
         self.deltabg = None
 
         # Insert pages
-        self.GainAndFWHMPage = GainAndFWHMPage(psperchannel=psperchannel,
-                                               FWHM=FWHM)
+        self.GainAndFWHMPage = GainAndFWHMPage(psperchannel=psperchannel, FWHM=FWHM)
         self.ROIPage = ROIPage(parent=self, selected=self.selected)
         self.AddCompsPage = AddCompsPage(parent=self)
         self.SummaryPage = SummaryPage(selected=selected)
@@ -277,9 +302,8 @@ class ParamWizard(QWizard):
         self.setField("upperlim", self.upperlim)
 
 
-# self.setField("comps",self.comps) #for some reason, This does not need to be restored explicitly (?)
-
-
+# for some reason, This does not need to be restored explicitly (?)
+# self.setField("comps",self.comps)
 
 if __name__ == "__main__":
     from .PAScual import discretepals
@@ -291,12 +315,14 @@ if __name__ == "__main__":
     dp3.exp[33] = 33000
     selected = [dp2, dp3]
 
-    app = QApplication(sys.argv)
+    app = Qt.QApplication(sys.argv)
 
     #  	form2=AddCompsWidget()
     #  	form2.show()
 
     form = ParamWizard(None, selected)
-    app.focusChanged.connect(form.ROIPage.ROIsel.onFocusChanged)  # manage the focus events (needed for mouse selection in ROI)
+    app.focusChanged.connect(
+        form.ROIPage.ROIsel.onFocusChanged
+    )  # manage the focus events (needed for mouse selection in ROI)
     form.show()
     sys.exit(app.exec())

@@ -19,7 +19,7 @@
 
 import sys
 
-from PyQt5.Qt import *  # TODO
+from PyQt5 import Qt
 
 from .PAScual import fitpar
 
@@ -46,40 +46,28 @@ class componentTableRow(object):
             return self.ity
 
 
-# class mydelegate(QItemDelegate):
-# 	def __init__(self, parent=None):
-# 		super(mydelegate,self).__init__(parent)
-# 	def createEditor(self,parent,option,index):
-# 		print 'AAAAAAAAAAA',index.column()
-# 		if index.column()==0:
-# 			print '!!'
-# 			return QItemDelegate.createEditor(self,parent,option,index)
-# 		else:
-# 			return QItemDelegate.createEditor(self,parent,option,index)
-
-
 # MY model
-class PAScomponentsTableModel(QAbstractTableModel):
+class PAScomponentsTableModel(Qt.QAbstractTableModel):
     def __init__(self, components=[]):
         super(PAScomponentsTableModel, self).__init__()
         self.components = components
         self.ncolumns = _ncolumns
         self.showtau = True
 
-    def rowCount(self, index=QModelIndex()):
+    def rowCount(self, index=Qt.QModelIndex()):
         return len(self.components)
 
-    def columnCount(self, index=QModelIndex()):
+    def columnCount(self, index=Qt.QModelIndex()):
         return self.ncolumns
 
-    def data(self, index, role=Qt.DisplayRole):
+    def data(self, index, role=Qt.Qt.DisplayRole):
         if not index.isValid() or not (0 <= index.row() < self.rowCount()):
             return None
         cp = self.components[index.row()]
         fp = cp.tauority(self.showtau)
         column = index.column()
         # Display Role
-        if role == Qt.DisplayRole:
+        if role == Qt.Qt.DisplayRole:
             if column == VAL:
                 if self.showtau:
                     return float(fp.val)
@@ -87,42 +75,41 @@ class PAScomponentsTableModel(QAbstractTableModel):
             elif column == MINVAL:
                 if self.showtau:
                     return float(fp.minval)
-                return float(
-                    100.0 * fp.minval
-                )  # since we don't allow to change the ity limits, this will always be 0
+                    #  changing ity limits is not allowed => this will always be 0
+                return float(100.0 * fp.minval)
             elif column == MAXVAL:
                 if self.showtau:
                     return float(fp.maxval)
-                return float(
-                    100
-                )  # Showing "100" is just aesthetics. Since the itys are normalised, the real maxval is None.
+                return float(100)
+                # Showing "100" is just aesthetics. Since the itys are normalised,
+                #  the real maxval is None.
         # CheckState Role
-        elif role == Qt.CheckStateRole:
+        elif role == Qt.Qt.CheckStateRole:
             if column == FIX:
                 return not fp.free
             elif column == COMMON:
                 return fp.common
         # Alignment
-        elif role == Qt.TextAlignmentRole:
-            return int(Qt.AlignHCenter | Qt.AlignVCenter)
+        elif role == Qt.Qt.TextAlignmentRole:
+            return int(Qt.Qt.AlignHCenter | Qt.Qt.AlignVCenter)
         # Background Color
-        elif role == Qt.TextColorRole:
+        elif role == Qt.Qt.TextColorRole:
             if column == MINVAL or column == MAXVAL:
                 if not fp.free:
-                    return QColor(Qt.gray)
-        elif role == Qt.UserRole:
+                    return Qt.QColor(Qt.Qt.gray)
+        elif role == Qt.Qt.UserRole:
             return self.components[index.row()]
         return None
 
-    def headerData(self, section, orientation, role=Qt.DisplayRole):
-        if role == Qt.TextAlignmentRole:
-            if orientation == Qt.Horizontal:
-                return int(Qt.AlignLeft | Qt.AlignVCenter)
-            return int(Qt.AlignRight | Qt.AlignVCenter)
-        if role != Qt.DisplayRole:
+    def headerData(self, section, orientation, role=Qt.Qt.DisplayRole):
+        if role == Qt.Qt.TextAlignmentRole:
+            if orientation == Qt.Qt.Horizontal:
+                return int(Qt.Qt.AlignLeft | Qt.Qt.AlignVCenter)
+            return int(Qt.Qt.AlignRight | Qt.Qt.AlignVCenter)
+        if role != Qt.Qt.DisplayRole:
             return None
         # So this is DisplayRole...
-        if orientation == Qt.Horizontal:
+        if orientation == Qt.Qt.Horizontal:
             if section == VAL:
                 if self.showtau:
                     return "Value (ps)"
@@ -144,18 +131,20 @@ class PAScomponentsTableModel(QAbstractTableModel):
 
     def flags(self, index):  # use this to set the editable flag when fix is selected
         if not index.isValid():
-            return Qt.ItemIsEnabled
+            return Qt.Qt.ItemIsEnabled
         fp = self.components[index.row()].tauority(self.showtau)
         column = index.column()
         if (column == MINVAL or column == MAXVAL or column == COMMON) and not fp.free:
-            return Qt.ItemFlags()  # disbled!
+            return Qt.Qt.ItemFlags()  # disbled!
         if (column == MINVAL or column == MAXVAL) and not self.showtau:
-            return Qt.ItemFlags()  # disbled! (ity limits cannot be changed)
+            return Qt.Qt.ItemFlags()  # disbled! (ity limits cannot be changed)
         elif column == FIX or column == COMMON:
-            return Qt.ItemFlags(Qt.ItemIsEnabled | Qt.ItemIsUserCheckable)
-        return Qt.ItemFlags(QAbstractTableModel.flags(self, index) | Qt.ItemIsEditable)
+            return Qt.Qt.ItemFlags(Qt.Qt.ItemIsEnabled | Qt.Qt.ItemIsUserCheckable)
+        return Qt.Qt.ItemFlags(
+            Qt.QAbstractTableModel.flags(self, index) | Qt.Qt.ItemIsEditable
+        )
 
-    def setData(self, index, value, role=Qt.EditRole):
+    def setData(self, index, value, role=Qt.Qt.EditRole):
         if index.isValid() and (0 <= index.row() < self.rowCount()):
             cp = self.components[index.row()]
             fp = cp.tauority(self.showtau)
@@ -175,7 +164,7 @@ class PAScomponentsTableModel(QAbstractTableModel):
             elif column == FIX:
                 fp.free = not fp.free
                 for i in [COMMON, MINVAL, MAXVAL]:
-                    otherindex = QAbstractTableModel.index(self, index.row(), i)
+                    otherindex = Qt.QAbstractTableModel.index(self, index.row(), i)
                     self.dataChanged.emit(
                         otherindex, otherindex
                     )  # note: a similar thing can be used to update the whole row
@@ -186,15 +175,15 @@ class PAScomponentsTableModel(QAbstractTableModel):
             return True
         return False
 
-    def insertRows(self, position, rows=1, index=QModelIndex()):
-        self.beginInsertRows(QModelIndex(), position, position + rows - 1)
+    def insertRows(self, position, rows=1, index=Qt.QModelIndex()):
+        self.beginInsertRows(Qt.QModelIndex(), position, position + rows - 1)
         for row in range(rows):
             self.components.insert(position + row, componentTableRow())
         self.endInsertRows()
         return True
 
-    def removeRows(self, position, rows=1, index=QModelIndex()):
-        self.beginRemoveRows(QModelIndex(), position, position + rows - 1)
+    def removeRows(self, position, rows=1, index=Qt.QModelIndex()):
+        self.beginRemoveRows(Qt.QModelIndex(), position, position + rows - 1)
         self.components = (
             self.components[:position] + self.components[position + rows :]
         )
@@ -202,7 +191,7 @@ class PAScomponentsTableModel(QAbstractTableModel):
         return True
 
 
-class demo(QDialog):
+class demo(Qt.QDialog):
     def __init__(self, parent=None):
         super(demo, self).__init__(parent)
         # generate fake components
@@ -210,20 +199,20 @@ class demo(QDialog):
         for i in range(4):
             components.append(componentTableRow())
 
-        self.table = QTableView(self)
+        self.table = Qt.QTableView(self)
         self.model = PAScomponentsTableModel(components)
         self.table.setModel(self.model)
         # 		self.table.setItemDelegate(mydelegate(self))
 
-        self.posSB = QSpinBox()
-        self.newSB = QSpinBox()
-        self.addBT = QPushButton("Add")
-        self.remBT = QPushButton("Rem")
-        self.dumpBT = QPushButton("Dump")
-        self.tauorityBT = QPushButton("Swtich to Ity")
+        self.posSB = Qt.QSpinBox()
+        self.newSB = Qt.QSpinBox()
+        self.addBT = Qt.QPushButton("Add")
+        self.remBT = Qt.QPushButton("Rem")
+        self.dumpBT = Qt.QPushButton("Dump")
+        self.tauorityBT = Qt.QPushButton("Swtich to Ity")
         self.tauorityBT.setCheckable(True)
 
-        mainLayout = QVBoxLayout()
+        mainLayout = Qt.QVBoxLayout()
         mainLayout.addWidget(self.table)
         mainLayout.addWidget(self.posSB)
         mainLayout.addWidget(self.newSB)
@@ -262,7 +251,7 @@ class demo(QDialog):
 
 
 if __name__ == "__main__":
-    app = QApplication(sys.argv)
+    app = Qt.QApplication(sys.argv)
     form = demo()
     form.resize(600, 400)
     form.show()
