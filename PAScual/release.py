@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 # Common metadata to be used by the whole package
 
-__version__ = "3.0.2"
+__version__ = "3.0.3"
 __homepage__ = "https://github.com/cpascual/PAScual"
 __citation_html__ = (
     """
