@@ -47,7 +47,7 @@ Once installed, just run the following command to get the graphical application:
 pascual
 ```
 
-And I recommend to try the tutorial from the User Manual (some example spectra
+And I recommend to try the tutorial from the [User Manual](http://cpascual.github.io/PAScual/User%20Manual.html) (some example spectra
 are provided in the examples dir)
 
 
