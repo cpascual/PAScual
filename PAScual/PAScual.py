@@ -2086,8 +2086,7 @@ def MELTlikeROI(expdata, headerlines=0, left_of_max=5, stopdat=None):
     """generates a ROI that goes from left_of_max channels before
     the peak max to the channel stopdat"""
     if isinstance(expdata, str):
-        # cmax=np.array(pylab.load(expfilename,skiprows=headerlines),dtype='d').argmax(0)
-        cmax = np.loadtxt(fname, skiprows=hdrlns, dtype="d").argmax(0)
+        cmax = np.loadtxt(expdata, skiprows=headerlines, dtype="d").argmax(0)
     else:
         cmax = np.array(expdata, dtype="d").argmax(0)
     roi = np.arange(cmax - left_of_max, stopdat + 1)
