@@ -1,11 +1,20 @@
 import os
 from setuptools import setup, find_packages
 
-# Load the variables (__version__, __citation_html__, etc.)
-# from PAScual/release.py without importing the module
-releasefname = os.path.join(os.path.dirname(__file__), "PAScual", "release.py")
-with open(releasefname) as f:
-    exec(f.read())
+
+def get_release_info():
+    from importlib.util import spec_from_file_location, module_from_spec
+    from pathlib import Path
+
+    path = Path(__file__).parent / "PAScual" / "release.py"
+    spec = spec_from_file_location("release", path.as_posix())
+    module = module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+release = get_release_info()
+
 
 # entry points to create scripts
 entry_points = {
@@ -32,8 +41,8 @@ classifiers = [
 # call setup()
 setup(
     name="PAScual",
-    version=__version__,
-    url="https://sourceforge.net/p/pascual/w/Main_Page/",
+    version=release.__version__,
+    url=release.__homepage__,
     license="GPLv3",
     author="Carlos Pascual-Izarra",
     author_email="cpascual@users.sourceforge.net",
